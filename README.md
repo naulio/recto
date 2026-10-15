@@ -2,7 +2,7 @@
 
 Une application de révision pour les livres et les leçons au programme : un plan de révision minuté, des exercices qui font réfléchir, des fiches, et un bilan de ce qui te manque à donner à ton IA.
 
-**Utiliser en ligne :** https://naulio.github.io/discours-de-la-methode/
+**Utiliser en ligne :** https://naulio.github.io/recto/
 
 Ou en local : télécharger le dépôt et ouvrir `index.html` dans un navigateur.
 
