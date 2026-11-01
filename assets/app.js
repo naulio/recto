@@ -4,6 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
+  const V = "5"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   const BOOKS = {}, WAIT = {};
   window.Recto = {
@@ -24,7 +25,7 @@
     (WAIT[id] = WAIT[id] || []).push(cb);
     if (WAIT[id].length > 1) return;
     const s = document.createElement("script");
-    s.src = meta.file + "?v=4";
+    s.src = meta.file + "?v=" + V;
     s.onerror = () => { const l = WAIT[id] || []; delete WAIT[id]; l.forEach(f => f(new Error("load"))); };
     document.head.appendChild(s);
   }
@@ -38,7 +39,31 @@
       EXm[e.id] = e;
     });
     const CHs = d.parts.filter(p => p.n > 0).map(p => p.n).sort((a, b) => a - b);
-    return Object.assign({ id, meta, unit: { one: "chapitre", many: "chapitres" }, exam: {}, plan: {}, tips: [], overview: null }, d, { EX: EXm, NIDS: Object.keys(d.notions), CH: CHs });
+    const extra = { EX: EXm, NIDS: Object.keys(d.notions), CH: CHs };
+    if (d.course) {
+      /* Leçon : temps de lecture calculés d'après les pages du cours, et lien notion → page */
+      d.course.forEach((pg, i) => { pg.i = i; });
+      const words = pg => [pg.title, pg.lead, pg.key].concat(pg.body.flat(), (pg.side || []).map(s => (s.w || "") + " " + (s.t || ""))).join(" ").split(/\s+/).length;
+      const reading = Object.assign({}, d.reading);
+      CHs.forEach(p => {
+        if (reading[p]) return;
+        const pages = d.course.filter(x => x.part === p);
+        const full = Math.max(4, Math.round(sum(pages.map(words)) / 150));
+        reading[p] = {
+          full, ess: Math.max(3, Math.round(full * 0.6)), express: Math.max(2, Math.round(full * 0.3)),
+          text: {
+            full: "Toutes les pages de la partie, exemples et encadrés compris. Ouvre la fiche liée quand une notion t'échappe.",
+            ess: "Chaque page : la phrase d'ouverture, le texte et l'encadré « À retenir ». Survole les exemples.",
+            express: "Seulement la phrase d'ouverture et l'encadré « À retenir » de chaque page."
+          },
+          look: pages.map(x => x.title)
+        };
+      });
+      extra.reading = reading;
+      extra.pageOf = {};
+      d.course.forEach(pg => (pg.ns || []).forEach(n => { if (!extra.pageOf[n]) extra.pageOf[n] = pg.id; }));
+    }
+    return Object.assign({ id, meta, unit: { one: "chapitre", many: "chapitres" }, exam: {}, plan: {}, tips: [], overview: null }, d, extra);
   }
   function collectNotions(e) {
     const s = new Set();
@@ -67,6 +92,10 @@
     flash: { label: "Carte mémoire", help: "Réponds à voix haute avant de retourner la carte, puis note-toi honnêtement.", keys: "Espace pour retourner · 1, 2 ou 3 pour noter" },
     build: { label: "Construire la réponse", help: "À l'épreuve, chaque question attend des arguments précis. Sélectionne ceux qui ont leur place dans ta réponse, ni plus ni moins.", keys: "Entrée pour valider" }
   };
+  /* Exercices d'explication de texte : un QCM accompagné d'un passage */
+  const TEXT_TYPE = { label: "Explication de texte", help: "Lis le passage deux fois. Repère d'abord la thèse (ce que l'auteur affirme), puis ce qu'il refuse, et les mots qui portent l'argument.", keys: "A à D (ou 1 à 4) pour choisir · Entrée pour valider" };
+  const typeOf = ex => ex.passage ? TEXT_TYPE : TYPES[ex.type];
+  const PART_HELP = { livre: TYPES.part.help, lecon: "Retrouve dans quelle partie du cours cette idée ou cette citation est étudiée. Savoir situer une référence aide à construire un plan." };
   const QUICK = ["qcm", "vf", "part", "fill"];
   const VISUAL = ["order", "match", "sort", "schema", "grid"];
   const STATUS_LABEL = { new: "Non testé", weak: "À revoir", mid: "Fragile", good: "Acquis" };
@@ -129,7 +158,10 @@
   function fmtHMS(ms) { let s = Math.max(0, Math.round(ms / 1000)); const h = Math.floor(s / 3600); s -= h * 3600; const m = Math.floor(s / 60); s %= 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0"); }
   function fmtLeft(ms) { const m = Math.max(0, Math.ceil(ms / 60000)); return m < 60 ? m + " min" : Math.floor(m / 60) + " h " + String(m % 60).padStart(2, "0"); }
   function nextFive() { const d = new Date(); d.setSeconds(0, 0); d.setMinutes(Math.ceil(d.getMinutes() / 5) * 5); return d.getTime(); }
-  const partLabel = p => p ? PARTS[p].name : "Contexte";
+  const partLabel = p => p ? PARTS[p].name : (PARTS[0] ? PARTS[0].name : "Contexte");
+  const ctxLabel = () => PARTS[0] ? PARTS[0].label : "Contexte";
+  /* Texte du cours : échappé, avec *gras* */
+  const md = s => esc(s).replace(/\*([^*]+)\*/g, "<b>$1</b>");
   const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
   function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600); }
 
@@ -165,11 +197,11 @@
   }
   applyFx();
   let S = null;
-  function bookDefaults() { return { attempts: [], plan: { duration: 60, read: (B.plan.defaultRead || []).slice() }, run: null, checks: {}, ach: {}, best: 0, maxErr: 0 }; }
+  function bookDefaults() { return { attempts: [], plan: { duration: 60, read: (B.plan.defaultRead || []).slice() }, run: null, checks: {}, ach: {}, best: 0, maxErr: 0, course: { seen: [], last: null } }; }
   function loadState(id) {
     const d = bookDefaults(), o = store.get(kBook(id));
     if (!o || typeof o !== "object") return d;
-    return Object.assign(d, o, { plan: Object.assign(d.plan, o.plan || {}), checks: o.checks || {}, ach: o.ach || {} });
+    return Object.assign(d, o, { plan: Object.assign(d.plan, o.plan || {}), checks: o.checks || {}, ach: o.ach || {}, course: Object.assign(d.course, o.course || {}) });
   }
   function save() {
     store.set(K_SET, G);
@@ -185,6 +217,7 @@
     B = BOOKS[id];
     PARTS = B.parts; NOTIONS = B.notions; READING = B.reading; EXS = B.exercises; NIDS = B.NIDS; EX = B.EX; CH = B.CH; U = B.unit; W = KIND[B.meta.type] || KIND.livre;
     S = loadState(id); MC = null; P = null; PLAN_SEL = null;
+    TYPES.part.help = B.course ? PART_HELP.lecon : PART_HELP.livre;
     pickState.parts.clear(); pickState.types.clear();
     store.set(K_LAST, id);
     saveSummary();
@@ -247,7 +280,7 @@
       case "fill": return "Compléter : " + ex.text.replace(/\[\[(.+?)\]\]/g, "____");
       case "part": return "D'où vient : « " + ex.quote + " »";
       case "flash": return ex.f;
-      default: return ex.q;
+      default: return (ex.passage ? "Texte de " + (ex.src || "l'auteur") + " : " : "") + ex.q;
     }
   }
   function dayKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
@@ -309,7 +342,7 @@
     const out = [];
     Object.keys(per).forEach(p => {
       const used = new Set();
-      shuffle(EXS.filter(e => e.part === +p && QUICK.includes(e.type) && avail(e))).forEach(e => {
+      shuffle(EXS.filter(e => e.part === +p && QUICK.includes(e.type) && !e.passage && avail(e))).forEach(e => {
         if (used.size >= per[p] || used.has(e.notion)) return;
         used.add(e.notion); out.push(e.id);
       });
@@ -329,7 +362,8 @@
   /* =========================================================
      Routage (#/  ·  #/bibliotheque  ·  #/<contenu>/<vue>?param=…)
      ========================================================= */
-  const BOOK_VIEWS = ["plan", "carte", "train", "reflexion", "bilan", "lecture", "player"];
+  const BOOK_VIEWS = ["cours", "plan", "carte", "train", "reflexion", "bilan", "lecture", "player"];
+  const defView = () => B && B.course ? "cours" : "plan";
   let VIEW = "home", PARAMS = {};
   let CLEAN = [];
   const app = $("#app");
@@ -342,7 +376,7 @@
     (qs || "").split("&").filter(Boolean).forEach(kv => { const i = kv.indexOf("="); q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? "1" : decodeURIComponent(kv.slice(i + 1)); });
     if (!seg.length) return { view: "home" };
     if (seg[0] === "bibliotheque" || seg[0] === "livres") return { view: "library", q };
-    return { book: seg[0], view: seg[1] || "plan", q };
+    return { book: seg[0], view: seg[1] || null, q };
   }
   function hashFor(view, params) {
     if (view === "home") return "#/";
@@ -358,7 +392,7 @@
     loadBook(id, err => {
       if (err) return toast("Impossible de charger ce contenu.");
       useBook(id);
-      go(view || "plan", params);
+      go(view || defView(), params);
     });
   }
   function route() {
@@ -373,8 +407,10 @@
     loadBook(r.book, err => {
       if (err) { toast("Impossible de charger ce contenu."); location.replace("#/"); return; }
       useBook(r.book);
-      let view = BOOK_VIEWS.includes(r.view) ? r.view : "plan";
+      let view = BOOK_VIEWS.includes(r.view) ? r.view : defView();
       if (view === "player" && !P) view = "train";
+      if (view === "cours" && !B.course) view = "plan";
+      if (view === "lecture" && B.course) view = "cours";
       const prm = Object.assign({}, r.q);
       if (prm.part != null) prm.part = +prm.part;
       if (prm.fromPlan) prm.fromPlan = true;
@@ -384,22 +420,33 @@
   }
   window.addEventListener("hashchange", route);
 
-  let STILL = false;
+  let STILL = false, LAST_HASH = null;
   function render() {
     closeModal(true);
     CLEAN.forEach(f => { try { f(); } catch (e) { /* */ } });
     CLEAN = [];
     document.body.dataset.view = VIEW;
+    /* Sur mobile la page défile : on revient en haut quand on change d'écran */
+    if (location.hash !== LAST_HASH || STILL) { LAST_HASH = location.hash; window.scrollTo(0, 0); }
     renderTopbar();
     VIEWS[VIEW](app, PARAMS);
     if (STILL) { const v = $(".view", app); if (v) v.classList.add("still"); }
     STILL = false;
     renderPill();
   }
+  function navItems() {
+    const L = !!(B && B.course);
+    return [L && ["cours", "Cours", "Cours"], ["plan", "Plan", "Plan"], ["carte", L ? "Fiches" : "Carte", L ? "Fiches" : "Carte"], ["train", "Entraînement", "Exos"], ["reflexion", L ? "Appliquer" : "Réflexion", L ? "Appliquer" : "Réflexion"], ["bilan", "Bilan", "Bilan"]].filter(Boolean);
+  }
   function renderTopbar() {
     const inBook = B && !["home", "library"].includes(VIEW);
-    $("#crumb").innerHTML = inBook ? `<span class="sep"></span><a href="#/${B.id}/plan">${esc(B.meta.title)}</a>` : "";
+    document.body.classList.toggle("in-item", !!inBook);
+    $("#crumb").innerHTML = inBook ? `<span class="sep"></span><a href="#/${B.id}">${esc(B.meta.title)}</a>` : "";
     $("#nav").hidden = !inBook;
+    if (inBook) {
+      $("#nav").innerHTML = navItems().map(([v, l, s]) => `<button data-view="${v}"><span class="l">${esc(l)}</span><span class="s">${esc(s)}</span></button>`).join("");
+      $$("#nav button").forEach(b => b.onclick = () => go(b.dataset.view, {}));
+    }
     $("#topIcons").innerHTML = `<a class="top-icon ${VIEW === "home" ? "on" : ""}" href="#/" title="Accueil" aria-label="Accueil">${ICON.home}</a><a class="top-icon ${VIEW === "library" ? "on" : ""}" href="#/bibliotheque" title="Bibliothèque" aria-label="Bibliothèque">${ICON.library}</a><button class="top-icon" id="openSettings" title="Réglages" aria-label="Réglages">${ICON.gear}</button>`;
     $("#openSettings").onclick = openSettings;
     const br = $(".brand");
@@ -407,14 +454,13 @@
     const navKey = VIEW === "player" ? (P && P.from === "reflexion" ? "reflexion" : "train") : VIEW === "lecture" ? "plan" : VIEW;
     $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.view === navKey));
   }
-  $$("#nav button").forEach(b => b.addEventListener("click", () => go(b.dataset.view, {})));
 
   /* =========================================================
      Accueil & bibliothèque
      ========================================================= */
   const SOON = {
     livre: { t: "D'autres livres arrivent", s: "Chaque œuvre au programme aura son plan, ses exercices et son bilan." },
-    lecon: { t: "Les leçons arrivent", s: "Notions de philosophie, chapitres d'histoire, de SES, de SVT… avec les mêmes outils." }
+    lecon: { t: "D'autres leçons arrivent", s: "Chaque nouveau chapitre du cours, remis au propre avec les mêmes outils." }
   };
   function coverHTML(meta, cls) {
     const sm = store.get(kSum(meta.id));
@@ -429,35 +475,40 @@
     </button>`;
   }
   const soonHTML = type => `<div class="cover soon"><span class="cv-title">${SOON[type].t}</span><span class="cv-author">${SOON[type].s}</span></div>`;
-  function bindCovers(root) { $$("[data-book]", root).forEach(b => b.onclick = () => openBook(b.dataset.book, "plan")); }
+  function bindCovers(root) { $$("[data-book]", root).forEach(b => b.onclick = () => openBook(b.dataset.book)); }
   const ofType = t => LIB.filter(m => m.type === t);
 
-  let HOME_TAB = "livre";
+  let HOME_TAB = "lecon";
   VIEWS.home = function (root) {
     const sm = B ? store.get(kSum(B.id)) : null;
     const started = sm && sm.answered;
     const list = ofType(HOME_TAB);
     const shown = list.slice(0, 5);
     const cells = shown.length + (list.length < 6 ? 1 : 0);
-    const prog = B && started ? `<div class="hero-prog"><div class="hp-top"><span>Préparation · ${esc(B.meta.title)}</span><b>${sm.pct} %</b></div><div class="bar ${sm.pct >= 80 ? "good" : sm.pct >= 50 ? "mid" : "weak"}"><i style="width:${sm.pct}%"></i></div>${S.run ? `<p class="resume-run" id="homeRun">Session en cours · reste ${fmtLeft(runTimes().left)}</p>` : `<p class="muted">${sm.tested} notions testées sur ${sm.total} · ${sm.answered} exercices faits</p>`}</div>` : "";
+    const pagesSeen = B && B.course ? B.course.filter(p => S.course.seen.includes(p.id)).length : 0;
+    const prog = B && started ? `<div class="hero-prog"><div class="hp-top"><span>Préparation · ${esc(B.meta.title)}</span><b>${sm.pct} %</b></div><div class="bar ${sm.pct >= 80 ? "good" : sm.pct >= 50 ? "mid" : "weak"}"><i style="width:${sm.pct}%"></i></div>${S.run ? `<p class="resume-run" id="homeRun">Session en cours · reste ${fmtLeft(runTimes().left)}</p>` : `<p class="muted">${sm.tested} notions testées sur ${sm.total} · ${sm.answered} exercices faits</p>`}</div>`
+      : B && pagesSeen ? `<div class="hero-prog"><div class="hp-top"><span>Cours lu · ${esc(B.meta.title)}</span><b>${Math.round(pagesSeen / B.course.length * 100)} %</b></div><div class="bar"><i style="width:${Math.round(pagesSeen / B.course.length * 100)}%"></i></div><p class="muted">${pagesSeen} pages sur ${B.course.length} · passe aux exercices quand tu veux</p></div>` : "";
+    const cta = !B ? "" : S.run ? "Revenir à la session" : started ? "Reprendre" : pagesSeen ? "Continuer le cours" : B.course ? "Apprendre" : "Commencer";
+    const facts = !B ? "" : B.course
+      ? `<div><b class="cnt" data-v="${B.course.length}">${B.course.length}</b><span>pages de cours</span></div><div><b class="cnt" data-v="${NIDS.length}">${NIDS.length}</b><span>fiches</span></div><div><b class="cnt" data-v="${EXS.length}">${EXS.length}</b><span>exercices</span></div>`
+      : `<div><b class="cnt" data-v="${EXS.length}">${EXS.length}</b><span>exercices</span></div><div><b class="cnt" data-v="${NIDS.length}">${NIDS.length}</b><span>fiches</span></div><div><b class="cnt" data-v="${new Set(EXS.map(e => e.type)).size}">${new Set(EXS.map(e => e.type)).size}</b><span>formats</span></div>`;
     root.innerHTML = `
     <section class="view home">
       <div class="card hero">
-        <div class="eyebrow accent">Livres et leçons · révision active</div>
-        <h1 class="hero-t">Lis. Comprends.<br><span class="hl">Retiens.</span></h1>
-        <p class="hero-p">Recto transforme un livre ou une leçon en plan de révision minuté, en exercices qui font réfléchir et en bilan de ce qui te manque.</p>
-        <div class="hero-cta">${B ? `<button class="btn primary xl" id="start">${S.run ? "Revenir à la session" : started ? "Reprendre" : "Commencer"} · ${esc(B.meta.title)}</button>` : ""}</div>
+        <div class="eyebrow accent">Tes cours, remis au propre</div>
+        <h1 class="hero-t">Apprends.<br><span class="hl">Applique.</span></h1>
+        <p class="hero-p">Recto remet tes leçons au propre, une idée par page, puis t'entraîne à t'en servir : exercices, fiches, sujets de dissertation et bilan de ce qui te manque.</p>
+        <div class="hero-cta">${B ? `<button class="btn primary xl" id="start">${cta} · ${esc(B.meta.title)}</button>` : ""}</div>
         ${prog}
-        ${B ? `<div class="hero-facts">${daysHTML()}<div><b class="cnt" data-v="${EXS.length}">${EXS.length}</b><span>exercices</span></div><div><b class="cnt" data-v="${NIDS.length}">${NIDS.length}</b><span>fiches</span></div><div><b class="cnt" data-v="${new Set(EXS.map(e => e.type)).size}">${new Set(EXS.map(e => e.type)).size}</b><span>formats</span></div></div>` : ""}
+        ${B ? `<div class="hero-facts">${daysHTML()}${facts}</div>` : ""}
       </div>
       <div class="card shelf">
-        <div class="row-head"><div class="segmented big" id="shelfTab"><button data-t="livre" class="${HOME_TAB === "livre" ? "on" : ""}">Livres <span class="n">${ofType("livre").length}</span></button><button data-t="lecon" class="${HOME_TAB === "lecon" ? "on" : ""}">Leçons <span class="n">${ofType("lecon").length}</span></button></div><a class="link" href="#/bibliotheque?type=${HOME_TAB}">Tout voir</a></div>
+        <div class="row-head"><div class="segmented big" id="shelfTab"><button data-t="lecon" class="${HOME_TAB === "lecon" ? "on" : ""}">Leçons <span class="n">${ofType("lecon").length}</span></button><button data-t="livre" class="${HOME_TAB === "livre" ? "on" : ""}">Livres <span class="n">${ofType("livre").length}</span></button></div><a class="link" href="#/bibliotheque?type=${HOME_TAB}">Tout voir</a></div>
         <div class="covers ${cells <= 2 ? "two" : ""}">${shown.map(m => coverHTML(m)).join("")}${list.length < 6 ? soonHTML(HOME_TAB) : ""}</div>
-        <ol class="how"><li><b>Planifie</b><span>De 30 min à 3 h, le plan se construit seul.</span></li><li><b>Entraîne-toi</b><span>11 formats qui font réfléchir.</span></li><li><b>Fais ton bilan</b><span>Ce qui te manque, prêt pour ton IA.</span></li></ol>
+        <ol class="how"><li><b>Apprends</b><span>Le cours au propre, une idée par page.</span></li><li><b>Entraîne-toi</b><span>Des exercices variés, un plan minuté.</span></li><li><b>Applique</b><span>Sujets de dissertation et bilan pour ton IA.</span></li></ol>
       </div>
     </section>`;
-    const s = $("#start"); if (s) s.onclick = () => openBook(B.id, "plan");
-    const rs = $("#resume"); if (rs) rs.onclick = () => openBook(B.id, "plan");
+    const s = $("#start"); if (s) s.onclick = () => openBook(B.id, S.run || started || !B.course ? "plan" : "cours");
     $$("#shelfTab button").forEach(b => b.onclick = () => { HOME_TAB = b.dataset.t; render(); });
     bindCovers(root);
     homeFx(root);
@@ -470,13 +521,13 @@
     const subjects = ["Toutes", ...new Set(base.map(b => b.subject).filter(Boolean))];
     if (!subjects.includes(LIB_SUBJ)) LIB_SUBJ = "Toutes";
     const list = base.filter(b => LIB_SUBJ === "Toutes" || b.subject === LIB_SUBJ);
-    const soons = (type === "tout" ? ["livre", "lecon"] : [type]).filter(t => ofType(t).length < 6);
+    const soons = (type === "tout" ? ["lecon", "livre"] : [type]).filter(t => ofType(t).length < 6);
     root.innerHTML = `
     <section class="view library">
       <div class="lib-head">
-        <div><div class="eyebrow">Bibliothèque</div><h1 style="margin-top:6px">${type === "lecon" ? "Leçons" : type === "livre" ? "Livres" : "Livres et leçons"}</h1><p class="muted">Choisis ce que tu révises. Chaque livre et chaque leçon a son plan, ses exercices, ses fiches et son bilan, enregistrés séparément.</p></div>
+        <div><div class="eyebrow">Bibliothèque</div><h1 style="margin-top:6px">${type === "lecon" ? "Leçons" : type === "livre" ? "Livres" : "Leçons et livres"}</h1><p class="muted">Choisis ce que tu apprends. Chaque leçon a son cours page par page, ses fiches, ses exercices, ses sujets et son bilan, enregistrés séparément.</p></div>
         <div class="lib-filters">
-          <div class="segmented big" id="ltype">${[["tout", "Tout"], ["livre", "Livres"], ["lecon", "Leçons"]].map(([k, l]) => `<button data-t="${k}" class="${k === type ? "on" : ""}">${l}</button>`).join("")}</div>
+          <div class="segmented big" id="ltype">${[["tout", "Tout"], ["lecon", "Leçons"], ["livre", "Livres"]].map(([k, l]) => `<button data-t="${k}" class="${k === type ? "on" : ""}">${l}</button>`).join("")}</div>
           ${subjects.length > 2 ? `<div class="chips">${subjects.map(s => `<button class="chip ${s === LIB_SUBJ ? "on" : ""}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}
         </div>
       </div>
@@ -599,7 +650,9 @@
     const ex = B.exam || {};
     switch (b.type) {
       case "diag": return { title: "Diagnostic éclair", desc: `10 questions rapides sur ${W.all}, sans réviser avant. Ne cherche pas à bien faire : le but est de repérer tes angles morts.`, why: "Se tester d'abord vaut mieux que relire : chaque erreur devient une priorité pour la suite du plan.", act: "Lancer le diagnostic" };
-      case "read": return { title: "Lecture · " + U.one + " " + PARTS[b.part].roman, desc: RD(b.part).text[b.mode], why: (B.plan.why || {})[b.part], list: RD(b.part).look, act: "Ouvrir le guide de lecture", eyebrow: "Lecture " + MODE_LABEL[b.mode].toLowerCase() };
+      case "read": return B.course
+        ? { title: "Cours · " + U.one + " " + PARTS[b.part].roman, desc: RD(b.part).text[b.mode], why: (B.plan.why || {})[b.part], list: RD(b.part).look, act: "Ouvrir le cours", eyebrow: "Cours · lecture " + MODE_LABEL[b.mode].toLowerCase() }
+        : { title: "Lecture · " + U.one + " " + PARTS[b.part].roman, desc: RD(b.part).text[b.mode], why: (B.plan.why || {})[b.part], list: RD(b.part).look, act: "Ouvrir le guide de lecture", eyebrow: "Lecture " + MODE_LABEL[b.mode].toLowerCase() };
       case "reread": return { title: "Relecture ciblée · " + romanList(b.parts), desc: "Ne relis pas tout : ouvre la Carte, puis la fiche de chaque notion en rouge ou en orange, et relis seulement les passages cités.", why: "Tu as déjà lu ces " + U.many + ". Relire en entier donne une illusion de maîtrise ; viser tes erreurs est bien plus rentable.", act: "Ouvrir la carte" };
       case "drill": {
         const n = nItems(b.min);
@@ -607,7 +660,9 @@
         return { title: "Exercices · " + romanList(b.parts), desc: fresh ? "Juste après la lecture, teste-toi : c'est à ce moment que l'effort de rappel fixe le mieux ce que tu viens de lire." : "Rappel actif sur ce que tu as déjà lu : QCM, textes à trous, cartes mémoire. Ce que tu rates part dans tes points faibles.", why: n + " exercices, environ 50 secondes chacun.", act: "Lancer " + n + " exercices", n };
       }
       case "mixed": { const n = Math.max(3, Math.round(b.min * 60 / 80)); return { title: "Schémas et liens", desc: "Exercices visuels : schémas à compléter, ordres à rétablir, associations, classements, tableaux. Ils obligent à relier les " + U.many + " entre eux, comme le demande une question de réflexion.", why: n + " exercices, environ 1 min 20 chacun.", act: "Lancer " + n + " exercices", n }; }
-      case "reflect": { const k = nBuild(b.min); return { title: "Questions de réflexion", desc: k + " questions du type de ton épreuve. Pour chacune : réfléchis 30 secondes, choisis les arguments pertinents, puis compare au plan modèle.", why: (ex.format ? "Ton épreuve : " + ex.format + ". " : "") + "Ici, tu t'entraînes à trouver vite les bons arguments sans perdre de temps à rédiger.", act: "Lancer " + k + " questions", n: k }; }
+      case "reflect": { const k = nBuild(b.min); return B.course
+        ? { title: "Sujets de dissertation", desc: k + " sujets du type de ton épreuve. Pour chacun : réfléchis 30 secondes, choisis les arguments et les références qui y répondent, puis compare au plan modèle.", why: (ex.format ? "Ton épreuve : " + ex.format + ". " : "") + "Ici, tu t'entraînes à mobiliser le cours vite et juste, sans perdre de temps à rédiger.", act: "Lancer " + k + " sujets", n: k }
+        : { title: "Questions de réflexion", desc: k + " questions du type de ton épreuve. Pour chacune : réfléchis 30 secondes, choisis les arguments pertinents, puis compare au plan modèle.", why: (ex.format ? "Ton épreuve : " + ex.format + ". " : "") + "Ici, tu t'entraînes à trouver vite les bons arguments sans perdre de temps à rédiger.", act: "Lancer " + k + " questions", n: k }; }
       case "weak": return { title: "Points faibles", desc: "Refais tes exercices ratés jusqu'à ce qu'ils passent au vert, puis ouvre la fiche des notions qui restent en rouge dans le Bilan.", why: "Les erreurs corrigées juste après coup sont celles qu'on retient le mieux le lendemain.", act: "Refaire mes erreurs" };
       case "video": return { title: "Vidéo ciblée", desc: "Sur ta notion la plus fragile, regarde une explication en vidéo, en vitesse ×1,5. Le Bilan propose une recherche pour chaque notion.", why: "Une vidéo est utile pour débloquer une idée précise, pas pour remplacer la lecture.", act: "Ouvrir le bilan" };
       case "pause": return { title: "Pause", desc: "Lève-toi, bois un verre d'eau, et pas d'écran. Cinq minutes suffisent.", why: "Une courte pause entre deux blocs aide à consolider ce que tu viens de travailler." };
@@ -640,7 +695,7 @@
         <div class="sub" id="durSub">de révision avant l'épreuve.</div>
         ${running ? `<div class="run-bar"><i id="runProg"></i></div>` : `<div class="range"><input type="range" id="dur" min="30" max="180" step="5" value="${S.plan.duration}" aria-label="Durée de révision"></div>
         <div class="range-scale"><span style="left:0">30 min</span><span style="left:20%">1 h</span><span style="left:40%">1 h 30</span><span style="left:60%">2 h</span><span style="left:100%">3 h</span></div>`}
-        <div class="ctrl-label">${esc(U.many.charAt(0).toUpperCase() + U.many.slice(1))} déjà lu${U.many.endsWith("es") ? "es" : "s"} <span>touche pour modifier</span></div>
+        <div class="ctrl-label">${esc(U.many.charAt(0).toUpperCase() + U.many.slice(1))} déjà ${B.course ? (U.fem ? "apprises" : "appris") : (U.fem ? "lues" : "lus")} <span>touche pour modifier</span></div>
         <div class="part-toggles" style="grid-template-columns:repeat(${Math.min(CH.length, 6)},1fr)">${CH.map(p => `<button class="ptog ${S.plan.read.includes(p) ? "on" : ""}" data-p="${p}" ${running ? "disabled" : ""} title="${esc(PARTS[p].title)}">${PARTS[p].roman}</button>`).join("")}</div>
         <div class="mix" id="mix"></div>
         <div class="set-line"><span>Sans citations</span>${switchHTML("nq", G.noQuotes)}</div>
@@ -796,11 +851,11 @@
     const o = { origin: "plan" };
     switch (b.type) {
       case "diag": return startSession(Object.assign({ title: "Diagnostic éclair", ids: pickDiag() }, o));
-      case "read": return go("lecture", { part: b.part, mode: b.mode, fromPlan: true });
+      case "read": return go(B.course ? "cours" : "lecture", { part: b.part, mode: b.mode, fromPlan: true });
       case "reread": return go("carte", { part: b.parts[0] });
       case "drill": return startSession(Object.assign({ title: "Exercices · " + romanList(b.parts), ids: pickSmart(d.n, e => b.parts.includes(e.part)) }, o));
       case "mixed": return startSession(Object.assign({ title: "Schémas et liens", ids: pickSmart(d.n, e => VISUAL.includes(e.type)) }, o));
-      case "reflect": return startSession(Object.assign({ title: "Questions de réflexion", ids: pickBuild(d.n), from: "reflexion" }, o));
+      case "reflect": return startSession(Object.assign({ title: B.course ? "Sujets de dissertation" : "Questions de réflexion", ids: pickBuild(d.n), from: "reflexion" }, o));
       case "weak": {
         const ids = errorIds().slice(0, 12);
         if (ids.length) return startSession(Object.assign({ title: "Mes erreurs", ids: shuffle(ids) }, o));
@@ -836,6 +891,100 @@
     const hr = $("#homeRun"); if (hr) hr.textContent = "Session en cours · reste " + fmtLeft(t.left);
     updatePlanClock();
   }, 1000);
+
+  /* =========================================================
+     Cours (leçons) : une idée par page, sans défilement
+     ========================================================= */
+  function coursePage(prm) {
+    const C = B.course;
+    let pg = prm.page && C.find(x => x.id === prm.page);
+    if (!pg && prm.part != null) { const ps = C.filter(x => x.part === prm.part); pg = ps.find(x => !S.course.seen.includes(x.id)) || ps[0]; }
+    return pg || C.find(x => x.id === S.course.last) || C[0];
+  }
+  function sideCardHTML(c) {
+    switch (c.k) {
+      case "q": return `<figure class="co-card q"><blockquote>« ${md(c.t)} »</blockquote>${c.a ? `<figcaption>${esc(c.a)}</figcaption>` : ""}</figure>`;
+      case "def": return `<div class="co-card def"><span class="tg">Définition</span><b>${esc(c.w)}</b><p>${md(c.t)}</p></div>`;
+      case "ex": return `<div class="co-card ex"><span class="tg">${esc(c.w || "Exemple")}</span><p>${md(c.t)}</p></div>`;
+      case "plus": return `<div class="co-card plus"><span class="tg">${esc(c.w || "Complément")}</span><p>${md(c.t)}</p></div>`;
+      case "warn": return `<div class="co-card warn"><span class="tg">Attention</span><p>${md(c.t)}</p></div>`;
+    }
+    return "";
+  }
+  function swipe(el, fn) {
+    if (!el) return;
+    let s = null;
+    el.addEventListener("touchstart", e => { s = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() } : null; }, { passive: true });
+    el.addEventListener("touchend", e => {
+      if (!s) return;
+      const t = e.changedTouches[0], dx = t.clientX - s.x, dy = t.clientY - s.y, dt = Date.now() - s.t;
+      s = null;
+      if (Math.abs(dx) > 70 && Math.abs(dy) < 45 && dt < 700 && !String(window.getSelection() || "")) fn(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  }
+  VIEWS.cours = function (root, prm) {
+    const C = B.course;
+    const pg = coursePage(prm);
+    const i = pg.i, prev = C[i - 1], next = C[i + 1];
+    const seen = S.course.seen;
+    if (!seen.includes(pg.id)) seen.push(pg.id);
+    S.course.last = pg.id;
+    /* Une partie lue en entier compte comme « apprise » dans le plan */
+    if (pg.part && !S.run && C.filter(x => x.part === pg.part).every(x => seen.includes(x.id)) && !S.plan.read.includes(pg.part)) S.plan.read = [...S.plan.read, pg.part].sort((a, b) => a - b);
+    save();
+    const endOfPart = !next || next.part !== pg.part;
+    const cur = S.run && S.run.blocks[S.run.idx];
+    const planRead = !!(cur && cur.type === "read" && cur.part === pg.part);
+    const pl = pg.part ? U.one + " " + PARTS[pg.part].roman : ctxLabel().toLowerCase();
+    const nSeen = C.filter(x => seen.includes(x.id)).length;
+    const tocPart = p => {
+      const ps = C.filter(x => x.part === p), n = ps.filter(x => seen.includes(x.id)).length, open = p === pg.part;
+      let sec = null;
+      const items = open ? ps.map(x => { const h = x.sec !== sec && x.sec !== ctxLabel() ? `<div class="co-sec">${esc(x.sec)}</div>` : ""; sec = x.sec; return h + `<button class="co-item ${x === pg ? "on" : ""} ${seen.includes(x.id) ? "seen" : ""}" data-page="${x.id}"><span class="ck">${ICON.check}</span><span class="t">${esc(x.title)}</span></button>`; }).join("") : "";
+      return `<div class="co-part ${open ? "open" : ""}"><button class="co-ph" data-ppart="${p}"><span class="r">${p ? PARTS[p].roman : "§"}</span><span class="t">${esc(p ? PARTS[p].label : ctxLabel())}</span><span class="n tabnum">${n}/${ps.length}</span></button>${items}</div>`;
+    };
+    const body = pg.body.map(b => Array.isArray(b) ? `<ul>${b.map(li => `<li>${md(li)}</li>`).join("")}</ul>` : `<p>${md(b)}</p>`).join("");
+    const side = pg.side || [];
+    const fiches = (pg.ns || []).filter(n => NOTIONS[n]).map(n => `<button class="chip co-fiche" data-fiche="${n}" title="Ouvrir la fiche"><span class="dot ${status(mastery(n))}"></span>${esc(NOTIONS[n].title)}</button>`).join("");
+    const where = pg.part ? PARTS[pg.part].roman + " · " + PARTS[pg.part].label + (pg.sec ? " · " + pg.sec : "") : ctxLabel();
+    root.innerHTML = `
+    <section class="view cours">
+      <nav class="card co-toc" aria-label="Sommaire du cours">
+        <div class="co-prog"><div class="top"><span>Cours lu</span><b class="tabnum">${nSeen} / ${C.length}</b></div><div class="bar"><i style="width:${Math.round(nSeen / C.length * 100)}%"></i></div></div>
+        <div class="co-list">${[0].concat(CH).filter(p => C.some(x => x.part === p)).map(tocPart).join("")}</div>
+      </nav>
+      <article class="card co-page" id="coPage">
+        <header class="co-head"><span class="eyebrow accent">${esc(where)}</span>${pg.extra ? `<span class="tag ghost">Complément</span>` : ""}<span class="co-count tabnum">${i + 1} / ${C.length}</span></header>
+        <h1 class="co-title">${esc(pg.title)}</h1>
+        <p class="co-lead">${md(pg.lead)}</p>
+        <div class="co-grid">
+          <div class="co-body">${body}</div>
+          <aside class="co-side">${side.map(sideCardHTML).join("")}<div class="co-key"><b>À retenir</b><span>${md(pg.key)}</span></div></aside>
+        </div>
+        <footer class="co-foot">
+          <div class="co-nav">
+            <button class="btn secondary" id="coPrev" ${prev ? "" : "disabled"} aria-label="Page précédente">${ICON.back}<span class="hide-sm">Précédente</span></button>
+            <div class="co-fiches">${fiches}</div>
+            ${endOfPart ? `<button class="btn ${next ? "secondary" : "primary"}" id="coTest">${planRead ? "J'ai fini · exercices" : "S'entraîner · " + esc(pl)}</button>` : ""}
+            ${next ? `<button class="btn primary" id="coNext" aria-label="Page suivante"><span>${endOfPart ? "Partie suivante" : "Suivante"}</span>${ICON.chev}</button>` : ""}
+          </div>
+        </footer>
+      </article>
+    </section>`;
+    const goPage = id => go("cours", { page: id });
+    $("#coPrev").onclick = () => { if (prev) goPage(prev.id); };
+    const nx = $("#coNext"); if (nx) nx.onclick = () => goPage(next.id);
+    const ct = $("#coTest"); if (ct) ct.onclick = () => {
+      if (planRead) { stepRun(); save(); }
+      startSession({ title: "Exercices · " + pl, ids: pickSmart(planRead ? 6 : G.len, e => e.part === pg.part), origin: planRead || S.run ? "plan" : null });
+    };
+    $$(".co-item", root).forEach(b => b.onclick = () => goPage(b.dataset.page));
+    $$(".co-ph", root).forEach(b => b.onclick = () => { const p = +b.dataset.ppart; if (p !== pg.part) go("cours", { part: p }); });
+    const list = $(".co-list", root), on = $(".co-item.on", root);
+    if (list && on && list.scrollHeight > list.clientHeight + 4) list.scrollTop = Math.max(0, on.offsetTop - list.clientHeight / 2);
+    X.fillBars($$(".co-prog .bar i", root));
+    swipe($("#coPage", root), d => { if (d > 0 && next) goPage(next.id); if (d < 0 && prev) goPage(prev.id); });
+  };
 
   /* =========================================================
      Guide de lecture
@@ -884,7 +1033,7 @@
     const cur = prm.notion ? NOTIONS[prm.notion].part : prm.part;
     const navItem = p => {
       const sc = partScore(p), st = status(partTested(p) ? sc : null);
-      return `<button class="c-nav-item ${mode !== "ov" && cur === p ? "on" : ""}" data-part="${p}"><span class="r">${p ? PARTS[p].roman : "§"}</span><span class="t">${esc(p ? PARTS[p].label : "Contexte")}</span><div class="bar ${st}"><i style="width:${pct(sc)}%"></i></div></button>`;
+      return `<button class="c-nav-item ${mode !== "ov" && cur === p ? "on" : ""}" data-part="${p}"><span class="r">${p ? PARTS[p].roman : "§"}</span><span class="t">${esc(p ? PARTS[p].label : ctxLabel())}</span><div class="bar ${st}"><i style="width:${pct(sc)}%"></i></div></button>`;
     };
     const hasCtx = NIDS.some(id => NOTIONS[id].part === 0);
     root.innerHTML = `
@@ -906,7 +1055,7 @@
     $$("[data-notion]", main).forEach(b => b.onclick = () => go("carte", { notion: b.dataset.notion }));
     const bk = $("[data-back]", main); if (bk) bk.onclick = () => go("carte", { part: NOTIONS[prm.notion].part });
     const tp = $("#trainPart", main); if (tp) tp.onclick = () => startSession({ title: "Exercices · " + partLabel(prm.part), ids: pickSmart(G.len, e => e.part === prm.part) });
-    const lp = $("#readPart", main); if (lp) lp.onclick = () => go("lecture", { part: prm.part, mode: "ess" });
+    const lp = $("#readPart", main); if (lp) lp.onclick = () => go(B.course ? "cours" : "lecture", { part: prm.part, mode: "ess" });
     X.fillBars($$(".bar i", root));
     X.stagger($$(".fr-col, .n-tile", main), { y: 10, step: 55 });
   };
@@ -926,7 +1075,7 @@
     return `
       <div class="part-head"><span class="r">${p ? P0.roman : "§"}</span><div><div class="eyebrow">${esc(partLabel(p))}${P0.metaphor ? " · " + esc(P0.metaphor) : ""}</div><h1 style="margin-top:6px">${esc(P0.title)}</h1><p>${esc(P0.essence)}</p></div></div>
       <div class="n-grid">${ids.map(id => { const m = mastery(id), st = status(m); return `<button class="n-tile" data-notion="${id}"><span class="t">${esc(NOTIONS[id].title)}</span><span class="s"><span class="dot ${st}"></span>${STATUS_LABEL[st]}${m != null ? " · " + pct(m) + " %" : ""}</span></button>`; }).join("")}</div>
-      <div class="part-actions"><button class="btn primary" id="trainPart">S'entraîner dessus</button>${p ? `<button class="btn secondary" id="readPart">Guide de lecture</button>${RD(p).link ? `<a class="btn ghost" href="${RD(p).link}" target="_blank" rel="noopener">Texte en ligne ${ICON.ext}</a>` : ""}` : ""}</div>`;
+      <div class="part-actions"><button class="btn primary" id="trainPart">S'entraîner dessus</button>${p ? `<button class="btn secondary" id="readPart">${B.course ? "Lire le cours" : "Guide de lecture"}</button>${RD(p).link ? `<a class="btn ghost" href="${RD(p).link}" target="_blank" rel="noopener">Texte en ligne ${ICON.ext}</a>` : ""}` : ""}</div>`;
   }
   function ficheHTML(id, o) {
     const n = NOTIONS[id], m = mastery(id), st = status(m);
@@ -945,6 +1094,7 @@
         <div class="fiche-links">
           <button class="btn primary sm" data-train-notion="${id}">S'entraîner</button>
           ${n.video ? `<a class="btn secondary sm" href="${yt(n.video)}" target="_blank" rel="noopener">Vidéos ${ICON.ext}</a>` : ""}
+          ${B.pageOf && B.pageOf[id] ? `<button class="btn ghost sm" data-goto-page="${B.pageOf[id]}">Relire le cours</button>` : ""}
           ${n.part && RD(n.part).link ? `<a class="btn ghost sm" href="${RD(n.part).link}" target="_blank" rel="noopener">Texte ${ICON.ext}</a>` : ""}
         </div>
       </div>
@@ -1007,7 +1157,7 @@
       <div class="card t-pick">
         <div class="row"><div><div class="eyebrow">À la carte</div><h3 style="margin-top:6px">Choisis ce que tu travailles</h3></div><div class="segmented" id="pickMode"><button data-m="part" class="${TRAIN_PICK === "part" ? "on" : ""}">Par ${esc(U.one)}</button><button data-m="format" class="${TRAIN_PICK === "format" ? "on" : ""}">Par format</button></div></div>
         ${TRAIN_PICK === "part"
-          ? `<div class="chips" id="partChips">${(hasCtx ? [0] : []).concat(CH).map(p => `<button class="chip ${pickState.parts.has(p) ? "on" : ""}" data-p="${p}">${p ? PARTS[p].roman + " · " + esc(PARTS[p].label) : "Contexte et transversal"} <span class="n">${pc[p] || 0}</span></button>`).join("")}</div>`
+          ? `<div class="chips" id="partChips">${(hasCtx ? [0] : []).concat(CH).map(p => `<button class="chip ${pickState.parts.has(p) ? "on" : ""}" data-p="${p}">${p ? PARTS[p].roman + " · " + esc(PARTS[p].label) : B.course ? esc(ctxLabel()) : "Contexte et transversal"} <span class="n">${pc[p] || 0}</span></button>`).join("")}</div>`
           : `<div class="chips" id="fmtChips">${Object.keys(TYPES).filter(t => EXS.some(e => e.type === t)).map(t => `<button class="chip ${pickState.types.has(t) ? "on" : ""}" data-t="${t}" ${counts[t] ? "" : "disabled"}>${esc(TYPES[t].label)} <span class="n">${counts[t] || 0}</span></button>`).join("")}</div>`}
         <div class="t-pick-foot"><button class="btn primary" id="${TRAIN_PICK === "part" ? "goPart" : "goFmt"}">Lancer la sélection</button></div>
       </div>
@@ -1039,28 +1189,57 @@
      ========================================================= */
   VIEWS.reflexion = function (root) {
     const builds = EXS.filter(e => e.type === "build" && avail(e));
+    const texts = EXS.filter(e => e.passage && avail(e));
     const last = lastByEx();
     const ex = B.exam || {};
+    const L = !!B.course;
     root.innerHTML = `
     <section class="view reflexion">
       <div class="refl-head">
-        <div><div class="eyebrow accent">Format de l'épreuve</div><h1 style="margin-top:6px">Questions de réflexion</h1>
+        ${L
+          ? `<div><div class="eyebrow accent">Appliquer le cours</div><h1 style="margin-top:6px">Sujets de dissertation</h1>
+        <p>${ex.format ? "À l'épreuve : " + esc(ex.format) + ". " : ""}Ici, pas de rédaction : pour chaque sujet, choisis les arguments et les références du cours qui y répondent, puis compare-toi au plan modèle.</p></div>
+        <div class="refl-acts"><button class="btn secondary" id="method">La méthode</button>${texts.length ? `<button class="btn secondary" id="texts">Textes à expliquer · ${texts.length}</button>` : ""}<button class="btn primary" id="sim">Simulation · 3 sujets</button></div>`
+          : `<div><div class="eyebrow accent">Format de l'épreuve</div><h1 style="margin-top:6px">Questions de réflexion</h1>
         <p>${ex.format ? "À l'épreuve : " + esc(ex.format) + (ex.perQuestion ? ", soit " + esc(ex.perQuestion) : "") + ". " : ""}Ici, pas de rédaction : pour chaque question, trouve les arguments pertinents, puis compare-toi au plan modèle et à la citation clé.</p></div>
-        <div style="display:flex;gap:8px;flex:none"><button class="btn secondary" id="undone">Questions jamais faites</button><button class="btn primary" id="sim">Simulation · 4 questions</button></div>
+        <div class="refl-acts"><button class="btn secondary" id="undone">Questions jamais faites</button><button class="btn primary" id="sim">Simulation · 4 questions</button></div>`}
       </div>
       <div class="refl-grid">${builds.map(e => {
         const l = last[e.id], st = l ? status(l.r) : "new";
-        return `<button class="q-card" data-id="${e.id}"><div class="top"><span class="r">${e.part ? PARTS[e.part].roman : "Contexte"}</span><span class="score-badge ${l ? st : ""}">${l ? Math.round(l.r * 100) + " %" : "À faire"}</span></div><span class="t">${esc(e.q)}</span></button>`;
+        return `<button class="q-card" data-id="${e.id}"><div class="top"><span class="r">${e.part ? PARTS[e.part].roman : esc(ctxLabel())}</span><span class="score-badge ${l ? st : ""}">${l ? Math.round(l.r * 100) + " %" : "À faire"}</span></div><span class="t">${esc(e.q)}</span></button>`;
       }).join("")}</div>
     </section>`;
-    $$(".q-card").forEach(c => c.onclick = () => startSession({ title: "Question de réflexion", ids: [c.dataset.id], from: "reflexion" }));
-    $("#sim").onclick = () => startSession({ title: "Simulation d'épreuve", ids: pickBuild(4), from: "reflexion" });
-    $("#undone").onclick = () => {
+    $$(".q-card").forEach(c => c.onclick = () => startSession({ title: L ? "Sujet de dissertation" : "Question de réflexion", ids: [c.dataset.id], from: "reflexion" }));
+    $("#sim").onclick = () => startSession({ title: "Simulation d'épreuve", ids: pickBuild(L ? 3 : 4), from: "reflexion" });
+    const un = $("#undone"); if (un) un.onclick = () => {
       const ids = builds.filter(e => !last[e.id]).map(e => e.id);
       if (!ids.length) return toast("Tu as déjà fait toutes les questions.");
       startSession({ title: "Questions jamais faites", ids: shuffle(ids), from: "reflexion" });
     };
+    const tx = $("#texts"); if (tx) tx.onclick = () => startSession({ title: "Explications de texte", ids: shuffle(texts.map(e => e.id)), from: "reflexion" });
+    const me = $("#method"); if (me) me.onclick = openMethod;
   };
+  /* Méthode de la dissertation et de l'explication de texte (leçons de philosophie) */
+  function openMethod() {
+    openModal(`
+      <div class="modal-head"><h3>La méthode</h3><button class="icon-btn" data-close aria-label="Fermer">${ICON.close}</button></div>
+      <div class="method">
+        <div><div class="eyebrow accent">La dissertation</div><ol class="m-steps">
+          <li><b>Analyser le sujet</b><span>Définis chaque mot, repère ce que la question suppose, reformule-la.</span></li>
+          <li><b>Poser une problématique</b><span>Une tension, en une question : pourquoi la réponse n'est pas évidente.</span></li>
+          <li><b>Construire un plan</b><span>Deux ou trois parties qui répondent chacune à la question, de la réponse la plus évidente à la plus juste.</span></li>
+          <li><b>Argumenter</b><span>Pour chaque argument : l'idée, son explication, une référence du cours (auteur, œuvre), un exemple précis.</span></li>
+          <li><b>Conclure</b><span>Réponds clairement à la question et rappelle le chemin parcouru.</span></li>
+        </ol></div>
+        <div><div class="eyebrow accent">L'explication de texte</div><ol class="m-steps">
+          <li><b>Trouver la thèse</b><span>Ce que l'auteur affirme, en une phrase.</span></li>
+          <li><b>Repérer le problème</b><span>À quelle question le texte répond-il, et contre quelle idée ?</span></li>
+          <li><b>Suivre le mouvement</b><span>Découpe le texte en étapes et nomme chacune.</span></li>
+          <li><b>Expliquer</b><span>Décortique les mots importants et les exemples, un par un, puis montre l'enjeu.</span></li>
+        </ol></div>
+      </div>
+      <p class="note">Les sujets et les textes de Recto t'entraînent à l'étape la plus difficile : trouver vite les bons arguments et les bonnes références.</p>`, "method");
+  }
 
   /* =========================================================
      Lecteur d'exercices
@@ -1099,12 +1278,13 @@
           ${goalHTML()}
           <span class="count">${P.idx + 1} / ${P.ids.length}</span>
         </div>
-        <div class="ex-meta"><span class="tag">${esc(TYPES[ex.type].label)}</span>${ex.type !== "part" && ex.part ? `<span class="tag ghost">${esc(U.one.charAt(0).toUpperCase() + U.one.slice(1))} ${PARTS[ex.part].roman}</span>` : ""}<span class="sess">${esc(P.title)}</span></div>
+        <div class="ex-meta"><span class="tag">${esc(typeOf(ex).label)}</span>${ex.type !== "part" && ex.part ? `<span class="tag ghost">${esc(U.one.charAt(0).toUpperCase() + U.one.slice(1))} ${PARTS[ex.part].roman}</span>` : ""}<span class="sess">${esc(P.title)}</span></div>
         <h2 class="ex-q">${esc(promptOf(ex))}</h2>
         <div class="ex-body" id="exBody"></div>
         <div class="ex-foot">
           <button class="btn ghost gray" id="idk">Je ne sais pas</button>
           <button class="btn ghost" id="hint" hidden>Indice</button>
+          <button class="foot-verdict" id="footVerdict" hidden></button>
           <span class="grow"></span>
           <button class="btn primary" id="validate" disabled>Valider <kbd>Entrée</kbd></button>
           <button class="btn primary" id="next" hidden>Continuer <kbd>Entrée</kbd></button>
@@ -1123,13 +1303,13 @@
     $("#idk").onclick = () => doCheck(true);
     $("#validate").onclick = () => doCheck(false);
     $("#next").onclick = nextEx;
-    if (ex.type === "flash") { $("#validate").hidden = true; $("#idk").hidden = true; }
+    if (ex.type === "flash") { $("#validate").hidden = true; $("#idk").hidden = true; $(".ex-foot").classList.add("empty"); }
     if (ex.type === "vf" || ex.type === "part") $("#validate").hidden = true;
   };
   function sideIntro(ex) {
-    const t = TYPES[ex.type];
+    const t = typeOf(ex);
     return `<div class="side-intro"><h4>Consigne</h4><p>${esc(t.help)}</p><div class="side-keys">${esc(t.keys)}</div></div>
-      ${ex.type === "build" ? `<div class="side-sep"></div><div class="side-intro"><h4>À l'épreuve</h4><p>Une bonne réponse tient en trois éléments : une problématique, deux ou trois arguments tirés du texte, une citation précise.</p></div>` : ""}
+      ${ex.type === "build" ? `<div class="side-sep"></div><div class="side-intro"><h4>À l'épreuve</h4><p>${B.course ? "Une bonne dissertation : une problématique, un plan en deux ou trois parties, et pour chaque argument une référence précise du cours et un exemple." : "Une bonne réponse tient en trois éléments : une problématique, deux ou trois arguments tirés du texte, une citation précise."}</p></div>` : ""}
       ${ex.type === "part" ? `<div class="side-sep"></div><div class="side-intro"><h4>Repères</h4><p>${CH.map(p => PARTS[p].roman + " " + esc(PARTS[p].label.toLowerCase())).join(" · ")}</p></div>` : ""}`;
   }
   function doCheck(giveUp) {
@@ -1148,6 +1328,9 @@
     $("#side").innerHTML = feedbackHTML(ex, res);
     $("#side").scrollTop = 0;
     $("#side").classList.remove("dim");
+    /* Sur mobile : le verdict reste sous le pouce, l'explication est un tap plus bas */
+    const fv = $("#footVerdict"), vc = res.score >= 0.99 ? "ok" : res.score > 0 ? "mid" : "ko";
+    if (fv) { fv.className = "foot-verdict " + vc; fv.innerHTML = (vc === "ok" ? ICON.check : vc === "mid" ? ICON.half : ICON.cross) + "<span>" + (res.gaveUp ? "Réponse" : vc === "ok" ? "Juste" : vc === "mid" ? "Presque" : "À revoir") + "</span><small>Explication</small>"; fv.hidden = false; fv.onclick = () => $("#side").scrollIntoView({ behavior: "smooth", block: "start" }); }
     celebrate(ex, res, before);
   }
   function nextEx() {
@@ -1168,7 +1351,7 @@
     if (ex.explain) body += `<div class="side-block"><h4>Explication</h4><p>${esc(ex.explain)}</p></div>`;
     const links = ex.nlist.map(id => `<button class="fiche-link" data-fiche="${id}"><span class="dot ${status(mastery(id))}"></span><span class="t">${esc(NOTIONS[id].title)}</span>${ICON.chev}</button>`).join("");
     return `<div class="verdict ${cls}"><div class="v-icon">${icon}</div><div><div class="v-title">${title}</div><div class="v-sub">${sub}</div></div></div>${body}
-      <div class="side-links"><h4>Fiche${ex.nlist.length > 1 ? "s" : ""} liée${ex.nlist.length > 1 ? "s" : ""}</h4>${links}</div>`;
+      <div class="side-links ${ex.nlist.length > 2 ? "compact" : ""}"><h4>Fiche${ex.nlist.length > 1 ? "s" : ""} liée${ex.nlist.length > 1 ? "s" : ""}</h4>${links}</div>`;
   }
   function ringHTML(p, st) {
     const r = 52, c = 2 * Math.PI * r;
@@ -1396,6 +1579,22 @@
     CLEAN.push(() => { clearTimeout(t1); clearTimeout(t3); });
   }
 
+  /* Mode application (écran d'accueil iOS / Android) */
+  const UA = navigator.userAgent || "";
+  const IS_IOS = /iP(hone|ad|od)/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const STANDALONE = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  document.documentElement.classList.toggle("standalone", !!STANDALONE);
+  let INSTALL = null;
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); INSTALL = e; });
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => { /* hors ligne indisponible */ }));
+  }
+  function installRowHTML() {
+    if (STANDALONE) return "";
+    const how = IS_IOS ? "Dans Safari : bouton Partager, puis « Sur l'écran d'accueil »." : INSTALL ? "Recto s'ouvrira comme une app, en plein écran, même hors ligne." : "Dans le menu du navigateur : « Installer l'application » ou « Ajouter à l'écran d'accueil ».";
+    return `<div class="set-row"><div><b>Installer l'app</b><span>${how}</span></div>${INSTALL ? `<button class="btn secondary sm" id="sInstall">Installer</button>` : ""}</div>`;
+  }
+
   /* IM-01 / IM-02 : petit onglet de réglages */
   function openSettings() {
     let dirty = false;
@@ -1408,6 +1607,7 @@
       <div class="set-row"><div><b>Rappel actif</b><span>Masque les propositions tant que tu n'as pas répondu de tête.</span></div>${switchHTML("sRecall", G.recall)}</div>
       <div class="set-row"><div><b>Sans citations</b><span>Retire les exercices de citation.</span></div>${switchHTML("sNq", G.noQuotes)}</div>
       <div class="set-row"><div><b>Longueur des séries</b><span>Nombre d'exercices par série.</span></div>${seg("sLen", [[8, "8"], [12, "12"], [20, "20"]], G.len)}</div>
+      ${installRowHTML()}
       <div class="set-foot"><span class="note">Les réglages valent pour tous les livres et leçons.</span><button class="btn secondary sm" id="sTry">Essayer les effets</button></div>`, "settings", () => { if (dirty) render(); });
     const segBind = (id, fn) => $$("#" + id + " button", card).forEach(b => b.onclick = () => { $$("#" + id + " button", card).forEach(x => x.classList.toggle("on", x === b)); fn(b.dataset.v); save(); });
     segBind("sFx", v => { G.fx = +v; applyFx(); });
@@ -1415,6 +1615,7 @@
     segBind("sLen", v => { G.len = +v; dirty = true; });
     bindSwitch("sRecall", v => { G.recall = v; save(); dirty = true; });
     bindSwitch("sNq", v => { G.noQuotes = v; save(); dirty = true; });
+    const si = $("#sInstall", card); if (si) si.onclick = () => { INSTALL.prompt(); INSTALL.userChoice.finally(() => { INSTALL = null; closeModal(); }); };
     $("#sTry", card).onclick = e => { const b = e.currentTarget; X.ripple(b, e.clientX, e.clientY, "rgba(0,113,227,.25)"); X.pop(b); X.burst(b); };
   }
 
@@ -1454,9 +1655,13 @@
     const ans = multi ? ex.answer : [ex.answer];
     const order = shuffle(ex.options.map((_, i) => i));
     const sel = new Set();
-    el.innerHTML = (multi ? `<p class="multi-hint">Plusieurs réponses possibles.</p>` : "") +
+    const inner = (multi ? `<p class="multi-hint">Plusieurs réponses possibles.</p>` : "") +
       recallWrap(`<div class="opts">${order.map((oi, k) => `<button class="opt" data-i="${oi}"><span class="k">${"ABCD"[k]}</span><span>${esc(ex.options[oi])}</span></button>`).join("")}</div>`,
         "Réponds d'abord de tête", "Formule ta réponse avant de voir les propositions : c'est cet effort qui fait retenir.");
+    /* Explication de texte : le passage à gauche, les propositions à droite */
+    el.innerHTML = ex.passage
+      ? `<div class="pass-wrap"><figure class="passage"><blockquote>${esc(ex.passage)}</blockquote>${ex.src ? `<figcaption>${esc(ex.src)}</figcaption>` : ""}</figure><div class="pass-q">${inner}</div></div>`
+      : inner;
     const rv = bindReveal(el);
     const btns = $$(".opt", el);
     const toggle = i => {
@@ -1935,7 +2140,7 @@
       </div>
       <div class="card b-parts"><h3>Par ${esc(U.one)}</h3><p class="small muted" style="margin-top:4px">Moyenne de maîtrise des notions ; une notion non testée compte zéro.</p>
         <div class="bp-list">${parts.map(p => { const sc = partScore(p); const has = partTested(p); const s = status(has ? sc : null); const nb = NIDS.filter(id => NOTIONS[id].part === p).length;
-          return `<button class="bp-row" data-part="${p}"><span class="r">${p ? PARTS[p].roman : "§"}</span><div><div class="t">${esc(p ? PARTS[p].label : "Contexte")}<span>${nb} notion${nb > 1 ? "s" : ""}</span></div><div class="bar ${s}"><i style="width:${pct(sc)}%"></i></div></div><span class="p">${has ? pct(sc) + " %" : "—"}</span></button>`; }).join("")}</div>
+          return `<button class="bp-row" data-part="${p}"><span class="r">${p ? PARTS[p].roman : "§"}</span><div><div class="t">${esc(p ? PARTS[p].label : ctxLabel())}<span>${nb} notion${nb > 1 ? "s" : ""}</span></div><div class="bar ${s}"><i style="width:${pct(sc)}%"></i></div></div><span class="p">${has ? pct(sc) + " %" : "—"}</span></button>`; }).join("")}</div>
         ${achHTML()}
       </div>
       <div class="card b-weak">
@@ -1994,15 +2199,21 @@
     const weak = ranked.filter(x => x.m != null && x.m < 0.8);
     const untested = ranked.filter(x => x.m == null);
     const tips = computedTips(weak, errList).concat(B.tips || []);
-    const work = "« " + meta.title + " »" + (meta.author ? " de " + meta.author : "") + (meta.year ? " (" + meta.year + ")" : "");
+    const work = B.course
+      ? "la leçon « " + meta.title + " »" + (meta.subject ? " (" + meta.subject.toLowerCase() + ")" : "")
+      : "« " + meta.title + " »" + (meta.author ? " de " + meta.author : "") + (meta.year ? " (" + meta.year + ")" : "");
+    const art = exam.kind && /^[éèêaeiouh]/i.test(exam.kind) ? "une " : "un ";
     const prompt = [
-      `Agis comme un professeur bienveillant et exigeant. Je prépare ${exam.kind ? "un " + exam.kind : "une évaluation"} sur ${work}${exam.format ? ", au format : " + exam.format : ""}.`,
+      `Agis comme un professeur bienveillant et exigeant. Je prépare ${exam.kind ? (B.course ? "une " : art) + exam.kind : "une évaluation"} sur ${work}${exam.format ? ", au format : " + exam.format : ""}.`,
       "Voici le bilan de mon entraînement : ma maîtrise par notion, mes erreurs non corrigées et les notions que je n'ai pas encore travaillées.",
+      B.course ? "Reste fidèle à mon cours : ses auteurs, ses exemples et ses citations sont ceux à utiliser." : "",
       "1. Fais le bilan de mes connaissances manquantes, classées par priorité, en t'appuyant sur mes erreurs.",
-      "2. Pour chaque notion fragile : explique l'idée simplement, déroule l'argument étape par étape, donne une image ou une formule du texte à retenir, et signale le piège à éviter.",
+      B.course
+        ? "2. Pour chaque notion fragile : explique l'idée simplement, déroule l'argument étape par étape, donne la référence du cours à retenir (auteur, exemple, citation), et signale le piège à éviter."
+        : "2. Pour chaque notion fragile : explique l'idée simplement, déroule l'argument étape par étape, donne une image ou une formule du texte à retenir, et signale le piège à éviter.",
       "3. Donne-moi des conseils concrets de méthode pour réussir cette épreuve.",
       "4. Pose-moi 5 questions de vérification, sans les réponses. Je te répondrai, puis tu me corrigeras."
-    ].join("\n");
+    ].filter(Boolean).join("\n");
     const noteBlock = (x, pad) => {
       const n = NOTIONS[x.id], L = [];
       L.push(pad + "L'essentiel : " + n.essentiel);
@@ -2091,6 +2302,8 @@
   document.addEventListener("click", e => {
     const f = e.target.closest("[data-fiche]");
     if (f) { e.preventDefault(); openFiche(f.dataset.fiche); return; }
+    const gp = e.target.closest("[data-goto-page]");
+    if (gp) { e.preventDefault(); const id = gp.dataset.gotoPage; closeModal(true); P = null; go("cours", { page: id }); return; }
     const t = e.target.closest("[data-train-notion]");
     if (t) {
       const id = t.dataset.trainNotion;
@@ -2100,6 +2313,11 @@
   document.addEventListener("keydown", e => {
     const modalOpen = !$("#modal").hidden;
     if (e.key === "Escape" && modalOpen) { closeModal(); return; }
+    if (VIEW === "cours" && !modalOpen && !/INPUT|TEXTAREA/.test(e.target.tagName) && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      const b = e.key === "ArrowRight" ? $("#coNext") : e.key === "ArrowLeft" ? $("#coPrev") : null;
+      if (b && !b.disabled) { e.preventDefault(); b.click(); }
+      return;
+    }
     if (VIEW !== "player" || !P || P.done || modalOpen) return;
     const tag = e.target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || e.metaKey || e.ctrlKey || e.altKey) return;
