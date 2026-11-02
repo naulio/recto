@@ -20,7 +20,7 @@ Recto.add("l-art", (function () {
       lead: "L'art pose d'abord la question de son rapport à la réalité : une œuvre peut représenter un paysage, une personne, un événement, une émotion. Mais se contente-t-elle de reproduire le réel ?",
       body: [
         "Quel est le lien entre l'art et la réalité ? L'art doit-il simplement *imiter* la réalité ? Doit-il au contraire l'*embellir* ? Peut-il aussi la *transformer* ou la *dénoncer* ?",
-        "On peut présenter l'art comme une imitation de la réalité, mais une imitation qui peut aussi la modifier ou l'embellir. Et il n'est pas évident que l'art ait pour seule fonction de rendre les choses plus belles : une œuvre peut chercher à *dénoncer une réalité*.",
+        "On peut présenter l'art comme une imitation de la réalité, mais ==une imitation qui peut aussi la modifier ou l'embellir==. Et il n'est pas évident que l'art ait pour seule fonction de rendre les choses plus belles : une œuvre peut chercher à *dénoncer une réalité*.",
         ["*I. Le critère artistique* : qu'est-ce qui distingue une œuvre d'un objet ordinaire ?", "*II. Le goût* : la laideur, les formes du beau, l'énigme du goût.", "*III. Art et réalité* : imiter, représenter."]
       ],
       side: [
@@ -33,8 +33,8 @@ Recto.add("l-art", (function () {
     { id: "technique", part: 1, sec: "A. Créer et produire", title: "La technique : nécessaire, mais pas suffisante",
       lead: "Qu'y a-t-il de plus dans l'art que dans la technique ? Tout art repose sur un savoir-faire, mais aucun savoir-faire ne suffit à faire une œuvre.",
       body: [
-        "Un peintre maîtrise les techniques de la peinture, un musicien les techniques musicales, un écrivain la langue et l'écriture. Le mot le dit : *art* vient du latin *ars*, savoir-faire, et le grec *technè* désigne à la fois la technique et l'art. L'*artisan* est celui qui possède un savoir-faire. Art et technique ne sont donc pas opposés.",
-        "Mais tout le monde peut apprendre à écrire sans être écrivain, et savoir dessiner ne fait pas un peintre. La technique est une *condition nécessaire* de l'art, pas une *condition suffisante*.",
+        "Un peintre maîtrise les techniques de la peinture, un musicien les techniques musicales, un écrivain la langue et l'écriture. Le mot le dit : *art* vient du latin *ars*, savoir-faire, et le grec *technè* désigne à la fois la technique et l'art. L'*artisan* est celui qui possède un savoir-faire. ==Art et technique ne sont donc pas opposés==.",
+        "Mais tout le monde peut apprendre à écrire sans être écrivain, et savoir dessiner ne fait pas un peintre. ==La technique est une *condition nécessaire* de l'art, pas une *condition suffisante*==.",
         "*Miró* cherche parfois la simplicité et l'innocence du dessin d'enfant. Pour un artiste très maîtrisé, y parvenir volontairement est difficile : même quand il s'éloigne de la technique, elle reste présente. L'artiste l'utilise, la transforme ou s'en détache *volontairement*."
       ],
       side: [
@@ -48,7 +48,7 @@ Recto.add("l-art", (function () {
       lead: "Qu'est-ce qui distingue vraiment la création artistique de la simple production technique ? Kant oppose l'activité artistique au métier.",
       body: [
         "Dans la *Critique de la faculté de juger*, Kant écrit que l'art est « libéral » et le métier « mercenaire ». Le métier produit quelque chose selon des règles techniques, ou pour gagner sa vie ; l'art ne se définit pas ainsi.",
-        "Kant insiste sur le *désintéressement* : l'activité artistique ne se définit pas par la recherche d'un résultat pratique ni par le fait de gagner de l'argent.",
+        "Kant insiste sur le *désintéressement* : ==l'activité artistique ne se définit pas par la recherche d'un résultat pratique ni par le fait de gagner de l'argent==.",
         "L'artiste peut évidemment vivre de son art ; mais ce n'est pas ce qui définit l'activité artistique elle-même."
       ],
       side: [
@@ -63,7 +63,7 @@ Recto.add("l-art", (function () {
       body: [
         "Le philosophe américain *Arthur Danto* explique que ce qui fait la différence entre une boîte de Brillo ordinaire et une œuvre d'art qui consiste en une boîte de Brillo, c'est « une certaine théorie de l'art ».",
         "*Andy Warhol* : une boîte de Brillo est un objet du quotidien ; présentée dans le cadre de l'art, elle peut devenir une œuvre. *Duchamp* et son urinoir : un objet ordinaire est considéré comme une œuvre alors qu'il n'a pas été fabriqué comme tel.",
-        "Ce qui fait l'œuvre n'est donc pas nécessairement sa beauté, son utilité, sa matière, ou simplement sa forme. Il faut aussi prendre en compte *la manière dont l'objet est pensé et interprété dans le cadre de l'art*. Danto nous conduit alors vers celui qui crée l'œuvre : l'artiste."
+        "Ce qui fait l'œuvre n'est donc pas nécessairement sa beauté, son utilité, sa matière, ou simplement sa forme. Il faut aussi ==prendre en compte *la manière dont l'objet est pensé et interprété dans le cadre de l'art*==. Danto nous conduit alors vers celui qui crée l'œuvre : l'artiste."
       ],
       side: [
         { k: "q", t: "Ce qui fait la différence entre une boîte de Brillo et une œuvre d'art qui consiste en une boîte de Brillo, c'est une certaine théorie de l'art.", a: "Arthur Danto, Philosophie analytique et esthétique" }
@@ -75,7 +75,7 @@ Recto.add("l-art", (function () {
     { id: "intention", part: 1, sec: "B. Les conditions de l'artiste", title: "L'artiste maîtrise-t-il son œuvre ?",
       lead: "Si le statut de l'œuvre dépend de son créateur, il faut s'interroger sur l'artiste : parvient-il à produire ce qu'il avait l'intention de produire ?",
       body: [
-        "*1. Une idée préalable.* Un peintre peut décider de peindre un coucher de soleil : il observe ce qu'il veut représenter et utilise la peinture comme un moyen. L'art devient un *moyen de parvenir à une fin déterminée par l'artiste*. C'est le cas des *travaux de commande* : longtemps, des rois, des nobles ou de riches commanditaires imposaient leurs demandes ; l'artiste gardait une certaine liberté dans la manière.",
+        "*1. Une idée préalable.* Un peintre peut décider de peindre un coucher de soleil : il observe ce qu'il veut représenter et utilise la peinture comme un moyen. ==L'art devient un *moyen de parvenir à une fin déterminée par l'artiste*==. C'est le cas des *travaux de commande* : longtemps, des rois, des nobles ou de riches commanditaires imposaient leurs demandes ; l'artiste gardait une certaine liberté dans la manière.",
         "*2. Une théorie ou des règles.* L'artiste peut se donner une méthode. *Baudelaire* a traduit le poète américain *Edgar Allan Poe* ; or traduire mot à mot ne conserve ni le style, ni le rythme, ni l'effet produit sur le lecteur. Pour rendre en français un effet aussi proche que possible, il élabore ce qu'il appelle la « *théorie de l'effet* »."
       ],
       side: [
@@ -88,8 +88,8 @@ Recto.add("l-art", (function () {
     { id: "holderlin", part: 1, sec: "B. Les conditions de l'artiste", title: "L'écart entre l'intention et le résultat",
       lead: "Même s'il sait ce qu'il veut et maîtrise sa technique, l'artiste peut ne pas parvenir à le réaliser exactement.",
       body: [
-        "*3. L'écart.* Un peintre a une image très précise d'un coucher de soleil, mais le tableau obtenu n'est « pas encore ça ». L'artiste peut être confronté à un écart entre *l'œuvre telle qu'il la pense* et *l'œuvre telle qu'il parvient à la réaliser*. Cela concerne tous les arts : peinture, littérature, musique, théâtre, cinéma.",
-        "*4. Hölderlin.* La difficulté est flagrante en littérature, car le langage a une grande *plasticité* : une même idée peut se formuler de nombreuses manières. Hölderlin a voulu écrire un *poème parfait*. Mais à chaque formulation trouvée, une autre, meilleure peut-être, restait possible. Il s'est consacré pendant des années à ce projet sans jamais juger le résultat parfaitement satisfaisant."
+        "*3. L'écart.* Un peintre a une image très précise d'un coucher de soleil, mais le tableau obtenu n'est « pas encore ça ». L'artiste peut être confronté à ==un écart entre *l'œuvre telle qu'il la pense* et *l'œuvre telle qu'il parvient à la réaliser*==. Cela concerne tous les arts : peinture, littérature, musique, théâtre, cinéma.",
+        "*4. Hölderlin.* La difficulté est flagrante en littérature, car le langage a une grande *plasticité* : une même idée peut se formuler de nombreuses manières. Hölderlin a voulu écrire un *poème parfait*. Mais ==à chaque formulation trouvée, une autre, meilleure peut-être, restait possible==. Il s'est consacré pendant des années à ce projet sans jamais juger le résultat parfaitement satisfaisant."
       ],
       side: [
         { k: "ex", w: "Le poème parfait", t: "Plusieurs formulations peuvent exprimer une même idée, et il est impossible de savoir avec certitude laquelle est absolument parfaite." }
@@ -101,7 +101,7 @@ Recto.add("l-art", (function () {
       lead: "La technique est d'abord une barrière. Mais plus l'artiste la maîtrise, plus il peut être libre dans sa création.",
       body: [
         "*5.* Pour créer, l'artiste doit maîtriser les moyens propres à son art : le pinceau, l'instrument, la sculpture. Au départ, la technique est presque un « interdit » : il ne parvient pas encore à faire ce qu'il veut, il a tout à apprendre, et c'est long, difficile, parfois pénible.",
-        "*6. Léonard de Vinci* dit de la perspective qu'elle est « la bride et le gouvernail » de la peinture. La bride dirige le cheval, le gouvernail dirige le bateau : la perspective impose des règles (proportions, distances, profondeur), mais sa maîtrise permet au peintre de *diriger sa peinture*. Une fois maîtrisée, la technique devient un « gouvernail » : l'artiste fait faire à la matière ce qu'il veut. Cela vaut pour tous les arts."
+        "*6. Léonard de Vinci* dit de la perspective qu'elle est « la bride et le gouvernail » de la peinture. La bride dirige le cheval, le gouvernail dirige le bateau : la perspective impose des règles (proportions, distances, profondeur), mais sa maîtrise permet au peintre de *diriger sa peinture*. Une fois maîtrisée, ==la technique devient un « gouvernail »== : l'artiste fait faire à la matière ce qu'il veut. Cela vaut pour tous les arts."
       ],
       side: [
         { k: "q", t: "La perspective est la bride et le gouvernail dans la peinture.", a: "Léonard de Vinci" },
@@ -114,9 +114,9 @@ Recto.add("l-art", (function () {
     { id: "infinite", part: 1, sec: "C. L'infinité de l'œuvre", title: "L'œuvre vit par son public",
       lead: "L'œuvre ne s'arrête jamais, même quand l'artiste y a mis un point final : quel que soit son contrôle, il le perd une fois l'œuvre livrée au public.",
       body: [
-        "Une chanson, un livre, une peinture paraît terminée au point final. Mais elle continue d'exister parce que le public la prend en charge. Une œuvre n'existe qu'à condition que le public la fasse vivre : sans public, son histoire s'arrête.",
+        "Une chanson, un livre, une peinture paraît terminée au point final. Mais elle continue d'exister parce que le public la prend en charge. ==Une œuvre n'existe qu'à condition que le public la fasse vivre== : sans public, son histoire s'arrête.",
         "*1. Une œuvre vit par son interprétation.* Les symphonies de *Schubert* (XIXᵉ siècle) sont encore jouées, comme Mozart, Beethoven ou Chopin ; sans cela, Schubert pourrait rejoindre les oubliés de l'histoire de l'art. On regarde encore Léonard de Vinci et Michel-Ange ; on joue encore *Shakespeare* et *Molière*.",
-        "Mais chaque interprétation est différente : instruments, son, rythme, tempo, intonations des acteurs ont changé depuis la création. Cela ne signifie pas nécessairement qu'on trahit l'œuvre."
+        "Mais chaque interprétation est différente : instruments, son, rythme, tempo, intonations des acteurs ont changé depuis la création. ==Cela ne signifie pas nécessairement qu'on trahit l'œuvre==."
       ],
       side: [
         { k: "def", w: "Infinité de l'œuvre", t: "L'œuvre continue d'exister après le point final, parce qu'elle est prise en charge par le public." }
@@ -127,9 +127,9 @@ Recto.add("l-art", (function () {
     { id: "rimbaud", part: 1, sec: "C. L'infinité de l'œuvre", title: "Tous les sens possibles",
       lead: "Chaque interprétation est une nouvelle manière de comprendre l'œuvre : elle peut l'enrichir de nouveaux sens.",
       body: [
-        "*2.* Arthur Rimbaud, dans la lettre dite du « voyant », où il expose sa conception du poète, veut qu'un poème soit « pris dans tous les sens possibles ». Un texte peut donc être interprété différemment de ce que son auteur voulait dire.",
+        "*2.* Arthur Rimbaud, dans la lettre dite du « voyant », où il expose sa conception du poète, veut qu'un poème soit « pris dans tous les sens possibles ». ==Un texte peut donc être interprété différemment de ce que son auteur voulait dire==.",
         "Mais il faut décortiquer la formule. « Dans tous les sens » : il existe plusieurs possibilités de sens. « *Possibles* » : le mot est essentiel. S'il y a des sens possibles, il y a aussi des sens *qui ne sont pas possibles*. Rimbaud ne dit pas qu'on peut interpréter un texte n'importe comment.",
-        "Il faut respecter au minimum la *littéralité* du texte : si un poème parle d'amour, on ne peut pas décider qu'il parle d'une vache. Une interprétation doit être sensée, apporter du sens et être justifiable à partir de l'œuvre."
+        "Il faut respecter au minimum la *littéralité* du texte : si un poème parle d'amour, on ne peut pas décider qu'il parle d'une vache. ==Une interprétation doit être sensée, apporter du sens et être justifiable à partir de l'œuvre==."
       ],
       side: [
         { k: "q", t: "Un poème doit être pris dans tous les sens possibles.", a: "Rimbaud, lettre dite du « voyant »" },
@@ -141,9 +141,9 @@ Recto.add("l-art", (function () {
     { id: "chopin-bref", part: 1, sec: "C. L'infinité de l'œuvre", title: "L'œuvre peut dépasser l'intention de son auteur",
       lead: "L'œuvre échappe à son auteur dès qu'elle devient publique : on peut en dire des choses auxquelles il n'avait jamais pensé, voire contraires à ce qu'il voulait.",
       body: [
-        "*3. Chopin*, compositeur franco-polonais qui a vécu une grande partie de sa vie à Paris, ne souhaitait pas être considéré comme un musicien romantique ; il avait même envers la musique romantique un rejet comparable à celui de Mozart envers l'opéra italien. Il est pourtant devenu l'un des *archétypes* de la musique romantique.",
+        "*3. Chopin*, compositeur franco-polonais qui a vécu une grande partie de sa vie à Paris, ne souhaitait pas être considéré comme un musicien romantique ; il avait même envers la musique romantique un rejet comparable à celui de Mozart envers l'opéra italien. ==Il est pourtant devenu l'un des *archétypes* de la musique romantique==.",
         "*4. Bref* : l'auteur voulait faire des sketchs drôles sur un personnage un peu perdu dans la vie parisienne. Invité à la télévision, il entend un sociologue y voir la difficulté de vivre à Paris à trente ans (solitude, travail, loyers, envie de profiter, difficulté à rencontrer les autres), le portrait du « bobo parisien ». Il n'y avait jamais pensé.",
-        "L'œuvre peut être réinterprétée indéfiniment, à condition d'apporter du sens. En commentaire de texte, on ne dit pas tout ce qu'on veut : l'interprétation doit être fondée et cohérente."
+        "==L'œuvre peut être réinterprétée indéfiniment, à condition d'apporter du sens==. En commentaire de texte, on ne dit pas tout ce qu'on veut : l'interprétation doit être fondée et cohérente."
       ],
       side: [
         { k: "def", w: "Archétype", t: "Ce qui représente fondamentalement ce qu'est quelque chose." }
@@ -154,8 +154,8 @@ Recto.add("l-art", (function () {
     { id: "valery", part: 1, sec: "C. L'infinité de l'œuvre", title: "Valéry : « Il n'y a pas de vrai sens d'un texte »",
       lead: "Puisque l'œuvre reçoit sans cesse de nouveaux sens, son sens se construit, d'une certaine manière, dans le présent.",
       body: [
-        "*5.* Mozart est encore joué des siècles après sa mort. À l'inverse, *Salieri*, célèbre à son époque, est aujourd'hui bien moins connu que lui. Le public participe à la construction de l'histoire des œuvres : leur sens est celui qui leur est donné dans le présent.",
-        "*6. Paul Valéry* l'affirme dans *Variété*. Cela ne veut pas dire qu'il ne faut pas tenir compte de l'auteur : il ne faut pas *réduire l'œuvre à l'intention de son auteur*. Son intention peut être prise en compte, mais elle n'est pas l'unique sens possible ; s'y arrêter, c'est réduire toutes les possibilités de sens de l'œuvre.",
+        "*5.* Mozart est encore joué des siècles après sa mort. À l'inverse, *Salieri*, célèbre à son époque, est aujourd'hui bien moins connu que lui. ==Le public participe à la construction de l'histoire des œuvres== : leur sens est celui qui leur est donné dans le présent.",
+        "*6. Paul Valéry* l'affirme dans *Variété*. Cela ne veut pas dire qu'il ne faut pas tenir compte de l'auteur : ==il ne faut pas *réduire l'œuvre à l'intention de son auteur*==. Son intention peut être prise en compte, mais elle n'est pas l'unique sens possible ; s'y arrêter, c'est réduire toutes les possibilités de sens de l'œuvre.",
         "*7. Beethoven*, *Neuvième Symphonie* (« Ode à la joie ») : selon le récit transmis par son entourage et ses biographes, des accélérations correspondraient à l'attente de retrouver une femme aimée ; arrivé trop tard, elle était partie, et la musique devient mélancolique. Un pianiste virtuose dit aussi mieux jouer une œuvre quand il connaît l'état psychologique du compositeur."
       ],
       side: [
@@ -167,9 +167,9 @@ Recto.add("l-art", (function () {
     { id: "proust-rilke", part: 1, sec: "C. L'infinité de l'œuvre", title: "Proust, Rilke : une œuvre qui dépasse l'auteur",
       lead: "Même les contresens peuvent enrichir une œuvre, et une grande œuvre semble dépasser l'humain qui l'a faite.",
       body: [
-        "*8. Marcel Proust*, dans *Contre Sainte-Beuve* : les contresens que l'on fait sur une œuvre peuvent eux-mêmes être intéressants, lorsqu'ils produisent une lecture riche. Le sens d'une œuvre ne se réduit pas à ce que l'auteur voulait consciemment exprimer.",
+        "*8. Marcel Proust*, dans *Contre Sainte-Beuve* : ==les contresens que l'on fait sur une œuvre peuvent eux-mêmes être intéressants==, lorsqu'ils produisent une lecture riche. Le sens d'une œuvre ne se réduit pas à ce que l'auteur voulait consciemment exprimer.",
         "*9. Rainer Maria Rilke* admirait le poète français *Jules Supervielle*. Il lui fait un compliment très fort : sa poésie est si belle qu'elle « n'aurait pu être écrite par personne ».",
-        "Pourquoi est-ce un compliment ? Non pas parce que Supervielle serait le seul à pouvoir l'écrire, mais parce que cette poésie semble dépasser ce qu'un être humain est normalement capable de produire. L'œuvre devient quelque chose qui dépasse son propre auteur."
+        "Pourquoi est-ce un compliment ? Non pas parce que Supervielle serait le seul à pouvoir l'écrire, mais parce que cette poésie semble dépasser ce qu'un être humain est normalement capable de produire. ==L'œuvre devient quelque chose qui dépasse son propre auteur==."
       ],
       side: [
         { k: "plus", w: "Complément : la phrase de Proust", t: "« Dans les beaux livres, tous les contresens qu'on fait sont beaux. » (Contre Sainte-Beuve)" },
@@ -184,7 +184,7 @@ Recto.add("l-art", (function () {
       body: [
         "Pour l'esthétique classique, l'art doit imiter la nature sans la reproduire exactement : il l'*embellit*. Analogie : la beauté, l'harmonie et le juste ; la laideur, le désordre et l'injuste. Le laid doit donc être corrigé : l'art peut produire une réalité plus belle que la réalité.",
         "Dans son *Exposition universelle de 1855*, Baudelaire reproche au peintre *Ingres* de vouloir corriger la nature, par une « tricherie heureuse, agréable, faite en vue du plaisir des yeux ».",
-        "*Le Bain turc* : pour adapter les corps à l'harmonie de la toile, Ingres allonge des bras, déplace des parties du corps, transforme les proportions. C'est ce que critique Baudelaire : l'art peut représenter la réalité telle qu'elle est, même laide, violente, disharmonieuse, dérangeante."
+        "*Le Bain turc* : pour adapter les corps à l'harmonie de la toile, Ingres allonge des bras, déplace des parties du corps, transforme les proportions. C'est ce que critique Baudelaire : ==l'art peut représenter la réalité telle qu'elle est, même laide, violente, disharmonieuse, dérangeante==."
       ],
       side: [
         { k: "q", t: "Il croit que la nature doit être corrigée, amendée.", a: "Baudelaire, à propos d'Ingres, Exposition universelle de 1855" }
@@ -195,9 +195,9 @@ Recto.add("l-art", (function () {
     { id: "horreur", part: 2, sec: "a. La laideur", title: "Représenter l'horreur et la violence",
       lead: "L'art n'a pas pour seule fonction de produire du plaisir : il peut nous confronter à ce que nous préférerions ne pas voir.",
       body: [
-        "*Goya*, *Saturne dévorant un de ses fils* : une scène volontairement violente et inquiétante. Goya n'embellit pas le mythe, il fait ressentir l'horreur. André *Malraux* : l'art peut montrer « la part obscure » du monde.",
+        "*Goya*, *Saturne dévorant un de ses fils* : une scène volontairement violente et inquiétante. ==Goya n'embellit pas le mythe, il fait ressentir l'horreur==. André *Malraux* : l'art peut montrer « la part obscure » du monde.",
         "*Lautréamont*, *Les Chants de Maldoror* : contre le romantisme qui idéalise personnages, sentiments et événements, une écriture violente et provocatrice.",
-        "*Le cinéma de guerre* : dans *Il faut sauver le soldat Ryan*, Spielberg filme le débarquement caméra à l'épaule pour faire ressentir le chaos ; *La Ligne rouge* de Terrence Malick montre des soldats qui obéissent à des ordres pouvant les conduire à la mort. Ces films ne glorifient pas la guerre.",
+        "*Le cinéma de guerre* : dans *Il faut sauver le soldat Ryan*, Spielberg filme le débarquement caméra à l'épaule pour faire ressentir le chaos ; *La Ligne rouge* de Terrence Malick montre des soldats qui obéissent à des ordres pouvant les conduire à la mort. ==Ces films ne glorifient pas la guerre==.",
         "*La tragédie* : tragédies grecques, *Hamlet*, *Roméo et Juliette* : la mort, la vengeance, la jalousie, les passions extrêmes."
       ],
       side: [
@@ -209,7 +209,7 @@ Recto.add("l-art", (function () {
     { id: "banal", part: 2, sec: "a. La laideur", title: "La banalité peut être représentée",
       lead: "La laideur artistique n'est pas seulement le violent ou l'horrible : c'est aussi le banal, le trivial, l'insignifiant.",
       body: [
-        "*Proust et Chardin.* Dans *À la recherche du temps perdu*, un personnage va au Louvre en espérant des œuvres extraordinaires. Il découvre *Chardin*, qui peint des objets et des scènes de la vie quotidienne. Double déception : il attendait l'extraordinaire et retrouve la banalité ; surtout, il n'avait pas compris que *la banalité elle-même pouvait être belle*.",
+        "*Proust et Chardin.* Dans *À la recherche du temps perdu*, un personnage va au Louvre en espérant des œuvres extraordinaires. Il découvre *Chardin*, qui peint des objets et des scènes de la vie quotidienne. Double déception : il attendait l'extraordinaire et retrouve la banalité ; surtout, ==il n'avait pas compris que *la banalité elle-même pouvait être belle*==.",
         "*Flaubert*, dans *Madame Bovary*, décrit très précisément la vie quotidienne de la petite bourgeoisie normande : objets, pièces, habitudes, conversations, pensées des personnages. Il cherche à pénétrer leur psychologie.",
         "Ce qui paraît insignifiant, trivial ou même laid peut avoir une forme de grandeur, parce qu'il correspond à la réalité concrète de la vie humaine."
       ],
@@ -225,7 +225,7 @@ Recto.add("l-art", (function () {
       body: [
         "La beauté n'est plus forcément perfection, symétrie, harmonie, régularité, embellissement. Une œuvre peut être belle parce qu'elle est originale, étrange, surprenante, dérangeante, réaliste, imparfaite.",
         "Il faut distinguer la *beauté naturelle* (un paysage, un coucher de soleil, une fleur, une montagne) et la *beauté artistique* (peinture, sculpture, musique, littérature, cinéma, architecture). La beauté artistique doit-elle prendre la nature pour modèle ? *Hegel* défend la thèse inverse.",
-        "Le beau artistique est « un produit de l'esprit » : le résultat d'une activité spirituelle et consciente. La nature peut être belle, mais elle ne produit pas volontairement sa beauté. L'artiste, lui, choisit, transforme, compose, représente et donne une signification à ce qu'il crée."
+        "==Le beau artistique est « un produit de l'esprit »== : le résultat d'une activité spirituelle et consciente. ==La nature peut être belle, mais elle ne produit pas volontairement sa beauté==. L'artiste, lui, choisit, transforme, compose, représente et donne une signification à ce qu'il crée."
       ],
       side: [
         { k: "q", t: "Le beau artistique est supérieur au beau naturel.", a: "Hegel, Esthétique" },
@@ -237,8 +237,8 @@ Recto.add("l-art", (function () {
     { id: "kant-beaute", part: 2, sec: "b. Les différentes formes du beau", title: "Kant : beauté libre et beauté adhérente",
       lead: "Dans la *Critique de la faculté de juger*, Kant précise cette diversité des formes du beau.",
       body: [
-        "*A. La beauté libre* ne dépend pas d'un concept précis de ce que l'objet doit être. Elle laisse une plus grande liberté dans l'appréciation et dans la création : deux artistes peuvent observer exactement la même chose et produire deux œuvres très différentes. Cette liberté n'est pas l'absence totale de règles : l'artiste doit aussi maîtriser une technique.",
-        "*B. La beauté adhérente* dépend davantage d'un concept de ce que l'objet doit être : elle suppose des normes ou des conventions. La *statuaire grecque* respecte des règles de proportion du corps humain : la beauté dépend en partie du respect d'un modèle.",
+        "*A. La beauté libre* ne dépend pas d'un concept précis de ce que l'objet doit être. Elle laisse une plus grande liberté dans l'appréciation et dans la création : ==deux artistes peuvent observer exactement la même chose et produire deux œuvres très différentes==. Cette liberté n'est pas l'absence totale de règles : l'artiste doit aussi maîtriser une technique.",
+        "*B. La beauté adhérente* dépend davantage d'un concept de ce que l'objet doit être : elle suppose des normes ou des conventions. La *statuaire grecque* respecte des règles de proportion du corps humain : ==la beauté dépend en partie du respect d'un modèle==.",
         "*Beauté et conventions.* La beauté adhérente peut être rapprochée d'une beauté conventionnelle : une société ou une époque attend certaines formes. Certaines productions musicales commerciales utilisent des codes reconnaissables pour correspondre aux goûts du public ; mais les artistes peuvent aussi rompre avec ces conventions."
       ],
       side: [
@@ -250,8 +250,8 @@ Recto.add("l-art", (function () {
     { id: "bizarre", part: 2, sec: "b. Les différentes formes du beau", title: "Baudelaire : le beau est toujours bizarre",
       lead: "Baudelaire propose une conception beaucoup plus ouverte du beau : multiple, étrange, imprévisible.",
       body: [
-        "Le beau peut comporter une part d'étrangeté, de nouveauté, d'imprévisibilité, de bizarrerie : une œuvre n'a pas besoin de respecter l'harmonie traditionnelle pour être belle.",
-        "*L'artiste ne maîtrise pas toujours son œuvre* : elle peut prendre une direction inattendue. *Flaubert* se laisse guider par la beauté de la langue ; *Léonard de Vinci* a travaillé très longtemps sur *La Joconde* et l'a constamment perfectionnée. L'œuvre est le résultat d'un *processus* (modifications, recherches, reprises), pas l'exécution mécanique d'une idée déterminée d'avance.",
+        "Le beau peut comporter une part d'étrangeté, de nouveauté, d'imprévisibilité, de bizarrerie : ==une œuvre n'a pas besoin de respecter l'harmonie traditionnelle pour être belle==.",
+        "*L'artiste ne maîtrise pas toujours son œuvre* : elle peut prendre une direction inattendue. *Flaubert* se laisse guider par la beauté de la langue ; *Léonard de Vinci* a travaillé très longtemps sur *La Joconde* et l'a constamment perfectionnée. L'œuvre est le résultat d'un *processus* (modifications, recherches, reprises), ==pas l'exécution mécanique d'une idée déterminée d'avance==.",
         "*Le surréalisme* va plus loin : faire surgir des associations inattendues, dépasser les règles ordinaires de la représentation. Les surréalistes parlent de « *beauté convulsive* » : une beauté qui naît d'une rencontre imprévisible entre des éléments qui n'étaient pas destinés à être associés."
       ],
       side: [
@@ -264,9 +264,9 @@ Recto.add("l-art", (function () {
     { id: "plaisir", part: 2, sec: "b. Les différentes formes du beau", title: "Un plaisir paradoxal, un goût qui se forme",
       lead: "Une œuvre peut nous plaire alors que son contenu est triste ou terrible. Et une œuvre nouvelle peut d'abord nous déplaire.",
       body: [
-        "*Kant* permet de comprendre ce *plaisir négatif* : nous pouvons être bouleversés par une tragédie, une représentation de la mort, de la souffrance, une scène de guerre, et pourtant trouver l'œuvre belle. Il faut distinguer *la beauté de l'œuvre* et *le caractère agréable ou désagréable de ce qu'elle représente*.",
+        "*Kant* permet de comprendre ce *plaisir négatif* : nous pouvons être bouleversés par une tragédie, une représentation de la mort, de la souffrance, une scène de guerre, et pourtant trouver l'œuvre belle. ==Il faut distinguer *la beauté de l'œuvre* et *le caractère agréable ou désagréable de ce qu'elle représente*==.",
         "*Le goût n'est pas immédiatement donné : il se forme.* Une œuvre nouvelle peut d'abord déplaire parce que nous ne connaissons pas encore son langage.",
-        "Les *impressionnistes* ont été mal accueillis : ils rompaient avec les habitudes, le public a dû apprendre à regarder autrement. Les premiers spectateurs du *cinéma* ont dû apprendre à comprendre les images en mouvement. Nous devons parfois éduquer notre regard."
+        "Les *impressionnistes* ont été mal accueillis : ils rompaient avec les habitudes, le public a dû apprendre à regarder autrement. Les premiers spectateurs du *cinéma* ont dû apprendre à comprendre les images en mouvement. ==Nous devons parfois éduquer notre regard==."
       ],
       side: [
         { k: "q", t: "Nos yeux ne sont pas encore faits pour elles.", a: "Abel Gance, à propos des images de cinéma" }
@@ -279,8 +279,8 @@ Recto.add("l-art", (function () {
       lead: "Le goût est le *sentiment du bon* : une appréciation que nous portons sur un objet. Mais sur quoi se fonde-t-il ?",
       body: [
         "Il y a toujours une part de bizarrerie dans le beau : l'artiste nous pousse au-delà de ce que nous pensions aimer. Tourner en rond dans ses goûts témoigne d'une certaine petitesse de l'esprit. Il faut distinguer *le beau*, qui provoque en nous un sentiment immédiat, et *le goût* : pourquoi trouvons-nous certaines choses belles plutôt que d'autres ?",
-        "*David Hume*, philosophe écossais du XVIIIᵉ siècle (*Traité de la nature humaine*), retient deux éléments : *l'objet qui provoque du plaisir*, et la *« subtile sympathie »*, un lien affectif entre l'œuvre et celui qui la regarde. Le goût est donc une *affaire de sensibilité individuelle* (plutôt que de « subjectivité », notion trop simple) : une même œuvre plaît à l'un et laisse l'autre indifférent.",
-        "Problème : si le goût n'est qu'une affaire de sentiments, il se réduit à « j'aime / je n'aime pas ». C'est le *relativisme* : plus de fondement commun pour réfléchir à la valeur des œuvres."
+        "*David Hume*, philosophe écossais du XVIIIᵉ siècle (*Traité de la nature humaine*), retient deux éléments : *l'objet qui provoque du plaisir*, et la *« subtile sympathie »*, un lien affectif entre l'œuvre et celui qui la regarde. ==Le goût est donc une *affaire de sensibilité individuelle*== (plutôt que de « subjectivité », notion trop simple) : une même œuvre plaît à l'un et laisse l'autre indifférent.",
+        "Problème : si le goût n'est qu'une affaire de sentiments, ==il se réduit à « j'aime / je n'aime pas »==. C'est le *relativisme* : plus de fondement commun pour réfléchir à la valeur des œuvres."
       ],
       side: [
         { k: "q", t: "Tout objet qui tend à causer du plaisir à son possesseur est la cause propre du plaisir, plaît sûrement aux spectateurs par une subtile sympathie avec le possesseur.", a: "Hume, Traité de la nature humaine" }
@@ -291,7 +291,7 @@ Recto.add("l-art", (function () {
     { id: "eduque", part: 2, sec: "C. L'énigme du goût", title: "Le goût s'éduque et se transmet",
       lead: "Comment savons-nous que le goût s'éduque ? C'est simple : il évolue au cours des années.",
       body: [
-        "Notre goût à cinq ans n'est pas celui d'aujourd'hui : nous avons découvert de nouvelles choses et appris à apprécier des œuvres inconnues (films, musique, et même cuisine). Rester enfermé dans les mêmes préférences limite le goût.",
+        "Notre goût à cinq ans n'est pas celui d'aujourd'hui : nous avons découvert de nouvelles choses et appris à apprécier des œuvres inconnues (films, musique, et même cuisine). ==Rester enfermé dans les mêmes préférences limite le goût==.",
         "Le goût se *transmet* : faire découvrir une œuvre à quelqu'un élargit ses connaissances. Découvrir en classe le *tombeau de Jules II* de Michel-Ange permet au moins de le connaître et de s'en faire une opinion (même si l'œuvre réelle ne produit pas la même impression qu'un petit écran de téléphone).",
         "*La musique* : des millions de personnes aiment Céline Dion parce que ses chansons ont été diffusées, partagées, transmises : une contagiosité, une sorte de « pandémie du goût ». Si l'on apprécie encore Mozart (mort à trente-deux ou trente-trois ans, très prolifique) ou Beethoven, c'est que la valeur de leur musique a été transmise à travers les siècles."
       ],
@@ -305,8 +305,8 @@ Recto.add("l-art", (function () {
       lead: "Même si le goût n'est pas que le résultat de la culture, une chose est certaine : l'inculture desservira le goût.",
       body: [
         "Quelqu'un qui connaît trois chansons a un éventail de références bien plus restreint que quelqu'un qui en connaît mille. Et connaître mille artistes d'un seul style reste un champ étroit face à tous les styles qui existent. Même chose en cuisine : n'aimer qu'un plat, c'est limiter son palais.",
-        "Dire qu'on n'aime pas lire après n'avoir lu que deux lignes, c'est juger sur une expérience très limitée. Il faut savoir se faire un peu violence pour aller au-delà de la superficialité de ce qu'on nous propose : non pas tout aimer, mais *découvrir avant de juger*.",
-        "*Les films de super-héros* : on peut aimer *Avengers*. Un grand lecteur de comics (des milliers lus) compare les œuvres, comprend leur construction, reconnaît des histoires parues dans les comics plus de trente ans plus tôt : la connaissance des œuvres antérieures développe le jugement."
+        "Dire qu'on n'aime pas lire après n'avoir lu que deux lignes, c'est juger sur une expérience très limitée. Il faut savoir se faire un peu violence pour aller au-delà de la superficialité de ce qu'on nous propose : ==non pas tout aimer, mais *découvrir avant de juger*==.",
+        "*Les films de super-héros* : on peut aimer *Avengers*. Un grand lecteur de comics (des milliers lus) compare les œuvres, comprend leur construction, reconnaît des histoires parues dans les comics plus de trente ans plus tôt : ==la connaissance des œuvres antérieures développe le jugement==."
       ],
       side: [
         { k: "q", t: "Même si le goût n'est pas que le résultat de la culture, ce qui est certain, c'est que l'inculture desservira le goût.", a: "Formule du cours" }
@@ -318,7 +318,7 @@ Recto.add("l-art", (function () {
       lead: "Complément. Ton cours annonce Kant à cet endroit. Voici l'idée qu'on lui associe le plus souvent, à vérifier avec ton professeur.",
       body: [
         "Kant distingue *l'agréable* et *le beau*. Pour l'agréable (une saveur, une couleur préférée), « chacun son goût ». Mais dire « c'est beau », ce n'est pas seulement parler de soi : on attend que les autres soient d'accord.",
-        "Le jugement de goût est *désintéressé* (on ne cherche pas à posséder l'objet) et prétend à l'*universalité*, sans pouvoir se démontrer par un concept : on ne prouve pas qu'une œuvre est belle, mais on en discute.",
+        "Le jugement de goût est *désintéressé* (on ne cherche pas à posséder l'objet) et prétend à l'*universalité*, sans pouvoir se démontrer par un concept : ==on ne prouve pas qu'une œuvre est belle, mais on en discute==.",
         "C'est une réponse à l'énigme : le goût part d'un sentiment (Hume), s'éduque, et prétend pourtant valoir pour tous."
       ],
       side: [
@@ -331,7 +331,7 @@ Recto.add("l-art", (function () {
     { id: "imiter", part: 3, sec: "A. Imiter", title: "Imiter n'est pas reproduire à l'identique",
       lead: "Dans l'esthétique classique, l'art est souvent pensé comme une imitation de la nature. Mais imiter, ce n'est pas photocopier.",
       body: [
-        "Imiter consiste à reprendre certaines qualités ou certains défauts d'une personne ou d'une chose pour en donner une représentation. Un imitateur accentue certains traits : une voix, un accent, une manière de marcher. Celui qui imite reste différent de celui qui est imité : l'imitation est une *production*, pas une simple photocopie du réel.",
+        "Imiter consiste à reprendre certaines qualités ou certains défauts d'une personne ou d'une chose pour en donner une représentation. Un imitateur accentue certains traits : une voix, un accent, une manière de marcher. Celui qui imite reste différent de celui qui est imité : ==l'imitation est une *production*, pas une simple photocopie du réel==.",
         "L'art entretient ainsi une forme de *concurrence avec la nature*. Pour Cicéron, la nature l'emporte sur l'art, car elle produit les formes que l'artiste cherche à représenter.",
         "Cela montre que l'art et la nature sont deux réalités distinctes : si l'art était une copie parfaite, il serait impossible de les différencier."
       ],
@@ -344,9 +344,9 @@ Recto.add("l-art", (function () {
     { id: "platon", part: 3, sec: "A. Imiter", title: "La critique de l'imitation par Platon",
       lead: "Dans *La République*, livre X, Platon critique l'art comme une imitation trompeuse de la réalité.",
       body: [
-        "L'artiste ne possède pas nécessairement la connaissance de ce qu'il représente : un peintre peut représenter un cordonnier sans connaître le métier de cordonnier. Il ne représente que l'*apparence* des choses, sans en connaître la nature.",
+        "L'artiste ne possède pas nécessairement la connaissance de ce qu'il représente : un peintre peut représenter un cordonnier sans connaître le métier de cordonnier. ==Il ne représente que l'*apparence* des choses, sans en connaître la nature==.",
         "Pour Platon, l'œuvre d'art n'est qu'un « *fantôme* » : une apparence de réalité, sans accès à la vérité. Une peinture de menuisier ne permet pas de connaître le métier de menuisier. Les enfants, et ceux qui distinguent mal l'apparence de la réalité, risquent d'être trompés.",
-        "Conséquence : l'art imite de façon trompeuse et nous éloigne de la vérité. Platon va jusqu'à écarter les artistes de la *cité idéale*, car leurs œuvres risquent de détourner les citoyens de la connaissance du vrai."
+        "Conséquence : ==l'art imite de façon trompeuse et nous éloigne de la vérité==. Platon va jusqu'à écarter les artistes de la *cité idéale*, car leurs œuvres risquent de détourner les citoyens de la connaissance du vrai."
       ],
       side: [
         { k: "q", t: "L'art de l'imitation est assurément loin du vrai. [...] il ne touche qu'à une petite partie de chacune, et qui n'est qu'un fantôme. [...] s'il peignait un menuisier et le leur montrait de loin, il pourrait tromper au moins les enfants et les fous.", a: "Platon, La République, livre X" }
@@ -357,9 +357,9 @@ Recto.add("l-art", (function () {
     { id: "stendhal", part: 3, sec: "A. Imiter", title: "Stendhal : le roman comme miroir",
       lead: "Même une œuvre très réaliste reste une construction : le reflet n'est pas la réalité.",
       body: [
-        "Stendhal, écrivain réaliste connu pour *Le Rouge et le Noir*, définit le roman comme un miroir promené le long d'un chemin. Le chemin représente la vie ; le miroir en renvoie une image. Mais le reflet n'est qu'une image : le roman représente certains aspects de la vie, il n'est pas la vie.",
+        "Stendhal, écrivain réaliste connu pour *Le Rouge et le Noir*, définit le roman comme un miroir promené le long d'un chemin. Le chemin représente la vie ; le miroir en renvoie une image. Mais le reflet n'est qu'une image : ==le roman représente certains aspects de la vie, il n'est pas la vie==.",
         "Un film de guerre ne fait pas réellement vivre la guerre au spectateur : la représentation ne se confond jamais avec l'expérience réelle.",
-        "Dans *Gladiator*, le héros est fictif et l'empereur Marc Aurèle n'a pas été assassiné par son fils Commode. Dans *Napoléon* de Ridley Scott, les tirs de canons contre les pyramides ne correspondent pas à la réalité historique. L'artiste peut modifier les événements pour construire son œuvre."
+        "Dans *Gladiator*, le héros est fictif et l'empereur Marc Aurèle n'a pas été assassiné par son fils Commode. Dans *Napoléon* de Ridley Scott, les tirs de canons contre les pyramides ne correspondent pas à la réalité historique. ==L'artiste peut modifier les événements pour construire son œuvre==."
       ],
       side: [
         { k: "q", t: "Un roman, c'est un miroir que l'on promène le long d'un chemin.", a: "Stendhal" }
@@ -371,7 +371,7 @@ Recto.add("l-art", (function () {
       lead: "On ne peut reprocher à l'art d'être infidèle au réel que si l'on attend de lui une connaissance exacte.",
       body: [
         "Comme moyen de connaissance comparable aux sciences, l'art est nécessairement dépassé : les sciences reposent sur une rigueur méthodologique, rationnelle et expérimentale. Un film sur les dinosaures peut réunir des espèces qui n'ont jamais vécu à la même époque et leur prêter des comportements imaginés : c'est une construction artistique, pas une connaissance scientifique.",
-        "Cela ne rend pas l'art inutile ou inférieur : il n'a pas pour fonction d'enseigner la vérité scientifique. Il peut exprimer une idée, une émotion, une expérience humaine.",
+        "Cela ne rend pas l'art inutile ou inférieur : ==il n'a pas pour fonction d'enseigner la vérité scientifique==. ==Il peut exprimer une idée, une émotion, une expérience humaine==.",
         "Pour *Hegel*, dans le monde moderne, l'art n'est plus la forme suprême de connaissance de la vérité : il est dépassé par des formes de pensée plus conceptuelles, la philosophie et les sciences."
       ],
       side: [
@@ -385,9 +385,9 @@ Recto.add("l-art", (function () {
     { id: "representer", part: 3, sec: "B. Représentation", title: "L'art représente sans imiter",
       lead: "Représenter, c'est rendre une réalité présente à travers une œuvre, sans être cette réalité. L'art est l'incarnation d'une idée sous une forme sensible.",
       body: [
-        "L'artiste transforme une idée en une œuvre que nous pouvons percevoir : peinture, sculpture, pièce de théâtre, roman, danse, œuvre musicale. Il ne reproduit pas ce qui existe : il transforme le matériau sensible pour lui donner une signification.",
+        "L'artiste transforme une idée en une œuvre que nous pouvons percevoir : peinture, sculpture, pièce de théâtre, roman, danse, œuvre musicale. Il ne reproduit pas ce qui existe : ==il transforme le matériau sensible pour lui donner une signification==.",
         "*Hegel* classe les arts selon leur proximité avec le *matériau sensible*. La *sculpture* est l'art le plus proche : elle travaille directement la pierre, le marbre, l'argile. La *poésie* est la plus éloignée : elle utilise le langage écrit, des signes symboliques, et des métaphores qui obligent à dépasser le sens immédiat des mots.",
-        "La poésie n'est pas forcément supérieure à tous les autres arts : elle nous éloigne davantage de la matière et nous oblige à interpréter. Plus l'art s'éloigne de la matière immédiate, plus il peut exprimer des idées abstraites."
+        "La poésie n'est pas forcément supérieure à tous les autres arts : elle nous éloigne davantage de la matière et nous oblige à interpréter. ==Plus l'art s'éloigne de la matière immédiate, plus il peut exprimer des idées abstraites==."
       ],
       side: [
         { k: "def", w: "Représenter", t: "Rendre une réalité présente à travers une œuvre, sans être cette réalité." },
@@ -400,7 +400,7 @@ Recto.add("l-art", (function () {
       lead: "L'activité artistique *dénature* le matériau naturel : elle modifie sa forme première pour lui donner une nouvelle signification.",
       body: [
         ["Le sculpteur transforme une pierre pour lui donner la forme qu'il souhaite.", "Le peintre ne reproduit pas un coucher de soleil : il crée une image à partir de sa perception.", "Le réalisateur choisit les cadrages, les scènes et les dialogues.", "L'écrivain invente des personnages et des situations pour exprimer une idée."],
-        "L'œuvre résulte d'une *intention artistique* : elle présente le réel non tel qu'il est, mais tel que l'artiste choisit de le représenter.",
+        "L'œuvre résulte d'une *intention artistique* : ==elle présente le réel non tel qu'il est, mais tel que l'artiste choisit de le représenter==.",
         "Dans *L'Avare* de Molière, *Harpagon* représente et dénonce l'avarice : personnage fictif, il fait comprendre un comportement humain réel. *La Liberté guidant le peuple* de Delacroix ne représente pas seulement un événement historique : le tableau symbolise la liberté et la révolte populaire."
       ],
       side: [
@@ -412,8 +412,8 @@ Recto.add("l-art", (function () {
     { id: "aristote", part: 3, sec: "B. Représentation", title: "Aristote : l'art comme création et symbolisation",
       lead: "Dans *La Poétique*, Aristote analyse la tragédie. Le grec *poiesis* signifie « création », « production » : l'art produit quelque chose de nouveau.",
       body: [
-        "L'artiste ne reproduit pas simplement la réalité : il en saisit les *aspects essentiels* pour les représenter sous une forme artistique. Il peut faire comprendre une passion, un conflit, une situation humaine sans reproduire exactement un événement réel.",
-        "Aristote associe la tragédie à la *catharsis* : une forme de purgation ou de clarification des émotions, notamment la *pitié* et la *crainte*. La tragédie nous fait éprouver des émotions à travers des personnages et des événements représentés, même si nous savons qu'ils ne sont pas réels.",
+        "L'artiste ne reproduit pas simplement la réalité : ==il en saisit les *aspects essentiels*== pour les représenter sous une forme artistique. Il peut faire comprendre une passion, un conflit, une situation humaine sans reproduire exactement un événement réel.",
+        "Aristote associe la tragédie à la *catharsis* : une forme de purgation ou de clarification des émotions, notamment la *pitié* et la *crainte*. La tragédie nous fait éprouver des émotions à travers des personnages et des événements représentés, ==même si nous savons qu'ils ne sont pas réels==.",
         "L'art peut ainsi nous faire comprendre quelque chose de l'expérience humaine sans être une reproduction fidèle de la vie."
       ],
       side: [
@@ -426,9 +426,9 @@ Recto.add("l-art", (function () {
     { id: "goodman", part: 3, sec: "B. Représentation", title: "Goodman : l'œuvre d'art comme symbole",
       lead: "Une œuvre d'art a une signification qui dépasse sa simple apparence : elle fonctionne comme un symbole.",
       body: [
-        "Dans *Manières de faire des mondes*, Nelson Goodman affirme qu'un objet devient une œuvre d'art parce qu'il fonctionne comme symbole, et tant qu'il fonctionne ainsi. L'œuvre renvoie à une idée, une émotion ou une réalité qui n'est pas directement visible.",
+        "Dans *Manières de faire des mondes*, Nelson Goodman affirme qu'==un objet devient une œuvre d'art parce qu'il fonctionne comme symbole, et tant qu'il fonctionne ainsi==. L'œuvre renvoie à une idée, une émotion ou une réalité qui n'est pas directement visible.",
         "Dans *La Liberté guidant le peuple* de Delacroix, la figure de la liberté et le drapeau symbolisent la lutte collective et les idéaux politiques : le tableau ne montre pas seulement des personnes, il donne un sens à la scène.",
-        "*Le Penseur* de Rodin : la posture du personnage donne une forme visible à la difficulté de penser. La sculpture est immobile et faite de matière, mais elle fait comprendre une activité intérieure."
+        "*Le Penseur* de Rodin : la posture du personnage donne une forme visible à la difficulté de penser. La sculpture est immobile et faite de matière, mais ==elle fait comprendre une activité intérieure==."
       ],
       side: [
         { k: "q", t: "Un objet devient précisément une œuvre d'art parce que et pendant qu'il fonctionne d'une certaine façon comme symbole.", a: "Nelson Goodman, Manières de faire des mondes" }
@@ -439,8 +439,8 @@ Recto.add("l-art", (function () {
     { id: "reverdy", part: 3, sec: "B. Représentation", title: "Reverdy : du réel extérieur au réel intérieur",
       lead: "L'artiste ne reproduit pas simplement ce qu'il a vu : il exprime ce que cette expérience a provoqué en lui.",
       body: [
-        "Le poète *Pierre Reverdy* définit la poésie comme une transmutation. Le *réel extérieur*, c'est ce que l'artiste perçoit : un paysage, une rencontre, un événement, une sensation. Le *réel intérieur*, c'est la manière dont il vit et ressent cette expérience. Il transforme cette impression personnelle en œuvre.",
-        "*La madeleine de Proust* : dans *À la recherche du temps perdu*, le goût de la madeleine fait ressurgir des souvenirs et des émotions d'enfance. Une sensation présente devient le point de départ d'un monde intérieur.",
+        "Le poète *Pierre Reverdy* définit la poésie comme une transmutation. Le *réel extérieur*, c'est ce que l'artiste perçoit : un paysage, une rencontre, un événement, une sensation. Le *réel intérieur*, c'est la manière dont il vit et ressent cette expérience. ==Il transforme cette impression personnelle en œuvre==.",
+        "*La madeleine de Proust* : dans *À la recherche du temps perdu*, le goût de la madeleine fait ressurgir des souvenirs et des émotions d'enfance. ==Une sensation présente devient le point de départ d'un monde intérieur==.",
         "La musique de *Debussy* évoque des impressions sans représenter un objet précis ; *Kandinsky* s'intéresse aux correspondances entre sensations musicales et formes picturales."
       ],
       side: [
@@ -1221,5 +1221,90 @@ Recto.add("l-art", (function () {
     "Termine chaque partie par une transition qui pose la question suivante, comme le cours passe de l'artiste à l'œuvre qui lui échappe."
   ];
 
-  return { unit, exam, plan, overview, tips, parts, course, notions, exercises };
+  /* ---------------- REPÈRES DE LECTURE ---------------- */
+  const authors = ["Léonard de Vinci", "Joan Miró", "Miró", "Kant", "Arthur Danto", "Danto", "Andy Warhol", "Warhol", "Duchamp", "Baudelaire", "Edgar Allan Poe", "Poe", "Hölderlin", "Léonard", "Schubert", "Mozart", "Beethoven", "Chopin", "Michel-Ange", "Shakespeare", "Molière", "Arthur Rimbaud", "Rimbaud", "Salieri", "Paul Valéry", "Valéry", "Marcel Proust", "Proust", "Rainer Maria Rilke", "Rilke", "Jules Supervielle", "Supervielle", "Ingres", "Goya", "André Malraux", "Malraux", "Lautréamont", "Spielberg", "Terrence Malick", "Malick", "Flaubert", "Chardin", "Hegel", "David Hume", "Hume", "Cicéron", "Platon", "Stendhal", "Ridley Scott", "Aristote", "Nelson Goodman", "Goodman", "Delacroix", "Rodin", "Pierre Reverdy", "Reverdy", "Debussy", "Kandinsky", "Abel Gance", "Céline Dion"];
+  const works = ["Critique de la faculté de juger", "Philosophie analytique et esthétique", "Neuvième Symphonie", "Contre Sainte-Beuve", "Variété", "Le Bain turc", "Saturne dévorant un de ses fils", "Les Chants de Maldoror", "Il faut sauver le soldat Ryan", "La Ligne rouge", "Hamlet", "Roméo et Juliette", "À la recherche du temps perdu", "Madame Bovary", "Esthétique", "La Joconde", "La République", "Le Rouge et le Noir", "Gladiator", "L'Avare", "La Liberté guidant le peuple", "La Poétique", "Manières de faire des mondes", "Le Penseur", "Les Stoïciens", "Avengers", "Bref"];
+
+  /* ---------------- KIT DE CITATIONS ----------------
+     Peu de citations du cours, choisies pour s'adapter à presque tous les sujets.
+     L'ordre est celui du fil : avec 2, 3, 4 ou 5 citations, on garde les premières.
+     Les ponts relient chaque citation à la suivante ({B} = auteur de la suivante). */
+  const kit = {
+    quotes: [
+      { id: "platon", t: "L'art de l'imitation est assurément loin du vrai.", who: "Platon", a: "Platon, La République, livre X", n: "platon",
+        short: "Platon : « l'imitation est loin du vrai »", role: "l'apparence",
+        sens: "L'image ne montre que l'apparence des choses, pas leur vérité : elle peut tromper.",
+        memo: "Un menuisier peint, vu de loin, qui trompe les enfants.",
+        pivot: "Dès qu'un sujet oppose l'apparence et la réalité, elle ouvre la thèse la plus méfiante.",
+        usages: [
+          { th: "l'art", t: "Thèse de départ : l'imitation éloigne du vrai, l'œuvre n'est qu'un « fantôme »." },
+          { th: "la vérité", t: "Ce qui semble vrai ne l'est pas forcément : il faut distinguer l'apparence et la réalité." },
+          { th: "la science", t: "Connaître exige de dépasser les images : on peut représenter une chose sans rien en savoir." },
+          { th: "le langage", t: "On peut parler de tout sans rien connaître : les mots, comme les images, imitent." },
+          { th: "l'État", t: "La cité idéale écarte les artistes : le pouvoir peut-il contrôler les images ?" },
+          { th: "la technique", t: "Celui qui fabrique sait ; celui qui imite ne fait que reproduire une apparence." },
+          { th: "la raison", t: "La raison doit se méfier de ce qui séduit les sens." }
+        ] },
+      { id: "hegel", t: "Le beau artistique est supérieur au beau naturel.", who: "Hegel", a: "Hegel, Esthétique", n: "hegel-beau",
+        short: "Hegel : « le beau artistique est supérieur »", role: "l'esprit",
+        sens: "L'œuvre vaut plus que la beauté naturelle, parce qu'elle est un produit de l'esprit.",
+        memo: "Le coucher de soleil peint vaut plus que le vrai : l'esprit l'a choisi et composé.",
+        pivot: "Dès qu'un sujet oppose la nature et ce que l'homme en fait, elle montre la valeur de l'esprit.",
+        usages: [
+          { th: "l'art", t: "L'art ne copie pas la nature : sa valeur vient de l'esprit qui choisit et compose." },
+          { th: "la nature", t: "Ce que l'homme produit consciemment dépasse ce que la nature produit sans le vouloir." },
+          { th: "la technique", t: "Transformer la nature, c'est lui donner une forme et un sens." },
+          { th: "le travail", t: "Travailler, c'est mettre la marque de l'esprit dans la matière." },
+          { th: "la conscience", t: "Choisir, composer, donner un sens : c'est ce que la conscience ajoute au donné naturel." },
+          { th: "la liberté", t: "L'esprit n'est pas soumis au donné : il le transforme." }
+        ] },
+      { id: "leonard", t: "La perspective est la bride et le gouvernail dans la peinture.", who: "Léonard de Vinci", a: "Léonard de Vinci", n: "bride",
+        short: "Léonard : « la bride et le gouvernail »", role: "la maîtrise",
+        sens: "La règle, d'abord contrainte, devient l'outil qui permet de diriger son œuvre.",
+        memo: "Une bride pour le cheval, un gouvernail pour le bateau : deux outils pour diriger.",
+        pivot: "Dès qu'un sujet oppose la règle et la liberté, elle montre que la contrainte maîtrisée libère.",
+        usages: [
+          { th: "l'art", t: "La technique, d'abord barrière, devient la condition de la liberté créatrice." },
+          { th: "la liberté", t: "La liberté n'est pas l'absence de règles : maîtriser la règle, c'est pouvoir diriger." },
+          { th: "le devoir", t: "Une contrainte acceptée n'est pas une servitude : elle peut devenir un gouvernail." },
+          { th: "le travail", t: "L'apprentissage est long et pénible, puis il libère." },
+          { th: "la technique", t: "Maîtriser un outil, c'est pouvoir faire faire à la matière ce qu'on veut." },
+          { th: "la raison", t: "Une méthode rigoureuse ne bride pas l'esprit : elle lui permet d'avancer." },
+          { th: "le langage", t: "Plus on maîtrise les mots, plus on peut dire ce qu'on veut : le vocabulaire comme gouvernail." }
+        ] },
+      { id: "valery", t: "Il n'y a pas de vrai sens d'un texte.", who: "Valéry", a: "Paul Valéry, Variété", n: "valery",
+        short: "Valéry : « pas de vrai sens d'un texte »", role: "le sens ouvert",
+        sens: "Le sens d'une œuvre ne se réduit pas à l'intention de son auteur : il vit dans ses interprétations.",
+        memo: "Un texte sans propriétaire : chaque lecteur en a une clé.",
+        pivot: "Dès qu'un sujet porte sur le sens ou l'intention, elle ouvre la pluralité, nuancée par « tous les sens possibles ».",
+        usages: [
+          { th: "l'art", t: "L'œuvre échappe à son auteur : elle vit par son public et ses interprétations." },
+          { th: "le langage", t: "Les mots disent plus que ce qu'on voulait dire : le sens échappe à celui qui parle." },
+          { th: "la vérité", t: "Pas de vrai sens ne veut pas dire n'importe quel sens : une interprétation doit être fondée." },
+          { th: "l'inconscient", t: "Une œuvre peut signifier plus que ce que son auteur a consciemment voulu." },
+          { th: "le temps", t: "Le sens se construit dans le présent : chaque époque relit les œuvres." },
+          { th: "la conscience", t: "L'auteur n'a pas la maîtrise complète de ce qu'il produit." }
+        ] },
+      { id: "baudelaire", t: "Le beau est toujours bizarre.", who: "Baudelaire", a: "Baudelaire", n: "bizarre",
+        short: "Baudelaire : « le beau est toujours bizarre »", role: "l'imprévu",
+        sens: "Le beau comporte une part d'étrangeté et d'imprévu : il ne se réduit pas à l'harmonie.",
+        memo: "Une beauté qui surprend, jamais une beauté de catalogue.",
+        pivot: "Dès qu'un sujet oppose la norme et la nouveauté, elle défend la part d'imprévu.",
+        usages: [
+          { th: "l'art", t: "Le beau n'est pas l'harmonie classique : il est multiforme et surprenant." },
+          { th: "la liberté", t: "Créer, c'est sortir des normes : la nouveauté comme marque de liberté." },
+          { th: "le temps", t: "Ce qui choque une époque devient beau pour la suivante : le goût évolue." },
+          { th: "le bonheur", t: "Le plaisir peut naître de la surprise, pas seulement de l'habitude." },
+          { th: "la raison", t: "Tout ne se ramène pas à des règles : une part du beau échappe au calcul." }
+        ] }
+    ],
+    bridges: [
+      "Mais l'art n'est pas une simple copie : pour {B}, il est un produit de l'esprit, et c'est ce qui le rend supérieur à la nature.",
+      "Encore faut-il que l'esprit maîtrise la matière : chez {B}, la règle technique devient ce qui dirige l'œuvre.",
+      "Pourtant, même maîtrisée, l'œuvre échappe à son auteur : pour {B}, son sens ne se réduit pas à l'intention.",
+      "Si le sens reste ouvert, le beau aussi : pour {B}, il comporte toujours une part d'imprévu."
+    ]
+  };
+
+  return { unit, exam, plan, overview, tips, parts, course, notions, exercises, authors, works, kit };
 })());

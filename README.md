@@ -12,10 +12,11 @@ Ou en local : télécharger le dépôt et ouvrir `index.html` dans un navigateur
 
 - **Leçons** : *Le langage* et *L'art* (philosophie, Terminale), remises au propre à partir du cours de la classe, fidèlement : mêmes idées, mêmes auteurs, mêmes exemples.
 - **Livres** : *Discours de la méthode* (Descartes, 1637).
-- **Cours** : la leçon page par page, une idée par écran, avec définitions, citations, exemples et un encadré « À retenir ». Flèches du clavier ou balayage sur mobile.
+- **Cours** : la leçon page par page, une idée par écran, avec définitions, citations, exemples et un encadré « À retenir ». Repères de lecture en couleur (idées clés surlignées, auteurs, œuvres), mode « Lecture rapide ». Flèches du clavier ou balayage sur mobile.
+- **Recherche** : dans la leçon ouverte (touche `/`), avec filtres Leçon, Fiches, Exos, Entraînement.
 - **Plan** : un emploi du temps de 30 min à 3 h (cours, exercices, sujets, pauses), avec chronomètre et temps restant en direct.
 - **Entraînement** : de 160 à 180 exercices par contenu en 11 formats (QCM avec rappel actif, vrai ou faux, textes à trous, citations à situer, ordres à rétablir, associations, classements, schémas et tableaux à compléter, cartes mémoire, construction de réponse), avec un mode sans citations.
-- **Appliquer** : des sujets de dissertation avec plan modèle, des textes à expliquer, et la méthode de la dissertation et de l'explication de texte.
+- **Appliquer** : des sujets de dissertation avec plan modèle, des textes à expliquer, la méthode, et un **kit de citations** : 2 à 5 citations reliées par des ponts, adaptées à chaque notion du programme, apprises par répétition espacée.
 - **Fiches** : une fiche par notion (l'essentiel, la citation, le piège), liens vers la page du cours et des vidéos.
 - **Bilan** : maîtrise par notion, et export (PDF ou texte) avec une consigne prête pour ChatGPT, Claude, Gemini, Mistral…
 - **Effets** : séries d'affilée, records, succès, jours de suite, confettis… sans aucun son. Un petit onglet **Réglages** permet de choisir l'intensité des effets et de réduire les animations.

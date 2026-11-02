@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "5"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "6"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   const BOOKS = {}, WAIT = {};
   window.Recto = {
@@ -63,6 +63,7 @@
       extra.pageOf = {};
       d.course.forEach(pg => (pg.ns || []).forEach(n => { if (!extra.pageOf[n]) extra.pageOf[n] = pg.id; }));
     }
+    extra._rx = { au: readRx(d.authors), wk: readRx(d.works) };
     return Object.assign({ id, meta, unit: { one: "chapitre", many: "chapitres" }, exam: {}, plan: {}, tips: [], overview: null }, d, extra);
   }
   function collectNotions(e) {
@@ -90,11 +91,12 @@
     schema: { label: "Schéma à compléter", help: "Place les étiquettes dans les cases vides. Attention : certaines étiquettes sont des pièges.", keys: "Clique une étiquette, puis une case · Entrée pour valider" },
     grid: { label: "Tableau à compléter", help: "Clique chaque case pour alterner entre ✓ et ✗.", keys: "Entrée pour valider" },
     flash: { label: "Carte mémoire", help: "Réponds à voix haute avant de retourner la carte, puis note-toi honnêtement.", keys: "Espace pour retourner · 1, 2 ou 3 pour noter" },
-    build: { label: "Construire la réponse", help: "À l'épreuve, chaque question attend des arguments précis. Sélectionne ceux qui ont leur place dans ta réponse, ni plus ni moins.", keys: "Entrée pour valider" }
+    build: { label: "Construire la réponse", help: "À l'épreuve, chaque question attend des arguments précis. Sélectionne ceux qui ont leur place dans ta réponse, ni plus ni moins.", keys: "Entrée pour valider" },
+    words: { label: "Reconstituer la citation", help: "Touche les mots dans l'ordre pour reconstituer la citation. Dis-la à voix haute en même temps : on retient mieux ce qu'on entend et ce qu'on fait.", keys: "Retour arrière pour enlever le dernier mot · Entrée pour valider" }
   };
   /* Exercices d'explication de texte : un QCM accompagné d'un passage */
   const TEXT_TYPE = { label: "Explication de texte", help: "Lis le passage deux fois. Repère d'abord la thèse (ce que l'auteur affirme), puis ce qu'il refuse, et les mots qui portent l'argument.", keys: "A à D (ou 1 à 4) pour choisir · Entrée pour valider" };
-  const typeOf = ex => ex.passage ? TEXT_TYPE : TYPES[ex.type];
+  const typeOf = ex => { const t = ex.passage && !ex.kit ? TEXT_TYPE : TYPES[ex.type]; return ex.label ? Object.assign({}, t, { label: ex.label, help: ex.help || t.help }) : t; };
   const PART_HELP = { livre: TYPES.part.help, lecon: "Retrouve dans quelle partie du cours cette idée ou cette citation est étudiée. Savoir situer une référence aide à construire un plan." };
   const QUICK = ["qcm", "vf", "part", "fill"];
   const VISUAL = ["order", "match", "sort", "schema", "grid"];
@@ -108,6 +110,7 @@
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 10.5L12 3.8l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.2v-5.8H9.2v5.8H5A1.5 1.5 0 0 1 3.5 19z"/></svg>',
     gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9.5M18.5 7H20M4 17h3.5M12.5 17H20"/><circle cx="16" cy="7" r="2.3"/><circle cx="10" cy="17" r="2.3"/></svg>',
     library: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="4" width="4.2" height="16" rx="1"/><rect x="9.7" y="4" width="4.2" height="16" rx="1"/><path d="M15.9 5.6l3.9-1 3 14.6-3.9 1z"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.25"/><path d="M15.3 15.3L20 20"/></svg>',
     close: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
     check: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>',
     cross: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>',
@@ -162,6 +165,26 @@
   const ctxLabel = () => PARTS[0] ? PARTS[0].label : "Contexte";
   /* Texte du cours : échappé, avec *gras* */
   const md = s => esc(s).replace(/\*([^*]+)\*/g, "<b>$1</b>");
+  /* Texte du cours, avec repères de lecture : *notion* en gras, ==idée clé== surlignée,
+     auteurs et œuvres en couleur, citations « … » en italique */
+  const rxEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  function readRx(list) {
+    if (!list || !list.length) return null;
+    const alt = list.map(x => esc(x)).sort((a, b) => b.length - a.length).map(rxEsc).join("|");
+    return new RegExp("(^|[^\\p{L}\\d])(" + alt + ")(?![\\p{L}\\d])", "gu");
+  }
+  function mdc(s) {
+    let h = esc(s).replace(/\*([^*]+)\*/g, "<b>$1</b>").replace(/==([^=]+?)==/g, '<mark class="hl">$1</mark>')
+      .replace(/« ([^«»]+?) »/g, '<span class="cq">« $1 »</span>');
+    const R = B && B._rx;
+    if (R && (R.au || R.wk)) h = h.split(/(<[^>]+>)/).map(x => {
+      if (x.charAt(0) === "<") return x;
+      if (R.wk) x = x.replace(R.wk, '$1<i class="wk">$2</i>');
+      if (R.au) x = x.replace(R.au, '$1<span class="au">$2</span>');
+      return x;
+    }).join("");
+    return h;
+  }
   const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
   function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600); }
 
@@ -187,12 +210,13 @@
     }
     if (!store.get(K_LAST) && store.get("ergo.last")) store.set(K_LAST, store.get("ergo.last"));
   })();
-  const G = Object.assign({ recall: true, len: 12, noQuotes: false, fx: 2, motion: "auto", days: [], celebrated: "" }, store.get(K_SET) || {});
+  const G = Object.assign({ recall: true, len: 12, noQuotes: false, fx: 2, motion: "auto", days: [], celebrated: "", hl: true, skim: false, kitN: 3 }, store.get(K_SET) || {});
   /* Effets visuels : fx.js s'il est chargé, sinon des fonctions vides */
   const X = window.FX || new Proxy({}, { get: () => () => 0 });
   function applyFx() {
     if (window.FX) { FX.setLevel(G.fx); FX.setMotion(G.motion); }
     document.body.classList.toggle("fx-off", G.fx === 0);
+    document.body.classList.toggle("no-hl", G.hl === false);
     document.body.classList.toggle("fx-reduce", !!(window.FX && FX.reduced()));
   }
   applyFx();
@@ -260,7 +284,7 @@
   }
   function errorIds() {
     const last = lastByEx();
-    return Object.keys(last).filter(id => EX[id] && avail(EX[id]) && last[id].r < 0.99).sort((a, b) => last[b].t - last[a].t);
+    return Object.keys(last).filter(id => EX[id] && !EX[id].kit && avail(EX[id]) && last[id].r < 0.99).sort((a, b) => last[b].t - last[a].t);
   }
   function rankWeak() {
     const mm = masteryMap();
@@ -362,7 +386,7 @@
   /* =========================================================
      Routage (#/  ·  #/bibliotheque  ·  #/<contenu>/<vue>?param=…)
      ========================================================= */
-  const BOOK_VIEWS = ["cours", "plan", "carte", "train", "reflexion", "bilan", "lecture", "player"];
+  const BOOK_VIEWS = ["cours", "plan", "carte", "train", "reflexion", "citations", "bilan", "lecture", "player"];
   const defView = () => B && B.course ? "cours" : "plan";
   let VIEW = "home", PARAMS = {};
   let CLEAN = [];
@@ -427,7 +451,7 @@
     CLEAN = [];
     document.body.dataset.view = VIEW;
     /* Sur mobile la page défile : on revient en haut quand on change d'écran */
-    if (location.hash !== LAST_HASH || STILL) { LAST_HASH = location.hash; window.scrollTo(0, 0); }
+    if (location.hash !== LAST_HASH || (STILL && VIEW === "player")) { LAST_HASH = location.hash; window.scrollTo(0, 0); }
     renderTopbar();
     VIEWS[VIEW](app, PARAMS);
     if (STILL) { const v = $(".view", app); if (v) v.classList.add("still"); }
@@ -451,7 +475,8 @@
     $("#openSettings").onclick = openSettings;
     const br = $(".brand");
     if (br && !br.dataset.fx) { br.dataset.fx = 1; br.addEventListener("pointerenter", flipLogo); }
-    const navKey = VIEW === "player" ? (P && P.from === "reflexion" ? "reflexion" : "train") : VIEW === "lecture" ? "plan" : VIEW;
+    renderSearch(inBook);
+    const navKey = VIEW === "player" ? (P && (P.from === "reflexion" || P.from === "citations") ? "reflexion" : "train") : VIEW === "lecture" ? "plan" : VIEW === "citations" ? "reflexion" : VIEW;
     $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.view === navKey));
   }
 
@@ -943,7 +968,7 @@
       const items = open ? ps.map(x => { const h = x.sec !== sec && x.sec !== ctxLabel() ? `<div class="co-sec">${esc(x.sec)}</div>` : ""; sec = x.sec; return h + `<button class="co-item ${x === pg ? "on" : ""} ${seen.includes(x.id) ? "seen" : ""}" data-page="${x.id}"><span class="ck">${ICON.check}</span><span class="t">${esc(x.title)}</span></button>`; }).join("") : "";
       return `<div class="co-part ${open ? "open" : ""}"><button class="co-ph" data-ppart="${p}"><span class="r">${p ? PARTS[p].roman : "§"}</span><span class="t">${esc(p ? PARTS[p].label : ctxLabel())}</span><span class="n tabnum">${n}/${ps.length}</span></button>${items}</div>`;
     };
-    const body = pg.body.map(b => Array.isArray(b) ? `<ul>${b.map(li => `<li>${md(li)}</li>`).join("")}</ul>` : `<p>${md(b)}</p>`).join("");
+    const body = pg.body.map(b => Array.isArray(b) ? `<ul>${b.map(li => `<li>${mdc(li)}</li>`).join("")}</ul>` : `<p>${mdc(b)}</p>`).join("");
     const side = pg.side || [];
     const fiches = (pg.ns || []).filter(n => NOTIONS[n]).map(n => `<button class="chip co-fiche" data-fiche="${n}" title="Ouvrir la fiche"><span class="dot ${status(mastery(n))}"></span>${esc(NOTIONS[n].title)}</button>`).join("");
     const where = pg.part ? PARTS[pg.part].roman + " · " + PARTS[pg.part].label + (pg.sec ? " · " + pg.sec : "") : ctxLabel();
@@ -952,11 +977,12 @@
       <nav class="card co-toc" aria-label="Sommaire du cours">
         <div class="co-prog"><div class="top"><span>Cours lu</span><b class="tabnum">${nSeen} / ${C.length}</b></div><div class="bar"><i style="width:${Math.round(nSeen / C.length * 100)}%"></i></div></div>
         <div class="co-list">${[0].concat(CH).filter(p => C.some(x => x.part === p)).map(tocPart).join("")}</div>
+        <div class="co-legend" aria-label="Repères de lecture"><mark class="hl">idée clé</mark><b>notion</b><span class="au">auteur</span><i class="wk">œuvre</i></div>
       </nav>
-      <article class="card co-page" id="coPage">
-        <header class="co-head"><span class="eyebrow accent">${esc(where)}</span>${pg.extra ? `<span class="tag ghost">Complément</span>` : ""}<span class="co-count tabnum">${i + 1} / ${C.length}</span></header>
+      <article class="card co-page ${G.skim ? "skim" : ""}" id="coPage">
+        <header class="co-head"><span class="eyebrow accent">${esc(where)}</span>${pg.extra ? `<span class="tag ghost">Complément</span>` : ""}<button class="co-skim ${G.skim ? "on" : ""}" id="coSkim" title="Lecture rapide : seules les idées clés restent en avant" aria-pressed="${!!G.skim}"><i></i>Lecture rapide</button><span class="co-count tabnum">${i + 1} / ${C.length}</span></header>
         <h1 class="co-title">${esc(pg.title)}</h1>
-        <p class="co-lead">${md(pg.lead)}</p>
+        <p class="co-lead">${mdc(pg.lead)}</p>
         <div class="co-grid">
           <div class="co-body">${body}</div>
           <aside class="co-side">${side.map(sideCardHTML).join("")}<div class="co-key"><b>À retenir</b><span>${md(pg.key)}</span></div></aside>
@@ -983,8 +1009,361 @@
     const list = $(".co-list", root), on = $(".co-item.on", root);
     if (list && on && list.scrollHeight > list.clientHeight + 4) list.scrollTop = Math.max(0, on.offsetTop - list.clientHeight / 2);
     X.fillBars($$(".co-prog .bar i", root));
+    /* Les idées clés se surlignent l'une après l'autre, comme au feutre */
+    $$(".co-lead mark.hl, .co-body mark.hl", root).forEach((m, k) => m.style.setProperty("--i", k));
+    const page = $("#coPage", root);
+    if (G.fx && !(window.FX && FX.reduced())) page.classList.add("draw");
+    $("#coSkim", root).onclick = e => { G.skim = !G.skim; save(); page.classList.toggle("skim", G.skim); e.currentTarget.classList.toggle("on", G.skim); e.currentTarget.setAttribute("aria-pressed", G.skim); };
+    if (SEARCH_HIT && SEARCH_HIT.page === pg.id) { const toks = SEARCH_HIT.toks; SEARCH_HIT = null; setTimeout(() => markHits(page, toks), 60); }
     swipe($("#coPage", root), d => { if (d > 0 && next) goPage(next.id); if (d < 0 && prev) goPage(prev.id); });
   };
+
+  /* =========================================================
+     Recherche : dans le contenu ouvert, et dans toute la bibliothèque
+     quand elle comptera assez de leçons
+     ========================================================= */
+  const SEARCH_GLOBAL_MIN = 6;   /* nombre de leçons à partir duquel la recherche couvre toute la bibliothèque */
+  const SEARCH_DELAY = 800;      /* petit temps de recherche, le temps de l'animation */
+  const SK = { cours: "Leçon", fiche: "Fiche", exo: "Exo", train: "Entraînement" };
+  const SK_ORDER = { cours: 4, fiche: 3, train: 2, exo: 1 };
+  const FILTER_WORDS = { exo: "exo", exos: "exo", exercice: "exo", exercices: "exo", fiche: "fiche", fiches: "fiche", lecon: "cours", lecons: "cours", cours: "cours", page: "cours", entrainement: "train", sujet: "train", sujets: "train" };
+  let SEARCH = { q: "", f: "all", shown: 4, res: { toks: [], list: [] }, sel: -1, timer: 0 };
+  let SEARCH_HIT = null;
+  const globalSearch = () => LIB.filter(m => m.type === "lecon").length >= SEARCH_GLOBAL_MIN;
+  /* minuscules sans accents, en gardant la longueur (pour surligner au bon endroit) */
+  function fold(s) { let o = ""; for (const c of String(s == null ? "" : s).toLowerCase()) o += c === "’" ? "'" : [...c.normalize("NFD")][0]; return o; }
+  const tokSrc = t => rxEsc(t).replace(/oe/g, "(?:oe|œ)").replace(/ae/g, "(?:ae|æ)");
+  const tokRx = toks => new RegExp(toks.map(tokSrc).join("|"), "g");
+  const stripMk = s => String(s == null ? "" : s).replace(/\*|==/g, "");
+  function exText(e) {
+    return [e.q, e.s, e.f, e.b, e.quote, e.passage, e.text && e.text.replace(/\[\[(.+?)\]\]/g, (_, a) => a.split("|")[0]), (e.options || []).join(" "),
+      (e.items || []).map(i => typeof i === "string" ? i : i.t).join(" "), (e.pairs || []).map(p => p.l + " " + p.r).join(" "), (e.buckets || []).join(" "),
+      (e.rows || []).map(r => r.t).join(" "), (e.nodes || []).map(n => n.t || n.slot || "").join(" "), e.explain].filter(Boolean).join(" · ");
+  }
+  function buildIndex(bk) {
+    if (bk._idx) return bk._idx;
+    const D = [], L = !!bk.course;
+    const pl = p => !bk.parts[p] ? "" : p ? bk.parts[p].roman + " · " + bk.parts[p].label : bk.parts[0].label;
+    (bk.course || []).forEach(pg => D.push({ k: "cours", title: pg.title, sub: pl(pg.part) + (pg.part && pg.sec ? " · " + pg.sec : ""),
+      text: stripMk([pg.lead].concat(pg.body.flat(), (pg.side || []).map(c => [c.w, c.t, c.a].filter(Boolean).join(" ")), pg.key).join(" ")), go: { page: pg.id } }));
+    Object.keys(bk.notions).forEach(id => { const n = bk.notions[id]; D.push({ k: "fiche", title: n.title, sub: pl(n.part), text: [n.essentiel].concat(n.retenir || [], n.citation ? "« " + n.citation + " »" : [], n.piege || []).join(" "), go: { fiche: id } }); });
+    bk.exercises.forEach(e => {
+      if (e.type === "build") D.push({ k: "train", title: e.q, sub: L ? "Sujet de dissertation" : "Question de réflexion", text: [e.prob].concat(e.plan || [], e.cit || [], e.els.map(x => x.t)).join(" "), go: { ex: e.id, from: "reflexion" } });
+      else if (e.passage) D.push({ k: "train", title: "Texte · " + (e.src || ""), sub: "Explication de texte", text: e.passage + " · " + e.q, go: { ex: e.id, from: "reflexion" } });
+      else D.push({ k: "exo", title: clip(shortQ(e), 120), sub: TYPES[e.type].label, text: exText(e), go: { ex: e.id } });
+    });
+    if (bk.kit) bk.kit.quotes.forEach(q => D.push({ k: "train", title: "Citation clé · " + q.who, sub: "Kit de citations", text: "« " + q.t + " » " + q.sens + " " + q.pivot + " " + q.usages.map(u => u.th + " : " + u.t).join(" "), go: { view: "citations" } }));
+    [
+      ["Mix intelligent", "Entraînement", "mix intelligent série exercices recommandés notions fragiles", { mode: "smart" }],
+      ["Diagnostic éclair", "Entraînement", "diagnostic test rapide angles morts début", { mode: "diag" }],
+      ["Mes erreurs", "Entraînement", "erreurs refaire corriger rater", { mode: "errs" }],
+      ["Simulation d'épreuve", L ? "Appliquer" : "Réflexion", "simulation épreuve examen bac dissertation sujets", { mode: "sim" }],
+      ["Plan de révision", "Plan", "plan révision emploi du temps durée minuté soirée", { view: "plan" }],
+      ["Bilan et export", "Bilan", "bilan export pdf ia chatgpt claude maîtrise progression", { view: "bilan" }]
+    ].concat(L ? [["La méthode de la dissertation", "Appliquer", "méthode dissertation problématique plan argument explication de texte thèse", { mode: "method" }]] : [],
+      bk.kit ? [["Kit de citations", "Appliquer", "citations clés apprendre retenir ponts relier sujet répétition espacée", { view: "citations" }]] : [])
+      .forEach(([title, sub, text, go]) => D.push({ k: "train", title, sub, text, go, mode: true }));
+    D.forEach(d => { d.book = bk.id; d.ft = fold(d.title); d.fx = fold(d.text); });
+    return (bk._idx = D);
+  }
+  function parseFilter(q) {
+    const m = q.match(/^\s*([^\s:]+)\s*:\s*/);
+    const f = m && FILTER_WORDS[fold(m[1])];
+    return f ? { q: q.slice(m[0].length), f } : { q, f: null };
+  }
+  function runSearch(q, f, books) {
+    const toks = fold(q).split(/[\s,;:!?«»"()]+/).map(t => t.replace(/^['-]+|['-]+$/g, "")).filter(t => t.length >= 2);
+    if (!toks.length) return { toks, list: [] };
+    const rxs = toks.map(t => new RegExp(tokSrc(t))), whole = fold(q).trim(), out = [];
+    books.forEach(bk => buildIndex(bk).forEach(d => {
+      if (f !== "all" && d.k !== f) return;
+      let sc = 0;
+      for (const r of rxs) { const inT = r.test(d.ft); if (!inT && !r.test(d.fx)) return; sc += inT ? 5 : 1; }
+      if (whole.length > 3) sc += d.ft.includes(whole) ? 6 : d.fx.includes(whole) ? 3 : 0;
+      if (d.mode) sc -= 0.5;
+      out.push({ d, sc: sc + SK_ORDER[d.k] * 0.01 });
+    }));
+    out.sort((a, b) => b.sc - a.sc);
+    return { toks, list: out.map(x => x.d) };
+  }
+  function markAll(text, toks) {
+    const rx = tokRx(toks), ft = fold(text);
+    let out = "", last = 0, m;
+    while ((m = rx.exec(ft))) {
+      if (!m[0].length) { rx.lastIndex++; continue; }
+      out += esc(text.slice(last, m.index)) + "<mark>" + esc(text.slice(m.index, m.index + m[0].length)) + "</mark>";
+      last = m.index + m[0].length;
+    }
+    return out + esc(text.slice(last));
+  }
+  function snippet(text, toks) {
+    const m = tokRx(toks).exec(fold(text));
+    let a = 0;
+    if (m && m.index > 45) { const sp = text.lastIndexOf(" ", m.index - 40); a = sp < 0 ? m.index - 40 : sp + 1; }
+    let b = Math.min(text.length, a + 140);
+    if (b < text.length) { const sp = text.lastIndexOf(" ", b); if (sp > a + 50) b = sp; }
+    return (a > 0 ? "…" : "") + markAll(text.slice(a, b), toks) + (b < text.length ? "…" : "");
+  }
+  function searchBooks(cb) {
+    if (B && !["home", "library"].includes(VIEW)) return cb([B]);
+    let left = LIB.length; const out = [];
+    if (!left) return cb(out);
+    LIB.forEach(m => loadBook(m.id, () => { if (BOOKS[m.id]) out.push(BOOKS[m.id]); if (!--left) cb(out); }));
+  }
+  function renderSearch(inBook) {
+    const slot = $("#searchSlot");
+    const on = !!inBook || globalSearch();
+    document.body.classList.toggle("has-search", on);
+    if (!on) { slot.innerHTML = ""; return; }
+    const L = inBook ? !!B.course : true;
+    if (!L && SEARCH.f === "cours") SEARCH.f = "all";
+    const filters = [["all", "Tout"]].concat(L ? [["cours", "Leçon"]] : [], [["fiche", "Fiches"], ["exo", "Exos"], ["train", "Entraînement"]]);
+    slot.innerHTML = `<div class="search" id="search">
+      <div class="sbox"><button class="s-ico" id="sIco" aria-label="Rechercher" title="Rechercher (/)">${ICON.search}</button><input id="sq" type="search" enterkeyhint="search" placeholder="Chercher dans ${esc(inBook ? B.meta.title : "la bibliothèque")}" autocomplete="off" spellcheck="false" aria-label="Rechercher"><kbd class="s-k">/</kbd><i class="s-load"></i></div>
+      <div class="spop" id="spop" hidden><div class="s-filters" id="sFil">${filters.map(([k, l]) => `<button data-f="${k}" class="${SEARCH.f === k ? "on" : ""}">${l}</button>`).join("")}</div><div class="s-res" id="sres"></div></div>
+    </div>`;
+    const box = $("#search"), inp = $("#sq"), pop = $("#spop");
+    inp.value = SEARCH.q;
+    const sb = $(".sbox", box), unscroll = () => { sb.scrollLeft = 0; };
+    sb.addEventListener("scroll", unscroll);
+    const openIt = () => { if (box.classList.contains("open")) return; box.classList.add("open"); pop.hidden = false; unscroll(); if (SEARCH.res.list.length && SEARCH.q.trim()) showResults(false); else showHint(); };
+    inp.addEventListener("focus", openIt);
+    $("#sIco").onclick = () => { openIt(); inp.focus({ preventScroll: true }); };
+    inp.addEventListener("input", () => { openIt(); SEARCH.q = inp.value; queueSearch(); });
+    inp.addEventListener("keydown", e => {
+      if (e.key === "Escape") { e.preventDefault(); if (inp.value) { inp.value = ""; SEARCH.q = ""; SEARCH.res = { toks: [], list: [] }; showHint(); } else closeSearch(); return; }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); moveSel(e.key === "ArrowDown" ? 1 : -1); return; }
+      if (e.key === "Enter") { e.preventDefault(); const it = $$(".s-item", pop)[Math.max(0, SEARCH.sel)]; if (it) it.click(); }
+    });
+    $$("#sFil button").forEach(b => b.onclick = () => { const pf = parseFilter(SEARCH.q); if (pf.f) { inp.value = SEARCH.q = pf.q; } setFilter(b.dataset.f); inp.focus({ preventScroll: true }); if (SEARCH.q.trim()) queueSearch(true); else showHint(); });
+  }
+  function setFilter(f) { SEARCH.f = f; $$("#sFil button").forEach(x => x.classList.toggle("on", x.dataset.f === f)); }
+  function closeSearch() {
+    const box = $("#search"); if (!box) return;
+    box.classList.remove("open", "loading"); $("#spop").hidden = true; clearTimeout(SEARCH.timer);
+    const i = $("#sq"); if (i && document.activeElement === i) i.blur();
+  }
+  document.addEventListener("pointerdown", e => { const box = $("#search"); if (box && box.classList.contains("open") && !box.contains(e.target)) closeSearch(); });
+  function moveSel(d) {
+    const items = $$("#sres .s-item"); if (!items.length) return;
+    SEARCH.sel = (SEARCH.sel + d + items.length) % items.length;
+    items.forEach((it, i) => it.classList.toggle("sel", i === SEARCH.sel));
+    items[SEARCH.sel].scrollIntoView({ block: "nearest" });
+  }
+  function showHint() {
+    const res = $("#sres"); if (!res) return;
+    const sug = B && B.kit ? B.kit.quotes.slice(0, 3).map(q => q.who) : B ? NIDS.slice(1, 4).map(id => clip(NOTIONS[id].title, 28)) : [];
+    res.innerHTML = `<div class="s-hint"><p>Cherche une notion, un auteur, un exemple ou une citation. Tape « exo: » devant pour ne chercher que les exercices.</p>${sug.length ? `<div class="s-sug">${sug.map(s => `<button class="chip" data-sug="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}</div>`;
+    $$("[data-sug]", res).forEach(b => b.onclick = () => { const i = $("#sq"); i.value = b.textContent; SEARCH.q = i.value; i.focus(); queueSearch(true); });
+  }
+  function queueSearch(now) {
+    clearTimeout(SEARCH.timer);
+    const box = $("#search"); if (!box) return;
+    const pf = parseFilter(SEARCH.q);
+    if (pf.f && pf.f !== SEARCH.f) setFilter(pf.f);
+    const q = pf.q.trim();
+    if (fold(q).replace(/[^a-z0-9œæ]/g, "").length < 2) { box.classList.remove("loading"); SEARCH.res = { toks: [], list: [] }; showHint(); return; }
+    SEARCH.timer = setTimeout(() => {
+      const key = SEARCH.q + "|" + SEARCH.f, t0 = Date.now(), delay = G.fx ? SEARCH_DELAY : 0;
+      box.classList.add("loading");
+      $("#sres").innerHTML = `<div class="s-wait"><span>Recherche dans ${esc(B && !["home", "library"].includes(VIEW) ? B.meta.title : "la bibliothèque")}</span><i></i><i></i><i></i></div><div class="s-skel"><i></i><i></i><i></i></div>`;
+      searchBooks(books => {
+        const r = runSearch(q, SEARCH.f, books);
+        SEARCH.timer = setTimeout(() => {
+          if (SEARCH.q + "|" + SEARCH.f !== key || !$("#search")) return;
+          $("#search").classList.remove("loading");
+          SEARCH.res = r; SEARCH.shown = 4; SEARCH.sel = -1;
+          showResults(true);
+        }, Math.max(0, delay - (Date.now() - t0)));
+      });
+    }, now ? 0 : 220);
+  }
+  function showResults(anim) {
+    const res = $("#sres"); if (!res) return;
+    const { list, toks } = SEARCH.res;
+    if (!list.length) { res.innerHTML = `<div class="s-empty"><b>Rien trouvé.</b><span>Essaie un auteur, une notion ou un exemple${SEARCH.f !== "all" ? ", ou enlève le filtre" : ""}.</span></div>`; return; }
+    const shown = list.slice(0, SEARCH.shown), multi = new Set(list.map(d => d.book)).size > 1;
+    res.innerHTML = `<div class="s-count">${list.length} résultat${list.length > 1 ? "s" : ""}</div>` + shown.map((d, i) => `<button class="s-item" data-i="${i}"><span class="s-pill ${d.k}">${SK[d.k]}</span><span class="s-main"><b>${markAll(d.title, toks)}</b><span class="s-sub">${esc(d.sub)}${multi ? " · " + esc(BOOKS[d.book].meta.title) : ""}</span>${d.mode ? "" : `<span class="s-snip">${snippet(d.text, toks)}</span>`}</span></button>`).join("")
+      + (list.length > shown.length ? `<button class="s-more" id="sMore">Afficher plus <span>${list.length - shown.length}</span></button>` : "");
+    $$(".s-item", res).forEach(b => b.onclick = () => pickResult(shown[+b.dataset.i]));
+    const more = $("#sMore", res);
+    if (more) more.onclick = () => { const from = SEARCH.shown; SEARCH.shown += 4; showResults(false); X.stagger($$(".s-item", res).slice(from), { y: 6, step: 50 }); $("#sq").focus({ preventScroll: true }); };
+    if (anim) X.stagger($$(".s-item", res), { y: 8, step: 60 });
+  }
+  function pickResult(d) {
+    const toks = SEARCH.res.toks;
+    closeSearch();
+    const act = () => {
+      const g = d.go;
+      if (g.page) { SEARCH_HIT = { page: g.page, toks }; P = null; go("cours", { page: g.page }); }
+      else if (g.fiche) openFiche(g.fiche);
+      else if (g.ex) {
+        const e = EX[g.ex]; if (!e) return;
+        const solo = e.type === "build" || e.passage;
+        const more = solo ? [] : pickSmart(3, x => x.id !== e.id && x.type !== "build" && x.nlist.some(n => e.nlist.includes(n)));
+        startSession({ title: solo ? (e.type === "build" ? (B.course ? "Sujet de dissertation" : "Question de réflexion") : "Explication de texte") : "Recherche · " + clip(NOTIONS[e.nlist[0]] ? NOTIONS[e.nlist[0]].title : "exercices", 40), ids: [e.id].concat(more), from: g.from || "train" });
+      }
+      else if (g.view) { P = null; go(g.view, {}); }
+      else if (g.mode) runMode(g.mode);
+    };
+    if (!B || B.id !== d.book) loadBook(d.book, err => { if (!err) { useBook(d.book); act(); } });
+    else act();
+  }
+  function runMode(m) {
+    if (m === "smart") startSession({ title: "Mix intelligent", ids: pickSmart(G.len) });
+    else if (m === "diag") startSession({ title: "Diagnostic éclair", ids: pickDiag() });
+    else if (m === "errs") { const ids = errorIds(); if (!ids.length) return toast("Aucune erreur à refaire."); startSession({ title: "Mes erreurs", ids: shuffle(ids.slice(0, Math.max(G.len, 12))) }); }
+    else if (m === "sim") startSession({ title: "Simulation d'épreuve", ids: pickBuild(B.course ? 3 : 4), from: "reflexion" });
+    else if (m === "method") openMethod();
+  }
+  /* Arrivée sur une page du cours depuis la recherche : les mots trouvés s'allument */
+  function markHits(root, toks) {
+    if (!root || !toks.length) return;
+    const rx = tokRx(toks), nodes = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = w.nextNode())) if (!n.parentElement.closest(".co-nav, .co-head, button")) nodes.push(n);
+    const hits = [];
+    nodes.forEach(node => {
+      const t = node.nodeValue, ft = fold(t), frag = document.createDocumentFragment();
+      let m, last = 0, any = false; rx.lastIndex = 0;
+      while ((m = rx.exec(ft))) {
+        if (!m[0].length) { rx.lastIndex++; continue; }
+        any = true;
+        frag.appendChild(document.createTextNode(t.slice(last, m.index)));
+        const mk = document.createElement("mark"); mk.className = "hit"; mk.textContent = t.slice(m.index, m.index + m[0].length);
+        frag.appendChild(mk); hits.push(mk); last = m.index + m[0].length;
+      }
+      if (any) { frag.appendChild(document.createTextNode(t.slice(last))); node.parentNode.replaceChild(frag, node); }
+    });
+    if (!hits.length) return;
+    hits[0].scrollIntoView({ block: "center", behavior: "smooth" });
+    setTimeout(() => hits.forEach(h => h.classList.add("on")), 40);
+    setTimeout(() => hits.forEach(h => h.classList.remove("on")), 2800);
+  }
+
+  /* =========================================================
+     Kit de citations : peu de citations, reliées entre elles,
+     adaptables à tous les sujets, apprises par répétition espacée
+     ========================================================= */
+  const KIT_INT = [0, 10 * 60e3, 864e5, 3 * 864e5, 7 * 864e5, 21 * 864e5]; /* délai de retour selon la boîte (0 à 5) */
+  let KIT_TAB = "ponts", KIT_TH = null;
+  const kitQuotes = () => B.kit.quotes.slice(0, Math.min(Math.max(2, G.kitN || 3), B.kit.quotes.length));
+  const kitState = q => Object.assign({ box: 0, due: 0 }, (S.kit || {})[q.id]);
+  const bridgeOf = (i, mask) => B.kit.bridges[i].replace("{B}", mask ? "…" : B.kit.quotes[i + 1].who);
+  function relTime(ts) {
+    const d = ts - Date.now(); if (d <= 0) return "à revoir";
+    const m = Math.round(d / 60000); if (m < 60) return "dans " + Math.max(1, m) + " min";
+    const h = Math.round(m / 60); if (h < 24) return "dans " + h + " h";
+    return "dans " + Math.round(h / 24) + " j";
+  }
+  function kitThemes(qs) {
+    const c = {}; qs.forEach(q => q.usages.forEach(u => { c[u.th] = (c[u.th] || 0) + 1; }));
+    return Object.keys(c).sort((a, b) => c[b] - c[a] || a.localeCompare(b, "fr"));
+  }
+  VIEWS.citations = function (root) {
+    if (!B.kit) return go("reflexion");
+    const qs = kitQuotes(), N = qs.length, now = Date.now();
+    const due = qs.filter(q => kitState(q).due <= now);
+    const themes = kitThemes(qs);
+    if (KIT_TH !== "*" && !themes.includes(KIT_TH)) KIT_TH = themes[0];
+    const qCard = (q, i) => {
+      const st = kitState(q);
+      return `<li class="ci-q" title="${esc(q.sens)}"><span class="ci-num">${i + 1}</span><div class="ci-body"><blockquote>« ${esc(q.t)} »</blockquote><div class="ci-a">${esc(q.a)}</div><div class="ci-sens">${esc(q.sens)}</div></div>
+        <div class="ci-st" title="Boîte ${st.box} sur 5"><span class="ci-box">${[1, 2, 3, 4, 5].map(k => `<i class="${st.box >= k ? "on" : ""}"></i>`).join("")}</span><span class="ci-due ${st.due <= now ? "now" : ""}">${st.box ? relTime(st.due) : "nouvelle"}</span></div></li>`;
+    };
+    const sideHTML = () => {
+      const chain = qs.map((q, i) => `<div class="ci-node"><span class="ci-num">${i + 1}</span><div><b>${esc(q.who)}</b><span>${esc(q.role)}</span></div></div>${i < N - 1 ? `<div class="ci-bridge"><p>${esc(bridgeOf(i))}</p></div>` : ""}`).join("");
+      const adapt = qs.map(q => {
+        const u = KIT_TH === "*" ? null : q.usages.find(x => x.th === KIT_TH);
+        return `<li><p><span class="ci-who">${esc(q.who)}${u || KIT_TH === "*" ? "" : " · pont général"}</span>${esc(u ? u.t : q.pivot)}</p></li>`;
+      }).join("");
+      return `<div class="segmented" id="kitTab"><button data-t="ponts" class="${KIT_TAB === "ponts" ? "on" : ""}">Les ponts</button><button data-t="adapt" class="${KIT_TAB === "adapt" ? "on" : ""}">Adapter à un sujet</button></div>
+        ${KIT_TAB === "ponts"
+          ? `<div class="ci-chain ${N >= 4 ? "tight" : ""}">${chain}</div>`
+          : `<div class="ci-themes">${themes.map((t, i) => `<button class="chip ${t === KIT_TH ? "on" : ""}" data-th="${i}">${esc(capFirst(t))}</button>`).join("")}<button class="chip ${KIT_TH === "*" ? "on" : ""}" data-th="*">Autre sujet</button></div>
+             <div class="ci-adapt"><h4>${KIT_TH === "*" ? "Pour n'importe quel sujet : le pivot de chaque citation" : "Pour un sujet sur " + esc(KIT_TH) + ", dans l'ordre du fil"}</h4><ol>${adapt}</ol></div>`}`;
+    };
+    const paintSide = anim => {
+      const side = $("#ciSide", root), sl = $(".ci-themes", side), keep = sl ? sl.scrollLeft : 0;
+      side.innerHTML = sideHTML();
+      const th = $(".ci-themes", side); if (th) th.scrollLeft = keep;
+      $$("#kitTab button", side).forEach(b => b.onclick = () => { if (KIT_TAB === b.dataset.t) return; KIT_TAB = b.dataset.t; paintSide(true); });
+      $$("[data-th]", side).forEach(b => b.onclick = () => { KIT_TH = b.dataset.th === "*" ? "*" : themes[+b.dataset.th]; paintSide(true); });
+      if (anim) X.stagger($$(".ci-node, .ci-bridge, .ci-adapt li", side), { y: 6, step: 45 });
+    };
+    root.innerHTML = `
+    <section class="view citations">
+      <div class="ci-head">
+        <div><div class="eyebrow accent">Appliquer · Citations clés</div><h1 style="margin-top:6px">Ton kit de citations</h1>
+        <p>Peu de citations, bien choisies et bien reliées, suffisent pour presque tous les sujets. Choisis combien tu veux en retenir : Recto les relie entre elles, les adapte à chaque thème et t'aide à les apprendre.</p></div>
+        <div class="ci-acts"><div class="ci-n"><span>Citations</span><div class="segmented" id="kitN">${[2, 3, 4, 5].filter(n => n <= B.kit.quotes.length).map(n => `<button data-n="${n}" class="${n === N ? "on" : ""}">${n}</button>`).join("")}</div></div>
+          <button class="btn primary" id="kitGo">${due.length ? "Apprendre · " + due.length + " à revoir" : "Réviser quand même"}</button></div>
+      </div>
+      <div class="card ci-kit">
+        <ol class="ci-list ${N >= 4 ? "compact" : ""}">${qs.map(qCard).join("")}</ol>
+        <p class="note ci-how">On apprend en quatre temps : les initiales et une image mentale, la citation reconstituée mot à mot, son usage dans un sujet, puis l'enchaînement du fil. Une citation réussie revient dans 10 min, puis 1, 3, 7 et 21 jours.</p>
+      </div>
+      <div class="card ci-side" id="ciSide"></div>
+    </section>`;
+    $$("#kitN button", root).forEach(b => b.onclick = () => { G.kitN = +b.dataset.n; save(); STILL = true; render(); });
+    paintSide(true);
+    $("#kitGo", root).onclick = () => startKit(due.length ? due : qs.slice().sort((a, b) => kitState(a).box - kitState(b).box));
+    X.stagger($$(".ci-q", root), { y: 8, step: 60 });
+  };
+  function initialsOf(t) { return t.split(/\s+/).map(w => { const m = w.match(/^[«"(]*((?:[\p{L}]['’])?\p{L})/u); return m ? m[1] : w; }).join(" "); }
+  function startKit(list) {
+    const qs = kitQuotes(), N = qs.length, pick = list.slice(0, 3), ids = [];
+    const reg = (ex, step) => {
+      const q0 = ex.kit === "*" ? qs[0] : qs.find(x => x.id === ex.kit);
+      ex.id = "kit-" + ex.kit + "-" + step; ex.notion = q0.n; ex.nlist = [q0.n];
+      ex.part = NOTIONS[q0.n] ? NOTIONS[q0.n].part : 0; ex.cite = false;
+      EX[ex.id] = ex; ids.push(ex.id);
+    };
+    const words = (q, hide) => ({ type: "words", kit: q.id, label: hide >= 1 ? "Citation complète" : "Reconstituer", q: "Reconstitue la citation de " + q.who + ".", t: q.t, a: q.a, hide, explain: q.sens });
+    const usage = q => {
+      const u = q.usages[Math.floor(Math.random() * q.usages.length)];
+      const opts = shuffle([q].concat(shuffle(qs.filter(x => x !== q)).slice(0, 3)));
+      return { type: "qcm", kit: q.id, label: "Utiliser dans un sujet", help: "Lis l'argument, puis choisis la citation de ton kit qui le porte le mieux.", passage: u.t, src: "Ton argument, pour un sujet sur " + u.th,
+        q: "Quelle citation de ton kit sert cet argument ?", options: opts.map(x => x.short), answer: opts.indexOf(q), explain: "« " + q.t + " » " + q.sens };
+    };
+    pick.forEach(q => {
+      const b = kitState(q).box;
+      if (b === 0) {
+        reg({ type: "flash", kit: q.id, label: "Initiales et image", help: "Lis les initiales, récite la citation en entier à voix haute, puis retourne la carte. L'image mentale t'aidera à la retrouver.", prompt: "Récite la citation à partir de ses initiales.", f: q.who + " · " + initialsOf(q.t), b: "« " + q.t + " »", memo: q.memo }, "init");
+        reg(words(q, 0.45), "w1");
+        reg(words(q, 1), "w3");
+      } else if (b === 1) { reg(words(q, 0.7), "w2"); reg(usage(q), "use"); }
+      else { reg(words(q, 1), "w3"); reg(usage(q), "use"); }
+    });
+    if (N >= 2) {
+      const i = Math.floor(Math.random() * (N - 1));
+      const opts = shuffle(qs.filter((_, k) => k !== i)).slice(0, 4);
+      if (!opts.includes(qs[i + 1])) opts[0] = qs[i + 1];
+      const o2 = shuffle(opts);
+      reg({ type: "qcm", kit: "*", label: "Trouver le pont", help: "Un pont mène d'une citation à la suivante : c'est ta transition dans la dissertation.", passage: bridgeOf(i, true), src: "Le pont qui part de " + qs[i].who,
+        q: "Vers quelle citation mène ce pont ?", options: o2.map(x => x.short), answer: o2.indexOf(qs[i + 1]), explain: bridgeOf(i) }, "pont");
+    }
+    if (N >= 3) reg({ type: "order", kit: "*", label: "Enchaîner le fil", q: "Remets ton fil dans l'ordre.", items: qs.map(q => q.who + " · " + q.role), explain: "Ton fil : " + qs.map(q => q.role).join(" → ") + "." }, "fil");
+    startSession({ title: "Kit de citations", ids, from: "citations" });
+  }
+  /* Fin de série : chaque citation monte ou descend d'une boîte */
+  function applyKit() {
+    if (!P || !P.kitFirst || P.kitApplied) return;
+    P.kitApplied = true;
+    const by = {};
+    Object.keys(P.kitFirst).forEach(id => { const k = EX[id] && EX[id].kit; if (k && k !== "*") (by[k] = by[k] || []).push(P.kitFirst[id]); });
+    const now = Date.now(); let up = 0, down = 0;
+    S.kit = S.kit || {};
+    Object.keys(by).forEach(k => {
+      const st = Object.assign({ box: 0, due: 0 }, S.kit[k]);
+      if (by[k].every(s => s >= 0.99)) { st.box = Math.min(5, st.box + 1); st.due = now + KIT_INT[st.box]; up++; }
+      else { st.box = Math.max(0, st.box - 1); st.due = now + KIT_INT[1]; down++; }
+      S.kit[k] = st;
+    });
+    save();
+    const qs = B.kit ? kitQuotes() : [];
+    P.kitSummary = { up, down, next: qs.length ? Math.min.apply(null, qs.map(q => kitState(q).due)) : 0 };
+  }
 
   /* =========================================================
      Guide de lecture
@@ -1204,7 +1583,7 @@
         <p>${ex.format ? "À l'épreuve : " + esc(ex.format) + (ex.perQuestion ? ", soit " + esc(ex.perQuestion) : "") + ". " : ""}Ici, pas de rédaction : pour chaque question, trouve les arguments pertinents, puis compare-toi au plan modèle et à la citation clé.</p></div>
         <div class="refl-acts"><button class="btn secondary" id="undone">Questions jamais faites</button><button class="btn primary" id="sim">Simulation · 4 questions</button></div>`}
       </div>
-      <div class="refl-grid">${builds.map(e => {
+      <div class="refl-grid">${B.kit ? (() => { const qs = kitQuotes(), nd = qs.filter(q => kitState(q).due <= Date.now()).length; return `<button class="q-card kit" id="kitCard"><div class="top"><span class="r">Kit</span><span class="score-badge ${nd ? "" : "good"}">${nd ? nd + " à revoir" : "À jour"}</span></div><span class="t">Citations clés : ${qs.length} citations reliées pour presque tous les sujets</span></button>`; })() : ""}${builds.map(e => {
         const l = last[e.id], st = l ? status(l.r) : "new";
         return `<button class="q-card" data-id="${e.id}"><div class="top"><span class="r">${e.part ? PARTS[e.part].roman : esc(ctxLabel())}</span><span class="score-badge ${l ? st : ""}">${l ? Math.round(l.r * 100) + " %" : "À faire"}</span></div><span class="t">${esc(e.q)}</span></button>`;
       }).join("")}</div>
@@ -1218,6 +1597,7 @@
     };
     const tx = $("#texts"); if (tx) tx.onclick = () => startSession({ title: "Explications de texte", ids: shuffle(texts.map(e => e.id)), from: "reflexion" });
     const me = $("#method"); if (me) me.onclick = openMethod;
+    const kc = $("#kitCard"); if (kc) kc.onclick = () => go("citations");
   };
   /* Méthode de la dissertation et de l'explication de texte (leçons de philosophie) */
   function openMethod() {
@@ -1253,6 +1633,7 @@
   }
   const segCls = s => s == null ? "" : s >= 0.99 ? "ok" : s > 0 ? "mid" : "ko";
   function promptOf(ex) {
+    if (ex.prompt) return ex.prompt;
     switch (ex.type) {
       case "vf": return "Vrai ou faux ?";
       case "fill": return ex.plain ? "Complète la phrase." : "Complète la citation.";
@@ -1261,7 +1642,7 @@
       default: return ex.q;
     }
   }
-  function leaveSession() { const back = P && P.origin === "plan" ? "plan" : P && P.from === "reflexion" ? "reflexion" : "train"; P = null; go(back); }
+  function leaveSession() { applyKit(); const back = P && P.origin === "plan" ? "plan" : P && P.from === "citations" ? "citations" : P && P.from === "reflexion" ? "reflexion" : "train"; P = null; go(back); }
 
   VIEWS.player = function (root) {
     if (!P) return go("train");
@@ -1322,6 +1703,12 @@
     const before = {}; ex.nlist.forEach(n => { before[n] = mastery(n); });
     record(ex, res);
     P.res[P.idx] = res.score;
+    /* Kit de citations : on garde le premier essai, et une erreur revient en fin de série */
+    if (ex.kit) {
+      P.kitFirst = P.kitFirst || {}; P.requeued = P.requeued || {};
+      if (!(ex.id in P.kitFirst)) P.kitFirst[ex.id] = res.score;
+      if (res.score < 0.99 && !P.requeued[ex.id]) { P.requeued[ex.id] = 1; P.ids.push(ex.id); const sg = $(".segs"); if (sg) sg.insertAdjacentHTML("beforeend", "<i></i>"); const ct = $(".count"); if (ct) ct.textContent = (P.idx + 1) + " / " + P.ids.length; }
+    }
     const seg = $$(".segs i")[P.idx]; if (seg) seg.className = segCls(res.score);
     ["#validate", "#idk", "#hint"].forEach(s => { const b = $(s); if (b) b.hidden = true; });
     $("#next").hidden = false;
@@ -1344,7 +1731,7 @@
     const s = res.score, cls = s >= 0.99 ? "ok" : s > 0 ? "mid" : "ko";
     const title = res.gaveUp ? "Voici la réponse" : cls === "ok" ? (res.typo ? "Juste, à une faute près" : "Juste") : cls === "mid" ? "Presque" : "À revoir";
     const icon = cls === "ok" ? ICON.check : cls === "mid" ? ICON.half : ICON.cross;
-    const partial = ["fill", "order", "match", "sort", "schema", "grid", "build"].includes(ex.type) || (ex.type === "qcm" && Array.isArray(ex.answer));
+    const partial = ["fill", "order", "match", "sort", "schema", "grid", "build", "words"].includes(ex.type) || (ex.type === "qcm" && Array.isArray(ex.answer));
     const sub = res.gaveUp ? "Pas de souci : elle repassera dans tes erreurs." : partial ? Math.round(s * 100) + " % des points" : cls === "ok" ? "Bonne réponse" : "Mauvaise réponse";
     let body = "";
     if (res.expectedHTML) body += `<div class="side-block"><h4>${esc(res.expectedTitle || "Réponse attendue")}</h4>${res.expectedHTML}</div>`;
@@ -1358,6 +1745,7 @@
     return `<div class="ring ${st}"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="${r}"/><circle class="fg" cx="60" cy="60" r="${r}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - p / 100)).toFixed(1)}"/></svg><div class="lbl"><span class="num">${p}</span><small>%</small></div></div>`;
   }
   function renderEnd(root) {
+    applyKit();
     const n = P.ids.length, score = sum(P.res.map(x => x || 0));
     const p = Math.round(score / n * 100), st = p >= 80 ? "good" : p >= 50 ? "mid" : "weak";
     const okN = P.res.filter(x => x >= 0.99).length;
@@ -1372,6 +1760,7 @@
         ${ringHTML(p, st)}
         <h2 class="${p === 100 ? "perfect" : ""}">${p === 100 ? "Parfait." : p >= 80 ? "Très bien." : p >= 50 ? "Pas mal. Encore un effort." : "C'est le bon moment pour corriger."}</h2>
         <p>${okN} réponse${okN > 1 ? "s" : ""} parfaite${okN > 1 ? "s" : ""} sur ${n} · ${esc(P.title)}</p>
+        ${P.kitSummary ? `<p class="kit-sum">${P.kitSummary.up} citation${P.kitSummary.up > 1 ? "s" : ""} en progrès${P.kitSummary.down ? " · " + P.kitSummary.down + " à reprendre" : ""} · prochaine révision ${relTime(P.kitSummary.next)}</p>` : ""}
         <div class="end-chips">${Object.keys(touched).map(id => { const a = avg(touched[id]); return `<button class="end-chip" data-fiche="${id}"><span class="dot ${a >= 0.99 ? "good" : a > 0 ? "mid" : "weak"}"></span>${esc(NOTIONS[id].title)}</button>`; }).join("")}</div>
         <div class="end-actions">
           ${errs.length ? `<button class="btn secondary" id="redo">Refaire ${errs.length > 1 ? "les " + errs.length + " erreurs" : "l'erreur"}</button>` : ""}
@@ -1606,6 +1995,7 @@
       <div class="set-row"><div><b>Animations</b><span>« Auto » suit le réglage de ton appareil${rmSys ? " (il demande des animations réduites)" : ""}.</span></div>${seg("sMo", [["auto", "Auto"], ["reduce", "Réduites"], ["full", "Complètes"]], G.motion)}</div>
       <div class="set-row"><div><b>Rappel actif</b><span>Masque les propositions tant que tu n'as pas répondu de tête.</span></div>${switchHTML("sRecall", G.recall)}</div>
       <div class="set-row"><div><b>Sans citations</b><span>Retire les exercices de citation.</span></div>${switchHTML("sNq", G.noQuotes)}</div>
+      <div class="set-row"><div><b>Repères de lecture</b><span>Dans le cours : idées clés surlignées, auteurs et œuvres en couleur.</span></div>${switchHTML("sHl", G.hl !== false)}</div>
       <div class="set-row"><div><b>Longueur des séries</b><span>Nombre d'exercices par série.</span></div>${seg("sLen", [[8, "8"], [12, "12"], [20, "20"]], G.len)}</div>
       ${installRowHTML()}
       <div class="set-foot"><span class="note">Les réglages valent pour tous les livres et leçons.</span><button class="btn secondary sm" id="sTry">Essayer les effets</button></div>`, "settings", () => { if (dirty) render(); });
@@ -1615,6 +2005,7 @@
     segBind("sLen", v => { G.len = +v; dirty = true; });
     bindSwitch("sRecall", v => { G.recall = v; save(); dirty = true; });
     bindSwitch("sNq", v => { G.noQuotes = v; save(); dirty = true; });
+    bindSwitch("sHl", v => { G.hl = v; save(); applyFx(); });
     const si = $("#sInstall", card); if (si) si.onclick = () => { INSTALL.prompt(); INSTALL.userChoice.finally(() => { INSTALL = null; closeModal(); }); };
     $("#sTry", card).onclick = e => { const b = e.currentTarget; X.ripple(b, e.clientX, e.clientY, "rgba(0,113,227,.25)"); X.pop(b); X.burst(b); };
   }
@@ -2052,7 +2443,7 @@
   };
 
   R.flash = function (ex, el, api) {
-    el.innerHTML = `<div class="flash"><div class="flash-card"><div class="f">${esc(ex.f)}</div><div class="b" hidden>${esc(ex.b)}</div></div><div id="flashAct"><button class="btn primary lg" id="flip">Retourner la carte <kbd>Espace</kbd></button></div></div>`;
+    el.innerHTML = `<div class="flash"><div class="flash-card"><div class="f">${esc(ex.f)}</div><div class="b" hidden>${esc(ex.b)}${ex.memo ? `<span class="memo">Image mentale : ${esc(ex.memo)}</span>` : ""}</div></div><div id="flashAct"><button class="btn primary lg" id="flip">Retourner la carte <kbd>Espace</kbd></button></div></div>`;
     let flipped = false, rating = null;
     function flip() {
       if (flipped) return;
@@ -2067,6 +2458,60 @@
       reveal: flip,
       key(k) { if (!flipped) return false; const m = { 1: 0, 2: 0.5, 3: 1 }; if (k in m) { rate(m[k]); return true; } return false; },
       check() { return { score: rating == null ? 0 : rating, given: rating == null ? "—" : ["Je ne savais pas", "À moitié", "Je savais"][rating * 2], expected: ex.b }; }
+    };
+  };
+
+  /* Reconstituer une citation : toucher les mots dans l'ordre (sans rien écrire) */
+  R.words = function (ex, el, api) {
+    const toks = ex.t.split(/\s+/).filter(Boolean);
+    const len = w => w.replace(/[^\p{L}]/gu, "").length;
+    let hidden;
+    if (ex.hide >= 1) hidden = toks.map((_, i) => i).filter(i => i > 0);
+    else {
+      const k = Math.max(2, Math.round(toks.length * ex.hide));
+      const big = shuffle(toks.map((w, i) => i).filter(i => i > 0 && len(toks[i]) >= 4));
+      const small = shuffle(toks.map((w, i) => i).filter(i => i > 0 && len(toks[i]) < 4 && len(toks[i]) >= 2));
+      hidden = big.concat(small).slice(0, Math.min(k, toks.length - 1)).sort((a, b) => a - b);
+    }
+    const bank = shuffle(hidden.map(i => ({ i, w: toks[i] })));
+    const fill = {};
+    el.innerHTML = `<div class="words"><p class="w-line">${toks.map((w, i) => hidden.includes(i) ? `<span class="w-slot" data-s="${i}"></span>` : `<span class="w-fix">${esc(w)}</span>`).join(" ")}</p><p class="w-src">${esc(ex.a)}</p>
+      <div class="w-bank">${bank.map((b, j) => `<button class="w-tok" data-b="${j}">${esc(b.w)}</button>`).join("")}</div></div>`;
+    const slots = () => hidden.map(i => $(`.w-slot[data-s="${i}"]`, el));
+    const paint = () => {
+      const nextI = hidden.find(i => fill[i] == null);
+      slots().forEach((sl, k) => { const i = hidden[k]; sl.textContent = fill[i] != null ? bank[fill[i]].w.replace(/'/g, "’") : ""; sl.classList.toggle("filled", fill[i] != null); sl.classList.toggle("next", i === nextI); });
+      $$(".w-tok", el).forEach(t => t.classList.toggle("used", Object.values(fill).includes(+t.dataset.b)));
+      api.ready(hidden.every(i => fill[i] != null));
+    };
+    const place = j => { if (CHECKED) return; const i = hidden.find(x => fill[x] == null); if (i == null) return; fill[i] = j; paint(); };
+    const undo = i => { if (CHECKED || fill[i] == null) return; delete fill[i]; paint(); };
+    $$(".w-tok", el).forEach(t => t.onclick = () => place(+t.dataset.b));
+    slots().forEach((sl, k) => sl.onclick = () => undo(hidden[k]));
+    paint();
+    return {
+      key(k) {
+        if (k !== "Backspace") return false;
+        const filled = hidden.filter(i => fill[i] != null);
+        if (filled.length) undo(filled[filled.length - 1]);
+        return true;
+      },
+      check() {
+        let ok = 0;
+        slots().forEach((sl, k) => {
+          const i = hidden[k], good = fill[i] != null && bank[fill[i]].w === toks[i];
+          if (good) ok++;
+          sl.classList.remove("next");
+          sl.classList.add(good ? "correct" : "wrong");
+          if (!good) sl.insertAdjacentHTML("beforeend", `<span class="w-fixw">${esc(toks[i])}</span>`);
+        });
+        return {
+          score: hidden.length ? ok / hidden.length : 1,
+          given: toks.map((w, i) => hidden.includes(i) ? (fill[i] != null ? bank[fill[i]].w : "∅") : w).join(" "),
+          expected: ex.t, expectedTitle: "La citation",
+          expectedHTML: `<p class="quote">« ${esc(ex.t)} »</p><p class="small muted" style="margin-top:6px">${esc(ex.a)}</p>`
+        };
+      }
     };
   };
 
@@ -2312,6 +2757,8 @@
   });
   document.addEventListener("keydown", e => {
     const modalOpen = !$("#modal").hidden;
+    const typing = /INPUT|TEXTAREA/.test(e.target.tagName);
+    if (!modalOpen && ((e.key === "/" && !typing) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k"))) { const si = $("#sq"); if (si) { e.preventDefault(); $("#sIco").click(); return; } }
     if (e.key === "Escape" && modalOpen) { closeModal(); return; }
     if (VIEW === "cours" && !modalOpen && !/INPUT|TEXTAREA/.test(e.target.tagName) && !e.metaKey && !e.ctrlKey && !e.altKey) {
       const b = e.key === "ArrowRight" ? $("#coNext") : e.key === "ArrowLeft" ? $("#coPrev") : null;

@@ -23,7 +23,7 @@ Recto.add("le-langage", (function () {
       body: [
         "Le terme *langage* vient du latin *lingua*, « langue ». En français, la langue désigne à la fois *l'organe* et *le système de communication* que nous utilisons pour parler.",
         "La *communication* est au cœur de nombreuses révolutions technologiques : de la lettre au télégraphe, puis au téléphone, au téléphone portable, aux smartphones et aux réseaux sociaux. Notre société vise un idéal d'*efficacité de la transmission* : communiquer toujours plus vite et plus précisément. Mais ce qui nous intéresse, c'est que *les êtres humains* puissent communiquer grâce aux machines.",
-        "Le langage semble être une caractéristique fondamentale de l'être humain : *l'homme semble être, par nature, un être parlant*. Pourtant, il est difficile de parler sans rien dire, et le langage semble avoir d'autres fonctions : *penser*, *nommer le monde*, *agir sur soi et sur autrui*."
+        "==Le langage semble être une caractéristique fondamentale de l'être humain== : *l'homme semble être, par nature, un être parlant*. Pourtant, ==il est difficile de parler sans rien dire==, et le langage semble avoir d'autres fonctions : *penser*, *nommer le monde*, *agir sur soi et sur autrui*."
       ],
       side: [
         { k: "def", w: "Langage", t: "Système de signes permettant notamment de communiquer." },
@@ -36,8 +36,8 @@ Recto.add("le-langage", (function () {
       lead: "Le langage semble constituer la « texture même de notre monde » : tout ce qui nous entoure peut être nommé et décrit à travers lui.",
       body: [
         "Le philosophe français *Maurice Merleau-Ponty* parle d'un « *monde parlé et parlant* ». Le monde est *parlé*, parce que nous le nommons : une chaise, un arbre, une maison. Il est *parlant*, car pour comprendre le monde, nous devons pouvoir en dire quelque chose et le penser à travers le langage.",
-        "Le langage ne sert donc pas seulement à communiquer : il *construit notre rapport au monde*. Il permet aussi d'*agir sur soi et sur autrui* : ce n'est pas une simple médiation, il peut être directement *agissant*.",
-        "Mais parce qu'il matérialise nos pensées, il peut aussi être source de difficultés : on a du mal à dire exactement ce qu'on veut, on est mal compris. Le langage peut *trahir notre pensée* : on peut dire plus que ce qu'on voulait exprimer."
+        "Le langage ne sert donc pas seulement à communiquer : ==il *construit notre rapport au monde*==. Il permet aussi d'*agir sur soi et sur autrui* : ce n'est pas une simple médiation, il peut être directement *agissant*.",
+        "Mais parce qu'il matérialise nos pensées, il peut aussi être source de difficultés : on a du mal à dire exactement ce qu'on veut, on est mal compris. ==Le langage peut *trahir notre pensée*== : on peut dire plus que ce qu'on voulait exprimer."
       ],
       side: [
         { k: "q", t: "Un monde parlé et parlant.", a: "Maurice Merleau-Ponty" },
@@ -52,7 +52,7 @@ Recto.add("le-langage", (function () {
       body: [
         "Dans *L'Évolution créatrice*, *Henri Bergson* distingue trois directions de l'évolution, qu'il rattache à l'*élan vital* (le principe qui permet de penser le développement de la vie) :",
         ["*La torpeur* → le règne végétal : les êtres vivants ne peuvent pas se déplacer eux-mêmes.", "*L'instinct* → le règne animal : des comportements principalement guidés par l'instinct.", "*L'intelligence* → l'être humain."],
-        "L'être humain se caractérise par son intelligence et sa capacité à *inventer et perfectionner des techniques* : il est avant tout un *Homo faber*. La *paléoanthropologie* (science de l'origine et de l'évolution de l'être humain) le confirme : des périodes entières portent le nom de leurs techniques (âge de la pierre, âge du bronze, âge du fer, révolution industrielle)."
+        "==L'être humain se caractérise par son intelligence et sa capacité à *inventer et perfectionner des techniques*== : il est avant tout un *Homo faber*. La *paléoanthropologie* (science de l'origine et de l'évolution de l'être humain) le confirme : des périodes entières portent le nom de leurs techniques (âge de la pierre, âge du bronze, âge du fer, révolution industrielle)."
       ],
       side: [
         { k: "def", w: "Homo faber", t: "« Homme fabricant » : l'être humain capable de fabriquer des outils et de créer des techniques." }
@@ -63,8 +63,8 @@ Recto.add("le-langage", (function () {
     { id: "loquens", part: 1, sec: "A. L'Homme, un être de parole", title: "Hagège : l'homme comme Homo loquens",
       lead: "Le linguiste français *Claude Hagège* discute cette conception : l'homme n'est pas seulement un Homo faber, il est aussi, et peut-être avant tout, un *Homo loquens*.",
       body: [
-        "L'être humain possède la capacité de parler et de *transmettre des connaissances* par le langage. Pour que les techniques évoluent, il faut *transmettre les savoir-faire* : une technique inventée par un individu n'est conservée et améliorée que si on l'enseigne aux autres, d'abord oralement, puis par écrit.",
-        "Exemple : le *fordisme* (production industrielle fondée sur le travail à la chaîne) : pour le mettre en place et le transmettre, il faut expliquer les méthodes de production. L'évolution technique et l'évolution du langage sont profondément liées.",
+        "L'être humain possède la capacité de parler et de *transmettre des connaissances* par le langage. Pour que les techniques évoluent, il faut *transmettre les savoir-faire* : ==une technique inventée par un individu n'est conservée et améliorée que si on l'enseigne aux autres==, d'abord oralement, puis par écrit.",
+        "Exemple : le *fordisme* (production industrielle fondée sur le travail à la chaîne) : pour le mettre en place et le transmettre, il faut expliquer les méthodes de production. ==L'évolution technique et l'évolution du langage sont profondément liées==.",
         "L'homme a aussi créé des *langages artificiels*, qui ne sont pas des langues naturelles : les mathématiques, la physique, la chimie, la logique, la musique. Ils transmettent des connaissances de façon précise et structurée."
       ],
       side: [
@@ -77,9 +77,9 @@ Recto.add("le-langage", (function () {
     { id: "animaux", part: 1, sec: "B. La communication animale", title: "Les animaux communiquent",
       lead: "La capacité humaine à parler n'est pas apparue soudainement : elle résulte d'une évolution progressive sur plusieurs millions d'années. Mais la communication est-elle propre à l'être humain ?",
       body: [
-        "La *paléoanthropologie* montre que l'évolution des capacités physiques nécessaires aux sons articulés et l'évolution du cerveau sont liées : l'apparition du langage est un *processus progressif*, pas l'apparition soudaine de la parole chez un individu isolé.",
+        "La *paléoanthropologie* montre que l'évolution des capacités physiques nécessaires aux sons articulés et l'évolution du cerveau sont liées : ==l'apparition du langage est un *processus progressif*==, pas l'apparition soudaine de la parole chez un individu isolé.",
         "De nombreux animaux transmettent des informations : des *sons*, des signaux visuels ou corporels, des *ultrasons* (trop aigus pour l'oreille humaine), des *infrasons* (sons très graves, inaudibles pour nous). Ces informations sont liées à la survie : nourriture, point d'eau, danger, déplacement du groupe.",
-        "Certains animaux vont au-delà de la survie : des *cétacés* (dauphins, orques) ont des comportements sociaux et ludiques associés à des échanges de signaux. Il existe donc bien une *communication animale*, parfois très complexe."
+        "Certains animaux vont au-delà de la survie : des *cétacés* (dauphins, orques) ont des comportements sociaux et ludiques associés à des échanges de signaux. ==Il existe donc bien une *communication animale*, parfois très complexe==."
       ],
       side: [
         { k: "def", w: "Cétacés", t: "Groupe comprenant notamment les dauphins et les orques." }
@@ -92,7 +92,7 @@ Recto.add("le-langage", (function () {
       body: [
         "Les abeilles utilisent une « *danse* » pour transmettre aux autres abeilles des informations sur la localisation d'une source de nourriture. La danse indique :",
         ["la *direction* de la nourriture ;", "la *distance approximative* à parcourir ;", "l'emplacement d'une source de nourriture ou d'eau."],
-        "Les mouvements de l'abeille, leur orientation et la manière dont elle danse transmettent ces informations aux autres. La communication animale n'est donc pas le fruit du hasard : elle peut être un véritable *système de transmission d'informations*.",
+        "Les mouvements de l'abeille, leur orientation et la manière dont elle danse transmettent ces informations aux autres. ==La communication animale n'est donc pas le fruit du hasard== : elle peut être un véritable *système de transmission d'informations*.",
         "La question devient alors : *suffit-il de communiquer pour parler véritablement ?* Il faut distinguer *communication* et *langage humain*."
       ],
       side: [
@@ -104,8 +104,8 @@ Recto.add("le-langage", (function () {
     { id: "difference", part: 1, sec: "B. La communication animale", title: "Communication animale et langage humain",
       lead: "Chez de nombreuses espèces, la communication est en grande partie *biologiquement déterminée*. Chez l'être humain, le langage s'apprend.",
       body: [
-        "*Biologiquement déterminé* : inscrit dans les caractéristiques de l'espèce, largement inné. Les animaux n'ont pas besoin d'apprendre leur système de communication comme les humains apprennent une langue. Le langage humain, lui, repose sur un *apprentissage* et peut être transmis et transformé par les générations.",
-        "Notre langage a surtout une très grande *productivité* : la capacité à produire et comprendre une infinité d'énoncés nouveaux. Nous pouvons apprendre de nouveaux mots, comprendre des phrases jamais entendues, transmettre de nouvelles connaissances, formuler de nouvelles idées, construire des raisonnements de plus en plus complexes.",
+        "*Biologiquement déterminé* : inscrit dans les caractéristiques de l'espèce, largement inné. Les animaux n'ont pas besoin d'apprendre leur système de communication comme les humains apprennent une langue. ==Le langage humain, lui, repose sur un *apprentissage*== et peut être transmis et transformé par les générations.",
+        "Notre langage a surtout une très grande *productivité* : ==la capacité à produire et comprendre une infinité d'énoncés nouveaux==. Nous pouvons apprendre de nouveaux mots, comprendre des phrases jamais entendues, transmettre de nouvelles connaissances, formuler de nouvelles idées, construire des raisonnements de plus en plus complexes.",
         "Le langage humain permet de parler *de presque n'importe quoi* : du monde présent ou passé, des mathématiques, des sciences, de nos émotions, de choses imaginaires, d'événements qui n'existent pas encore. Cela le distingue fortement des systèmes de communication animale connus."
       ],
       side: [
@@ -118,12 +118,12 @@ Recto.add("le-langage", (function () {
       lead: "Cette spécificité avait déjà été remarquée par Descartes, dans sa *lettre au marquis de Newcastle*.",
       body: [
         "Descartes présente le langage comme « cet instrument universel qui peut servir en toutes sortes de rencontres ». La formule souligne l'*élasticité* du langage humain : il peut être utilisé dans une très grande diversité de situations, pour parler d'une infinité de sujets.",
-        "Le langage humain n'est donc pas limité à quelques messages déterminés à l'avance : il permet de *produire et de comprendre constamment de nouveaux énoncés*.",
+        "==Le langage humain n'est donc pas limité à quelques messages déterminés à l'avance== : il permet de *produire et de comprendre constamment de nouveaux énoncés*.",
         "Ainsi, les animaux communiquent, parfois de manière très élaborée : les abeilles transmettent avec précision des informations à leurs congénères. Mais le langage humain se caractérise par sa *productivité*, sa *capacité d'apprentissage* et son *ouverture à une infinité de sujets*."
       ],
       side: [
         { k: "q", t: "Cet instrument universel qui peut servir en toutes sortes de rencontres.", a: "Descartes, lettre au marquis de Newcastle" },
-        { k: "plus", w: "Lien", t: "Même idée dans le Discours de la méthode (Ve partie), aussi dans Recto." }
+        { k: "plus", w: "Lien", t: "Même idée dans le Discours de la méthode (Ve partie)." }
       ],
       key: "Communiquer n'est donc pas nécessairement parler : le langage humain a des caractéristiques particulières.",
       ns: ["instrument-universel"] },
@@ -132,7 +132,7 @@ Recto.add("le-langage", (function () {
     { id: "communication", part: 2, sec: "A. La communication", title: "La communication, fonction fondamentale",
       lead: "Si le langage ne sert pas uniquement à communiquer, quelles sont ses différentes fonctions ? D'abord, il est un *instrument de communication*.",
       body: [
-        "La communication semble être une fonction fondamentale du langage, car toute société humaine repose sur *l'échange*, et le premier échange possible entre les individus est précisément la communication. Cela vaut pour les échanges quotidiens comme pour la transmission des connaissances et des techniques.",
+        "La communication semble être une fonction fondamentale du langage, car toute société humaine repose sur *l'échange*, et ==le premier échange possible entre les individus est précisément la communication==. Cela vaut pour les échanges quotidiens comme pour la transmission des connaissances et des techniques.",
         "Exemple : même en achetant une paire de chaussures sur Internet, on est confronté au langage (taille, prix, description du produit, conditions de livraison). Dans un magasin, il faut échanger avec le vendeur.",
         "Le langage permet ainsi :",
         ["de transmettre des informations ;", "de transmettre des connaissances et des techniques ;", "de satisfaire nos besoins ;", "d'organiser la vie collective ;", "de créer du lien social."]
@@ -146,9 +146,9 @@ Recto.add("le-langage", (function () {
     { id: "lien", part: 2, sec: "A. La communication", title: "Le lien social, et un outil pas comme les autres",
       lead: "La communication ne sert pas toujours à transmettre une information importante. Et le langage est-il seulement un outil ?",
       body: [
-        "« Salut, comment tu vas ? » : nous ne cherchons pas forcément à connaître en détail l'état de la personne. La formule sert surtout à *établir ou maintenir un lien social*. Le langage crée une relation avec autrui, même sans information importante.",
+        "« Salut, comment tu vas ? » : nous ne cherchons pas forcément à connaître en détail l'état de la personne. ==La formule sert surtout à *établir ou maintenir un lien social*==. Le langage crée une relation avec autrui, même sans information importante.",
         "On pourrait penser que le langage est simplement un *outil au service du sens*. Mais un outil permet de réaliser une action et peut être *remplacé* : un stylo par un autre stylo, une méthode par une autre, une machine par une autre.",
-        "Or si je cherche mes mots pour exprimer une pensée, j'utilise généralement *d'autres mots* pour retrouver celui qui me manque. Le langage n'est donc pas un outil extérieur que l'on pourrait remplacer : il participe directement à notre manière de *penser et d'exprimer notre pensée*."
+        "Or si je cherche mes mots pour exprimer une pensée, ==j'utilise généralement *d'autres mots* pour retrouver celui qui me manque==. Le langage n'est donc pas un outil extérieur que l'on pourrait remplacer : il participe directement à notre manière de *penser et d'exprimer notre pensée*."
       ],
       side: [
         { k: "ex", w: "Le retour de Merleau-Ponty", t: "Le langage constitue la « texture » de notre monde, qui est un monde parlé et parlant." }
@@ -160,9 +160,9 @@ Recto.add("le-langage", (function () {
     { id: "magiques", part: 2, sec: "B. Les « fonctions magiques » du langage", title: "Agir sur autrui par la parole",
       lead: "Expression de Freud : les « *fonctions magiques* » du langage. Le langage ne sert pas seulement à communiquer ou à exprimer une pensée : il permet d'*agir sur autrui*.",
       body: [
-        "Avec le langage, nous pouvons agir sur l'état psychologique d'une personne. Une parole peut provoquer de la joie, de la tristesse, de la colère, de la peur, du dégoût. Le langage peut *stimuler intellectuellement et affectivement* autrui et provoquer une réaction psychologique, voire comportementale. On ne fait pas que *dire* quelque chose : on peut *faire* quelque chose.",
+        "Avec le langage, nous pouvons agir sur l'état psychologique d'une personne. Une parole peut provoquer de la joie, de la tristesse, de la colère, de la peur, du dégoût. Le langage peut *stimuler intellectuellement et affectivement* autrui et provoquer une réaction psychologique, voire comportementale. ==On ne fait pas que *dire* quelque chose : on peut *faire* quelque chose==.",
         "On peut aussi agir sur certains animaux : apprendre à un chien à s'asseoir quand il entend un son. Mais il ne comprend pas forcément le *sens conceptuel* du mot : il associe un son et une action.",
-        "Chez l'humain, le rapport entre *le mot et le sens* est plus complexe : l'enfant confronte peu à peu ce qu'il apprend à l'usage des autres et découvre que les mots ont un *sens partagé* au sein d'une communauté linguistique."
+        "Chez l'humain, le rapport entre *le mot et le sens* est plus complexe : l'enfant confronte peu à peu ce qu'il apprend à l'usage des autres et découvre que ==les mots ont un *sens partagé* au sein d'une communauté linguistique==."
       ],
       side: [
         { k: "ex", w: "Ce qu'une parole peut provoquer", t: "Joie, tristesse, colère, peur, dégoût…" }
@@ -173,7 +173,7 @@ Recto.add("le-langage", (function () {
     { id: "absence", part: 2, sec: "B. Les « fonctions magiques » du langage", title: "Le mot nous détache de la réalité de l'objet",
       lead: "Le langage a une capacité étonnante : *le mot symbolise l'objet sans nécessiter la présence de l'objet*.",
       body: [
-        "Quand je dis « chaise », je pense à une chaise même s'il n'y en a aucune devant moi. Je peux parler d'un objet matériel (une voiture, une fleur), d'une réalité abstraite (la justice, la liberté), d'un lieu (la tour Eiffel), d'une personne absente.",
+        "Quand je dis « chaise », ==je pense à une chaise même s'il n'y en a aucune devant moi==. Je peux parler d'un objet matériel (une voiture, une fleur), d'une réalité abstraite (la justice, la liberté), d'un lieu (la tour Eiffel), d'une personne absente.",
         "Le langage permet même de *faire être ce qui n'est pas* :",
         ["→ *ce qui n'est plus* : le passé (l'Antiquité, les dinosaures, des époques qu'aucun humain n'a vécues) ;", "→ *ce qui n'est pas encore* : le futur (demain, l'évolution lointaine de la Terre) ;", "→ *ce qui n'existe pas* : l'imaginaire (une licorne, un dragon, un personnage fictif)."],
         "Le poète *Stéphane Mallarmé* met en évidence ce pouvoir d'évocation : dire « fleur » fait apparaître une fleur dans l'esprit, et chacun se représente la sienne (une rose, une tulipe, blanche ou rouge)."
@@ -189,7 +189,7 @@ Recto.add("le-langage", (function () {
       body: [
         "Le langage peut devenir un *pouvoir*. On peut l'utiliser pour :",
         ["convaincre ;", "persuader ;", "ordonner ;", "influencer ;", "provoquer une émotion ;", "pousser quelqu'un à agir."],
-        "Le langage ne se réduit donc pas à la simple transmission d'informations. *Par le langage, on peut non seulement dire quelque chose, mais aussi faire quelque chose.*",
+        "Le langage ne se réduit donc pas à la simple transmission d'informations. ==*Par le langage, on peut non seulement dire quelque chose, mais aussi faire quelque chose.*==",
         "C'est cette dimension du langage comme *pouvoir sur autrui* que la suite du cours approfondit avec Austin."
       ],
       side: [
@@ -202,8 +202,8 @@ Recto.add("le-langage", (function () {
     { id: "austin", part: 2, sec: "C. Quand dire, c'est faire", title: "Austin : le langage performatif",
       lead: "Le philosophe anglais *John Langshaw Austin* (1911-1960) analyse le pouvoir d'action du langage dans *Quand dire, c'est faire*.",
       body: [
-        "Austin montre que certaines paroles ne servent pas seulement à *décrire une action* : leur prononciation constitue elle-même une action. C'est le *langage performatif* (de l'idée de faire, d'accomplir une action).",
-        "Exemple classique : le *mariage*. Quand la personne habilitée à célébrer le mariage déclare que deux personnes sont mariées, elle ne décrit pas une situation : *elle produit juridiquement et socialement cette nouvelle situation par sa parole*.",
+        "Austin montre que certaines paroles ne servent pas seulement à *décrire une action* : ==leur prononciation constitue elle-même une action==. C'est le *langage performatif* (de l'idée de faire, d'accomplir une action).",
+        "Exemple classique : le *mariage*. Quand la personne habilitée à célébrer le mariage déclare que deux personnes sont mariées, elle ne décrit pas une situation : ==*elle produit juridiquement et socialement cette nouvelle situation par sa parole*==.",
         "Il y a donc simultanément :",
         ["une parole ;", "une action accomplie par celui qui parle ;", "une conséquence produite sur autrui."],
         "Le langage peut être *efficace* : les mots ne se contentent pas de représenter le monde, ils peuvent contribuer à le transformer."
@@ -217,9 +217,9 @@ Recto.add("le-langage", (function () {
     { id: "ordres", part: 2, sec: "C. Quand dire, c'est faire", title: "Les ordres : faire faire à autrui",
       lead: "Le pouvoir du langage apparaît aussi dans les situations ordinaires.",
       body: [
-        "Un ordre comme « *Range ta chambre.* » ne sert pas seulement à transmettre une information : il cherche à faire accomplir une action à quelqu'un. Le langage a un caractère *directif* : il peut orienter le comportement d'autrui.",
+        "Un ordre comme « *Range ta chambre.* » ne sert pas seulement à transmettre une information : ==il cherche à faire accomplir une action à quelqu'un==. Le langage a un caractère *directif* : il peut orienter le comportement d'autrui.",
         "Ce pouvoir peut prendre des formes très simples, mais aussi beaucoup plus graves, notamment dans le cadre *militaire* : un ordre donné à un soldat peut le conduire à une action extrêmement dangereuse.",
-        "Austin permet de comprendre que le langage ordinaire peut être une *source de pouvoir*. La parole est donc *signifiante* (elle transmet un sens), mais aussi *directive* (elle oriente l'action)."
+        "Austin permet de comprendre que le langage ordinaire peut être une *source de pouvoir*. ==La parole est donc *signifiante* (elle transmet un sens), mais aussi *directive* (elle oriente l'action)==."
       ],
       side: [
         { k: "ex", w: "La question qui suit", t: "Si le langage permet de transmettre une pensée et de faire agir autrui, quel est exactement le rapport entre la pensée et le langage ?" }
@@ -231,8 +231,8 @@ Recto.add("le-langage", (function () {
     { id: "anteriorite", part: 3, sec: "A. L'antériorité de la pensée sur le langage ?", title: "La pensée existe-t-elle avant le langage ?",
       lead: "On pourrait d'abord supposer que *la pensée existe avant le langage*. C'est une hypothèse à examiner, pour en montrer les limites.",
       body: [
-        "*La multiplicité des langues et des codes.* Il existe beaucoup de langues (français, anglais, allemand, chinois, italien…), et une même pensée peut s'exprimer dans plusieurs d'entre elles. Il existe aussi des *codes artificiels* : mathématiques, géométrie, physique, chimie, musique. Les langues et les codes ne seraient que des *moyens de traduire ou de matérialiser* une pensée qui existerait sans eux : le langage serait un simple *instrument*.",
-        "*L'expérience de la recherche des mots.* Quand je cherche mes mots, j'ai l'impression que *ma pensée est déjà présente dans mon esprit*, mais que la formulation me manque. Je cherche une autre expression, j'utilise une périphrase, je reformule, je rejette certains mots, j'essaie plusieurs formulations.",
+        "*La multiplicité des langues et des codes.* Il existe beaucoup de langues (français, anglais, allemand, chinois, italien…), et une même pensée peut s'exprimer dans plusieurs d'entre elles. Il existe aussi des *codes artificiels* : mathématiques, géométrie, physique, chimie, musique. ==Les langues et les codes ne seraient que des *moyens de traduire ou de matérialiser* une pensée qui existerait sans eux== : le langage serait un simple *instrument*.",
+        "*L'expérience de la recherche des mots.* Quand je cherche mes mots, ==j'ai l'impression que *ma pensée est déjà présente dans mon esprit*==, mais que la formulation me manque. Je cherche une autre expression, j'utilise une périphrase, je reformule, je rejette certains mots, j'essaie plusieurs formulations.",
         "On pourrait donc croire que *la pensée précède le langage*. Mais cette même expérience va montrer les limites de l'hypothèse."
       ],
       side: [
@@ -245,8 +245,8 @@ Recto.add("le-langage", (function () {
       lead: "Si la pensée était vraiment indépendante du langage, pourquoi, quand je cherche mes mots, est-ce que je cherche *d'autres mots* ?",
       body: [
         "Si le langage n'était qu'un outil extérieur à la pensée, je pourrais simplement l'abandonner quand il ne fonctionne pas, et utiliser un autre moyen.",
-        "Or ce n'est pas ce que nous faisons. Pour préciser notre pensée, nous utilisons encore et toujours *le langage lui-même*.",
-        "Si je cherche mes mots avec d'autres mots, c'est que le langage n'est pas un simple outil extérieur : il participe à la *structure même de la pensée*."
+        "Or ce n'est pas ce que nous faisons. ==Pour préciser notre pensée, nous utilisons encore et toujours *le langage lui-même*==.",
+        "Si je cherche mes mots avec d'autres mots, c'est que le langage n'est pas un simple outil extérieur : ==il participe à la *structure même de la pensée*==."
       ],
       side: [
         { k: "ex", w: "L'argument en une phrase", t: "On ne sort pas du langage pour retrouver sa pensée : on la cherche avec des mots." }
@@ -258,9 +258,9 @@ Recto.add("le-langage", (function () {
     { id: "inseparable", part: 3, sec: "B. La pensée est inséparable du langage", title: "Penser avec des mots",
       lead: "Quand nous cherchons nos mots, nous essayons de préciser notre pensée *à l'aide d'autres mots* : la pensée humaine est inséparable du langage.",
       body: [
-        "Si quelqu'un ne nous comprend pas, nous disons « *Tu vois ce que je veux dire…* » puis nous tentons une nouvelle formulation. Nous ne sortons pas du langage pour retrouver une pensée pure : le langage participe à la *construction et à la clarification de la pensée*.",
+        "Si quelqu'un ne nous comprend pas, nous disons « *Tu vois ce que je veux dire…* » puis nous tentons une nouvelle formulation. ==Nous ne sortons pas du langage pour retrouver une pensée pure== : le langage participe à la *construction et à la clarification de la pensée*.",
         "*Peut-on penser uniquement en images ?* Nous avons des images mentales. Mais pour les transmettre précisément, il faut un moyen. Le dessin est plus long et plus limité : il serait bien plus difficile de représenter en images une phrase complexe décrivant une action, une intention, une relation temporelle ou une idée abstraite.",
-        "Le langage, lui, produit un très grand nombre de significations avec *un nombre limité de signes* : l'alphabet français ne compte que *26 lettres*. Et les signes n'ont pas de rapport naturel avec ce qu'ils désignent : la lettre « A » ne ressemble pas à ce qu'elle aide à désigner."
+        "==Le langage, lui, produit un très grand nombre de significations avec *un nombre limité de signes*== : l'alphabet français ne compte que *26 lettres*. Et les signes n'ont pas de rapport naturel avec ce qu'ils désignent : la lettre « A » ne ressemble pas à ce qu'elle aide à désigner."
       ],
       side: [
         { k: "def", w: "Le langage", t: "Un système de signes organisés et partagés qui permet de transmettre des pensées complexes." }
@@ -271,7 +271,7 @@ Recto.add("le-langage", (function () {
     { id: "platon", part: 3, sec: "B. La pensée est inséparable du langage", title: "Platon : la pensée comme dialogue intérieur",
       lead: "Le langage n'est pas présent seulement quand je parle à autrui : il l'est aussi quand je me parle intérieurement.",
       body: [
-        "Le philosophe grec *Platon* définit la pensée comme un discours intérieur : penser consiste notamment à *dialoguer avec soi-même*.",
+        "Le philosophe grec *Platon* définit la pensée comme un discours intérieur : ==penser consiste notamment à *dialoguer avec soi-même*==.",
         "La pensée implique une forme de *confrontation intérieure* : je peux examiner une idée, la remettre en question, la corriger, chercher à la préciser. La pensée entretient une sorte de *friction avec elle-même*.",
         "Le langage est donc présent même lorsque je *me parle intérieurement*."
       ],
@@ -284,9 +284,9 @@ Recto.add("le-langage", (function () {
     { id: "leibniz", part: 3, sec: "B. La pensée est inséparable du langage", title: "Leibniz et la tour de Babel",
       lead: "Le philosophe allemand *Gottfried Wilhelm Leibniz* (1646-1716) a cherché à élaborer un « *alphabet des pensées humaines* ».",
       body: [
-        "Son objectif : un langage universel et parfaitement *univoque*, c'est-à-dire ne permettant pas plusieurs interprétations contradictoires. Leibniz pensait qu'une grande partie des désaccords entre les hommes venait de leur incapacité à se comprendre parfaitement. Il n'a pas réussi, mais ses travaux sur les systèmes symboliques ont contribué à l'histoire de la logique et du *langage binaire*, utilisé bien plus tard en informatique.",
+        "==Son objectif : un langage universel et parfaitement *univoque*==, c'est-à-dire ne permettant pas plusieurs interprétations contradictoires. Leibniz pensait qu'une grande partie des désaccords entre les hommes venait de leur incapacité à se comprendre parfaitement. Il n'a pas réussi, mais ses travaux sur les systèmes symboliques ont contribué à l'histoire de la logique et du *langage binaire*, utilisé bien plus tard en informatique.",
         "*La tour de Babel* (Genèse) : les hommes parlent une même langue et construisent une tour pour atteindre les cieux. Dieu *confond leur langage* : ils ne se comprennent plus et sont dispersés. La *diversité des langues* y est une source de séparation. Leibniz cherche, d'une certaine manière, à aller contre cette séparation.",
-        "Mais même quand ils parlent *la même langue*, les individus peuvent mal se comprendre, se disputer, interpréter différemment les mêmes mots."
+        "==Mais même quand ils parlent *la même langue*, les individus peuvent mal se comprendre==, se disputer, interpréter différemment les mêmes mots."
       ],
       side: [
         { k: "def", w: "Univoque", t: "Qui ne permet pas plusieurs interprétations contradictoires." }
@@ -299,8 +299,8 @@ Recto.add("le-langage", (function () {
       lead: "Que la pensée soit inséparable du langage ne signifie pas que le langage exprime toujours parfaitement ce que nous pensons : il peut y avoir une *trahison du langage*.",
       body: [
         "Dans la vie quotidienne comme dans les travaux scolaires, il nous arrive de savoir plus ou moins ce que nous voulons dire sans trouver la formulation adéquate. Nous cherchons nos mots, reformulons, hésitons, utilisons une périphrase, constatons que notre formulation est imprécise, sommes mal compris.",
-        "Cela ne signifie pas que la pensée et le langage sont séparés : au contraire, cela montre *à quel point ils sont liés*. Nous avons besoin du langage pour donner une forme claire et communicable à notre pensée.",
-        "*Hegel* (1770-1831) le dit dans *La Phénoménologie de l'esprit* : l'*ineffable* (ce qui ne peut pas être exprimé par des mots, l'indicible) est une pensée obscure, encore en devenir. Une joie intense, une grande tristesse peuvent nous laisser sans mots ; tant qu'elles n'ont pas trouvé une forme langagière claire, elles restent à l'état de « *fermentation* »."
+        "Cela ne signifie pas que la pensée et le langage sont séparés : au contraire, ==cela montre *à quel point ils sont liés*==. Nous avons besoin du langage pour donner une forme claire et communicable à notre pensée.",
+        "*Hegel* (1770-1831) le dit dans *La Phénoménologie de l'esprit* : l'*ineffable* (ce qui ne peut pas être exprimé par des mots, l'indicible) ==est une pensée obscure, encore en devenir==. Une joie intense, une grande tristesse peuvent nous laisser sans mots ; tant qu'elles n'ont pas trouvé une forme langagière claire, elles restent à l'état de « *fermentation* »."
       ],
       side: [
         { k: "q", t: "L'ineffable est la pensée obscure, la pensée à l'état de fermentation.", a: "Hegel, La Phénoménologie de l'esprit" },
@@ -312,9 +312,9 @@ Recto.add("le-langage", (function () {
     { id: "ecriture", part: 3, sec: "C. Les périls du langage", title: "Hegel et l'écriture ; le langage, condition de la pensée",
       lead: "Pour donner une forme claire et objective à une pensée, il faut passer par le langage.",
       body: [
-        "Dans *La Phénoménologie de l'esprit* (§549), Hegel réfléchit à l'évolution des systèmes d'écriture : schématiquement, *des représentations figuratives vers des signes plus abstraits*, jusqu'à l'alphabet. Une image représente directement une chose ; un signe alphabétique fonctionne de façon bien plus abstraite. L'écriture *détache le signe de l'image* et permet de fixer et d'organiser la pensée.",
+        "Dans *La Phénoménologie de l'esprit* (§549), Hegel réfléchit à l'évolution des systèmes d'écriture : schématiquement, *des représentations figuratives vers des signes plus abstraits*, jusqu'à l'alphabet. Une image représente directement une chose ; un signe alphabétique fonctionne de façon bien plus abstraite. ==L'écriture *détache le signe de l'image*== et permet de fixer et d'organiser la pensée.",
         "Le langage rend ainsi la pensée accessible *à soi-même* et *aux autres*.",
-        "*Le langage comme condition de la pensée* : pour exprimer une pensée complexe et précise, il faut un vocabulaire suffisamment riche. *Plus notre maîtrise du langage est riche, plus nous pouvons distinguer, préciser et organiser nos pensées.* D'où l'importance de *forger son vocabulaire*. Mais le langage peut aussi être une *limite* : simplifier le réel, banaliser nos expériences, nous enfermer dans des catégories."
+        "*Le langage comme condition de la pensée* : pour exprimer une pensée complexe et précise, il faut un vocabulaire suffisamment riche. ==*Plus notre maîtrise du langage est riche, plus nous pouvons distinguer, préciser et organiser nos pensées.*== D'où l'importance de *forger son vocabulaire*. Mais le langage peut aussi être une *limite* : simplifier le réel, banaliser nos expériences, nous enfermer dans des catégories."
       ],
       side: [
         { k: "ex", w: "Du dessin à l'alphabet", t: "L'image ressemble à la chose ; la lettre ne lui ressemble pas : le signe devient abstrait." }
@@ -325,9 +325,9 @@ Recto.add("le-langage", (function () {
     { id: "etiquettes", part: 3, sec: "C. Les périls du langage", title: "Bergson : les mots comme « étiquettes »",
       lead: "Pour *Henri Bergson*, le langage est indispensable à la vie sociale, mais il ne permet pas toujours d'exprimer fidèlement ce que nous ressentons ou pensons intérieurement.",
       body: [
-        "*a. Les mots désignent les choses communes* : une table, une chaise, une maison, un arbre, une personne. Le langage nous permet de communiquer efficacement sur le monde. Mais cette efficacité a une contrepartie : *les mots simplifient la réalité*.",
+        "*a. Les mots désignent les choses communes* : une table, une chaise, une maison, un arbre, une personne. Le langage nous permet de communiquer efficacement sur le monde. ==Mais cette efficacité a une contrepartie : *les mots simplifient la réalité*==.",
         "*b. Les mots comme « étiquettes »* : nous ne percevons pas les choses dans leur singularité, nous les identifions par les mots que nous connaissons déjà. « Arbre » est une catégorie générale ; pourtant chaque arbre est différent. Le mot permet de *classer la réalité*, mais il peut nous empêcher d'en percevoir la richesse.",
-        "*c. La vie intérieure* : les mots sont nombreux, mais en nombre limité, et hérités d'une langue qui existe avant nous. Deux personnes peuvent dire « tristesse » en vivant des expériences très différentes. Les mots risquent de *banaliser ce que nous vivons intérieurement*."
+        "*c. La vie intérieure* : les mots sont nombreux, mais en nombre limité, et hérités d'une langue qui existe avant nous. Deux personnes peuvent dire « tristesse » en vivant des expériences très différentes. ==Les mots risquent de *banaliser ce que nous vivons intérieurement*==."
       ],
       side: [
         { k: "q", t: "Nous ne voyons pas les choses mêmes, nous nous bornons le plus souvent à lire les étiquettes collées sur elles.", a: "Bergson, Le Rire" }
@@ -338,8 +338,8 @@ Recto.add("le-langage", (function () {
     { id: "social", part: 3, sec: "C. Les périls du langage", title: "Le langage, réalité sociale ; rendre sa pensée personnelle",
       lead: "Une langue n'est pas créée par un individu isolé : elle se construit dans l'histoire d'une communauté, et elle s'impose à nous.",
       body: [
-        "Le français d'aujourd'hui n'est pas celui de l'époque de Molière, lui-même différent du français de plusieurs siècles auparavant : vocabulaire, grammaire, prononciation, usages évoluent. À notre naissance, une langue existe déjà ; nous apprenons son vocabulaire, sa grammaire, ses règles, ses significations. Nous ne décidons pas seuls du sens des mots : *la langue s'impose à nous*.",
-        "Bergson pose la question : *ma pensée est-elle réellement aussi personnelle que je le crois ?* Si je pense avec des mots créés avant moi, ma pensée est influencée par ma langue, qui peut la *banaliser ou la normaliser*.",
+        "Le français d'aujourd'hui n'est pas celui de l'époque de Molière, lui-même différent du français de plusieurs siècles auparavant : vocabulaire, grammaire, prononciation, usages évoluent. À notre naissance, une langue existe déjà ; nous apprenons son vocabulaire, sa grammaire, ses règles, ses significations. ==Nous ne décidons pas seuls du sens des mots== : *la langue s'impose à nous*.",
+        "Bergson pose la question : ==*ma pensée est-elle réellement aussi personnelle que je le crois ?*== Si je pense avec des mots créés avant moi, ma pensée est influencée par ma langue, qui peut la *banaliser ou la normaliser*.",
         "Deux moyens pour la rendre plus personnelle : *a. enrichir son vocabulaire et ses connaissances* (et savoir utiliser les mots correctement) ; *b. utiliser le langage métaphorique* : exprimer une idée par une image, sortir des formulations toutes faites. Bergson lui-même use beaucoup d'images."
       ],
       side: [
@@ -351,9 +351,9 @@ Recto.add("le-langage", (function () {
     { id: "nietzsche", part: 3, sec: "C. Les périls du langage", title: "Nietzsche : les mots comme « concepts »",
       lead: "*Friedrich Nietzsche* développe une réflexion proche de celle de Bergson : chaque mot renvoie à un *concept*.",
       body: [
-        "« Arbre » renvoie au concept d'arbre, « chaise » au concept de chaise, « vérité » au concept de vérité. Le mot regroupe sous une même catégorie une multitude de réalités particulières.",
+        "« Arbre » renvoie au concept d'arbre, « chaise » au concept de chaise, « vérité » au concept de vérité. ==Le mot regroupe sous une même catégorie une multitude de réalités particulières==.",
         "*a. Le concept simplifie la réalité* : deux arbres ne sont jamais identiques, et nous les désignons pourtant par le même mot.",
-        "*b. Le risque d'aliénation* : être aliéné, c'est devenir *étranger à soi-même*. À penser seulement avec des mots et des concepts déjà établis, on risque de ne plus exprimer une pensée vraiment personnelle : on pense selon des catégories que l'on n'a pas créées.",
+        "*b. Le risque d'aliénation* : être aliéné, c'est devenir *étranger à soi-même*. À penser seulement avec des mots et des concepts déjà établis, on risque de ne plus exprimer une pensée vraiment personnelle : ==on pense selon des catégories que l'on n'a pas créées==.",
         "*Comment dépasser ces limites ?* Comme Bergson, enrichir ses connaissances et son vocabulaire ; mais surtout *écrire et penser à la manière des poètes* : utiliser des images, créer de nouvelles associations, sortir des formulations habituelles. L'écriture de Nietzsche est riche en images, métaphores et symboles."
       ],
       side: [
@@ -367,7 +367,7 @@ Recto.add("le-langage", (function () {
       lead: "Si le langage et la pensée sont étroitement liés, celui qui parvient à *contrôler le langage* peut exercer une influence sur la pensée.",
       body: [
         "*Contrôler les mots → contrôler les catégories de pensée → influencer la manière dont les individus comprennent le monde.* Un système autoritaire peut imposer certaines manières de nommer les choses et faire disparaître certains mots : le langage agit alors jusque dans la *pensée privée*.",
-        "Dans le roman dystopique *1984*, *George Orwell* imagine la *novlangue*, qui réduit progressivement les possibilités de pensée critique. *Réduire les possibilités du langage, c'est réduire les possibilités de la pensée* : sans les mots pour formuler une idée, il devient difficile de la penser et de la communiquer. La « *crimepensée* » montre que le régime veut contrôler même les pensées.",
+        "Dans le roman dystopique *1984*, *George Orwell* imagine la *novlangue*, qui réduit progressivement les possibilités de pensée critique. ==*Réduire les possibilités du langage, c'est réduire les possibilités de la pensée*== : sans les mots pour formuler une idée, il devient difficile de la penser et de la communiquer. La « *crimepensée* » montre que le régime veut contrôler même les pensées.",
         "Contrôler le langage, c'est aussi contrôler le *récit du passé*, donc la *mémoire collective*. Double domination : *contrôle du langage → contrôle de la pensée → contrôle de l'histoire*."
       ],
       side: [
@@ -382,7 +382,7 @@ Recto.add("le-langage", (function () {
         "Dans une démocratie aussi, les responsables politiques, les médias et les institutions peuvent utiliser les mots pour *présenter les événements d'une certaine manière*.",
         "Il faut donc distinguer :",
         ["l'information ;", "l'interprétation ;", "la persuasion ;", "la propagande ;", "la manipulation."],
-        "Le choix des mots peut modifier la manière dont un événement est perçu : nommer une même situation de deux manières différentes provoque des réactions différentes dans le public."
+        "Le choix des mots peut modifier la manière dont un événement est perçu : ==nommer une même situation de deux manières différentes provoque des réactions différentes dans le public==."
       ],
       side: [
         { k: "ex", w: "Retenir", t: "Celui qui contrôle les mots, ou parvient à imposer certaines formulations, influence la manière dont on comprend une situation." }
@@ -394,7 +394,7 @@ Recto.add("le-langage", (function () {
       lead: "Peut-on étudier scientifiquement le langage ? Il est psychologique, social, historique, culturel, politique.",
       body: [
         "On peut l'étudier en observant comment on apprend une langue, comment on comprend les mots, comment une langue évolue, comment le langage influence les comportements, comment les groupes le transforment. Disciplines : *linguistique*, psychologie, sociologie, sciences cognitives, philosophie. La *linguistique* étudie les sons, la formation des mots, la construction des phrases, le raisonnement dans le langage, l'évolution des langues. Son objet est *hétérogène* : même en français, il y a mille manières de prononcer et de construire les phrases.",
-        "Le *signe linguistique* met en relation le *signifiant* (la forme : les sons prononcés, les lettres écrites) et le *signifié* (le sens associé). Le son « arbre » est le signifiant ; le concept d'arbre, le signifié.",
+        "Le *signe linguistique* met en relation le *signifiant* (la forme : les sons prononcés, les lettres écrites) et le *signifié* (le sens associé). ==Le son « arbre » est le signifiant ; le concept d'arbre, le signifié==.",
         "Mais la signification dépend aussi de l'intonation, du rythme, des pauses, des gestes, de la situation, du contexte, de la relation entre les interlocuteurs."
       ],
       side: [
@@ -407,8 +407,8 @@ Recto.add("le-langage", (function () {
     { id: "convention", part: 4, sec: "Annexe : la science du langage", title: "Le mot et la chose : nature ou convention ?",
       lead: "Question fondamentale de la philosophie du langage : comment un mot peut-il renvoyer à une chose ?",
       body: [
-        "Le rapport entre le mot et la chose est-il *naturel* (un lien intrinsèque) ou *conventionnel* (une association établie par les hommes) ? Certains mots imitent des sons ; mais pour une grande partie du vocabulaire, rien dans la chose n'impose le mot. Le rapport signifiant / signifié est en grande partie une *convention linguistique*.",
-        "*Platon*, dans le *Cratyle*, demande si chacun peut nommer les choses comme il veut. Si l'un appelle « chaise » ce que les autres appellent « cheval », les interlocuteurs ne partagent plus les mêmes conventions. Il faut une *communauté des signes* : le langage est *conventionnel et collectif*.",
+        "Le rapport entre le mot et la chose est-il *naturel* (un lien intrinsèque) ou *conventionnel* (une association établie par les hommes) ? Certains mots imitent des sons ; mais pour une grande partie du vocabulaire, ==rien dans la chose n'impose le mot==. Le rapport signifiant / signifié est en grande partie une *convention linguistique*.",
+        "*Platon*, dans le *Cratyle*, demande si chacun peut nommer les choses comme il veut. Si l'un appelle « chaise » ce que les autres appellent « cheval », les interlocuteurs ne partagent plus les mêmes conventions. ==Il faut une *communauté des signes*== : le langage est *conventionnel et collectif*.",
         "Peut-on modifier artificiellement une langue ? On peut réformer des règles, l'orthographe, introduire des termes. Mais une *langue vivante* évolue spontanément avec ses locuteurs : elle est *mutable* (des mots apparaissent, changent de sens, disparaissent). La *philologie* étudie l'histoire des langues à partir de leurs formes anciennes."
       ],
       side: [
@@ -420,9 +420,9 @@ Recto.add("le-langage", (function () {
     { id: "formels", part: 4, sec: "Annexe : la science du langage", title: "Langages artificiels et langues naturelles",
       lead: "L'être humain peut créer des systèmes symboliques entièrement artificiels. Les mathématiques en sont l'exemple le plus important.",
       body: [
-        "Les nombres ne sont pas des objets physiques trouvés dans la nature ; pourtant, les mathématiques décrivent avec une grande précision des phénomènes naturels. *Galilée* (1564-1642) mathématise l'étude du mouvement et la chute des corps : dans le vide, les corps tombent avec la même accélération, quelle que soit leur masse ; dans l'air, les différences viennent de la résistance de l'air.",
+        "Les nombres ne sont pas des objets physiques trouvés dans la nature ; pourtant, ==les mathématiques décrivent avec une grande précision des phénomènes naturels==. *Galilée* (1564-1642) mathématise l'étude du mouvement et la chute des corps : dans le vide, les corps tombent avec la même accélération, quelle que soit leur masse ; dans l'air, les différences viennent de la résistance de l'air.",
         "*Leibniz*, dans les *Nouveaux Essais sur l'entendement humain*, envisage un « alphabet des pensées humaines » pour limiter les ambiguïtés. Peut-on créer une langue universelle sans malentendus ? Difficile : une langue naturelle n'est pas un système formel.",
-        "Une langue naturelle exprime l'ironie, l'humour, les émotions, les sous-entendus, les nuances, les intentions, les contextes. La manière de dire compte autant que les mots. Elle est *plastique, souple et évolutive* ; un langage formel est volontairement plus rigoureux et plus limité, et c'est ce qui le rend extrêmement précis."
+        "Une langue naturelle exprime l'ironie, l'humour, les émotions, les sous-entendus, les nuances, les intentions, les contextes. La manière de dire compte autant que les mots. Elle est *plastique, souple et évolutive* ; un langage formel est volontairement plus rigoureux et plus limité, et ==c'est ce qui le rend extrêmement précis==."
       ],
       side: [
         { k: "ex", w: "Galilée", t: "Les mathématiques ne sont pas seulement un langage abstrait : elles formulent précisément des lois physiques." }
@@ -433,9 +433,9 @@ Recto.add("le-langage", (function () {
     { id: "wittgenstein", part: 4, sec: "Annexe : la science du langage", title: "Wittgenstein et Aristote : décrire le langage",
       lead: "La philosophie du langage ne doit pas forcément chercher à fabriquer une langue parfaite : elle doit décrire et comprendre le langage tel qu'il existe.",
       body: [
-        "*Ludwig Wittgenstein* (1889-1951), dans les *Investigations philosophiques*, parle de « *jeux de langage* » : les mots prennent leur sens dans les *usages concrets* que nous en faisons et dans les situations où nous les employons. La philosophie doit laisser les choses « *en leur état* » : comprendre comment fonctionnent le langage, les usages des mots, les raisonnements, le sens selon les contextes.",
+        "*Ludwig Wittgenstein* (1889-1951), dans les *Investigations philosophiques*, parle de « *jeux de langage* » : ==les mots prennent leur sens dans les *usages concrets* que nous en faisons== et dans les situations où nous les employons. La philosophie doit laisser les choses « *en leur état* » : comprendre comment fonctionnent le langage, les usages des mots, les raisonnements, le sens selon les contextes.",
         "*Aristote* (384-322 av. J.-C.) développe une réflexion systématique sur le raisonnement logique, dans les ouvrages réunis sous le nom d'*Organon* (« outil » en grec). Il cherche comment les termes et les propositions s'articulent en raisonnements cohérents, et étudie le *syllogisme*, qui tire une conclusion de plusieurs propositions.",
-        "La logique ne transforme pas artificiellement une langue : elle *décrit les structures du raisonnement*. Aristote contribue ainsi à la naissance de la logique comme discipline."
+        "==La logique ne transforme pas artificiellement une langue : elle *décrit les structures du raisonnement*==. Aristote contribue ainsi à la naissance de la logique comme discipline."
       ],
       side: [
         { k: "def", w: "Syllogisme", t: "Raisonnement qui tire une conclusion de plusieurs propositions." },
@@ -448,7 +448,7 @@ Recto.add("le-langage", (function () {
       lead: "Le langage permet de désigner et de penser le réel, mais il ne faut pas confondre *le mot avec la chose elle-même*.",
       body: [
         "La maîtrise d'un vocabulaire permet de mieux parler d'une réalité, mais pas forcément de maîtriser cette réalité. Quel est le rapport entre *les mots, les concepts et les choses* ?",
-        "*Michel Foucault* (1926-1984), dans *Les Mots et les Choses* (1966), étudie les relations entre le langage, les connaissances et les manières dont les sociétés *organisent et classent le réel*. Le langage n'est pas un moyen neutre : nos catégories participent à notre manière de comprendre le monde.",
+        "*Michel Foucault* (1926-1984), dans *Les Mots et les Choses* (1966), étudie les relations entre le langage, les connaissances et les manières dont les sociétés *organisent et classent le réel*. Le langage n'est pas un moyen neutre : ==nos catégories participent à notre manière de comprendre le monde==.",
         "*Définition : parler, c'est toujours dire quelque chose à quelqu'un sur quelque chose.* Trois éléments : quelqu'un qui parle ; quelque chose qui est dit ; quelqu'un à qui l'on parle (on peut se parler à soi-même). Parler n'est pas produire des sons : c'est une activité *signifiante et relationnelle*. Reste à comprendre comment un mot acquiert un sens et comment un signe désigne une réalité."
       ],
       side: [
@@ -461,8 +461,8 @@ Recto.add("le-langage", (function () {
       lead: "Les mots correspondent-ils naturellement aux choses ? Le cours répond : le langage est un pouvoir de symbolisation et de manifestation.",
       body: [
         "*1. Le langage adamique* : dans la Genèse, Adam donne un nom aux animaux, comme si le nom correspondait directement à la chose et en exprimait la nature. Nommer permettrait de saisir la chose, voire d'avoir pouvoir sur elle, comme dans certaines œuvres de *fantasy* où connaître le vrai nom d'une chose permet de la maîtriser.",
-        "*2. Platon, Cratyle* : Hermogène soutient que chacun est maître de ses mots. Mais si l'un appelle un cheval « mouchoir » et l'autre « tabouret », on ne se comprend plus : Socrate critique cette idée. Cela ne veut pas dire que les mots manifestent la nature des choses : le mot « pommier » n'est pas le pommier, il le *figure* dans ma pensée. *Le langage est une forme de symbolisation.*",
-        "*3. Le pouvoir de manifestation* : le langage fait apparaître dans notre esprit des choses absentes (lointaines, disparues, passées, futures, imaginaires). *Aristote*, dans la *Rhétorique* : le discours (*logos*) doit faire apparaître quelque chose dans l'esprit de celui qui écoute."
+        "*2. Platon, Cratyle* : Hermogène soutient que chacun est maître de ses mots. Mais si l'un appelle un cheval « mouchoir » et l'autre « tabouret », on ne se comprend plus : Socrate critique cette idée. Cela ne veut pas dire que les mots manifestent la nature des choses : ==le mot « pommier » n'est pas le pommier, il le *figure* dans ma pensée==. *Le langage est une forme de symbolisation.*",
+        "*3. Le pouvoir de manifestation* : le langage fait apparaître dans notre esprit des choses absentes (lointaines, disparues, passées, futures, imaginaires). *Aristote*, dans la *Rhétorique* : ==le discours (*logos*) doit faire apparaître quelque chose dans l'esprit de celui qui écoute==."
       ],
       side: [
         { k: "q", t: "Le logos, s'il ne manifeste pas, n'accomplira pas son œuvre propre.", a: "Aristote, Rhétorique" },
@@ -1274,5 +1274,89 @@ Recto.add("le-langage", (function () {
     "Termine par une nuance : le langage est à la fois condition et limite de la pensée."
   ];
 
-  return { unit, exam, plan, overview, tips, parts, course, notions, exercises };
+  /* ---------------- REPÈRES DE LECTURE ---------------- */
+  const authors = ["Maurice Merleau-Ponty", "Merleau-Ponty", "Henri Bergson", "Bergson", "Claude Hagège", "Hagège", "Karl von Frisch", "Descartes", "Freud", "Stéphane Mallarmé", "Mallarmé", "John Langshaw Austin", "Austin", "Platon", "Gottfried Wilhelm Leibniz", "Leibniz", "Hegel", "Friedrich Nietzsche", "Nietzsche", "George Orwell", "Orwell", "Galilée", "Ludwig Wittgenstein", "Wittgenstein", "Aristote", "Michel Foucault", "Foucault", "Ferdinand de Saussure", "Socrate", "Hermogène", "Molière"];
+  const works = ["L'Évolution créatrice", "Vie et mœurs des abeilles", "Quand dire, c'est faire", "Le Rire", "1984", "La Phénoménologie de l'esprit", "Nouveaux Essais sur l'entendement humain", "Investigations philosophiques", "Organon", "Les Mots et les Choses", "Rhétorique", "Cratyle", "Genèse", "Discours de la méthode"];
+
+  /* ---------------- KIT DE CITATIONS ----------------
+     Peu de citations du cours, choisies pour s'adapter à presque tous les sujets.
+     L'ordre est celui du fil : avec 2, 3, 4 ou 5 citations, on garde les premières.
+     Les ponts relient chaque citation à la suivante ({B} = auteur de la suivante). */
+  const kit = {
+    quotes: [
+      { id: "platon", t: "La pensée est un discours que l'âme se tient à elle-même.", who: "Platon", a: "Platon", n: "dialogue-ame",
+        short: "Platon : « un discours de l'âme avec elle-même »", role: "penser, c'est parler",
+        sens: "Penser, c'est dialoguer avec soi : la pensée a déjà la forme du langage.",
+        memo: "Deux voix dans ta tête qui se répondent.",
+        pivot: "Dès qu'un sujet touche à la pensée, au jugement ou au doute, elle montre que réfléchir, c'est se parler.",
+        usages: [
+          { th: "le langage", t: "La pensée est inséparable du langage : même seul, on se parle." },
+          { th: "la conscience", t: "Être conscient, c'est pouvoir se parler à soi-même et se mettre à distance." },
+          { th: "la vérité", t: "Chercher le vrai, c'est s'objecter et se corriger : la vérité naît d'un dialogue." },
+          { th: "la raison", t: "Raisonner, c'est se poser des questions et y répondre." },
+          { th: "la liberté", t: "Délibérer, c'est se parler avant d'agir." },
+          { th: "l'art", t: "Créer, c'est chercher la forme juste en dialoguant avec soi." }
+        ] },
+      { id: "bergson", t: "Nous ne voyons pas les choses mêmes, nous nous bornons le plus souvent à lire les étiquettes collées sur elles.", who: "Bergson", a: "Bergson, Le Rire", n: "etiquettes",
+        short: "Bergson : « lire les étiquettes collées sur les choses »", role: "les mots simplifient",
+        sens: "Les mots généraux nous font voir des catégories, pas la singularité des choses ni de nos émotions.",
+        memo: "Au supermarché, on lit les étiquettes, on ne regarde plus les fruits.",
+        pivot: "Dès qu'un sujet oppose le général et le singulier, ou l'habitude et le regard neuf, elle sert l'antithèse.",
+        usages: [
+          { th: "le langage", t: "Les mots simplifient la réalité et banalisent la vie intérieure." },
+          { th: "la conscience", t: "Nos sentiments les plus intimes sont recouverts par des mots communs." },
+          { th: "la vérité", t: "Nommer n'est pas voir : les mots donnent l'illusion de connaître." },
+          { th: "l'art", t: "L'art peut nous apprendre à regarder autrement ce que les mots nous cachent." },
+          { th: "la science", t: "Le concept classe le réel : utile, mais il simplifie." },
+          { th: "la liberté", t: "Penser avec des mots tout faits, est-ce encore penser librement ?" }
+        ] },
+      { id: "hegel", t: "L'ineffable est la pensée obscure, la pensée à l'état de fermentation.", who: "Hegel", a: "Hegel, La Phénoménologie de l'esprit", n: "hegel-ineffable",
+        short: "Hegel : « l'ineffable est la pensée obscure »", role: "les mots éclairent",
+        sens: "Ce qu'on n'arrive pas à dire n'est pas plus profond : c'est une pensée encore inachevée.",
+        memo: "Une pâte qui fermente n'est pas encore du pain.",
+        pivot: "Dès qu'un sujet valorise l'indicible, le sentiment ou l'intuition, elle oppose le travail de la formulation.",
+        usages: [
+          { th: "le langage", t: "Une pensée ne devient claire qu'en trouvant ses mots." },
+          { th: "la conscience", t: "Se connaître, c'est réussir à mettre des mots sur ce qu'on vit." },
+          { th: "la vérité", t: "Une idée n'est discutable, donc vérifiable, qu'une fois formulée." },
+          { th: "l'art", t: "L'œuvre donne une forme à ce qui restait confus en l'artiste." },
+          { th: "le travail", t: "Penser est un travail : trouver ses mots demande un effort." },
+          { th: "l'inconscient", t: "Ce qui n'est pas dit reste obscur : formuler, c'est éclairer." }
+        ] },
+      { id: "orwell", t: "Réduire les possibilités du langage, c'est réduire les possibilités de la pensée.", who: "Orwell", a: "Orwell, 1984 (formule du cours)", n: "orwell",
+        short: "Orwell : « réduire le langage, c'est réduire la pensée »", role: "les mots dominent",
+        sens: "Sans les mots pour dire une idée, on peut difficilement la penser : contrôler la langue, c'est contrôler la pensée.",
+        memo: "Un dictionnaire qui maigrit chaque année.",
+        pivot: "Dès qu'un sujet touche au pouvoir, à la liberté ou à l'éducation, elle montre que les mots sont un enjeu politique.",
+        usages: [
+          { th: "l'État", t: "Le pouvoir peut agir jusque dans la pensée privée en contrôlant les mots." },
+          { th: "la liberté", t: "Pas de liberté de pensée sans richesse du langage." },
+          { th: "la justice", t: "Nommer une situation, c'est déjà orienter le jugement." },
+          { th: "le temps", t: "Contrôler les mots du récit, c'est contrôler la mémoire collective." },
+          { th: "la vérité", t: "La manipulation commence par le choix des mots." },
+          { th: "le langage", t: "Le langage peut devenir un instrument de domination." }
+        ] },
+      { id: "descartes", t: "Cet instrument universel qui peut servir en toutes sortes de rencontres.", who: "Descartes", a: "Descartes, lettre au marquis de Newcastle", n: "instrument-universel",
+        short: "Descartes : « un instrument universel »", role: "le propre de l'homme",
+        sens: "Le langage humain s'adapte à toutes les situations : c'est ce qui le distingue de la communication animale.",
+        memo: "Un couteau suisse sans limite, face à la danse unique des abeilles.",
+        pivot: "Dès qu'un sujet demande ce qui fait le propre de l'homme, elle fournit le critère.",
+        usages: [
+          { th: "le langage", t: "Communiquer n'est pas parler : le langage humain sert en toutes circonstances." },
+          { th: "la nature", t: "L'homme se distingue de l'animal non parce qu'il communique, mais parce qu'il peut parler de tout." },
+          { th: "la raison", t: "La raison se manifeste dans une parole capable de répondre à toute situation." },
+          { th: "la technique", t: "L'outil a une fonction ; le langage, lui, sert à tout." },
+          { th: "la liberté", t: "Parler, c'est pouvoir dire du nouveau, sans message fixé d'avance." },
+          { th: "la science", t: "Le langage permet de transmettre et d'accumuler les savoirs." }
+        ] }
+    ],
+    bridges: [
+      "Mais si penser, c'est se parler, nous pensons avec des mots communs : pour {B}, ces étiquettes nous cachent les choses et notre vie intérieure.",
+      "Faut-il alors se méfier des mots ? Pour {B}, sans eux la pensée reste obscure : il faut les travailler, pas les fuir.",
+      "Si la pensée dépend des mots, celui qui contrôle les mots contrôle la pensée : {B} l'a montré avec la novlangue.",
+      "D'où l'enjeu de garder au langage son ouverture : pour {B}, il est l'instrument universel qui fait le propre de l'homme."
+    ]
+  };
+
+  return { unit, exam, plan, overview, tips, parts, course, notions, exercises, authors, works, kit };
 })());

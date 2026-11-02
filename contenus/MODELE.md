@@ -61,6 +61,24 @@ Recto.add("la-conscience", (function () {
 
 Pour une leçon, les temps de lecture du plan sont calculés à partir des pages du cours. Pour garder « un écran, pas de défilement », vise environ 200 mots par page (texte + encadrés), deux encadrés au plus.
 
+Repères de lecture et kit de citations (facultatifs, renvoyés avec le reste) :
+
+```js
+const authors = ["Henri Bergson", "Bergson"];   // colorés dans le cours (nom complet avant le nom court)
+const works = ["Le Rire"];                      // en italique dans le cours
+const kit = {
+  quotes: [                                     // dans l'ordre du fil : avec 2 à 5 citations, on garde les premières
+    { id: "bergson", t: "La citation exacte du cours.", who: "Bergson", a: "Bergson, Le Rire", n: "id-notion",
+      short: "Bergson : « … »", role: "les mots simplifient", sens: "Ce qu'elle veut dire.", memo: "Une image mentale.",
+      pivot: "Comment l'adapter à n'importe quel sujet.",
+      usages: [{ th: "la liberté", t: "L'argument qu'elle porte dans un sujet sur la liberté." }] }
+  ],
+  bridges: ["Transition de la citation 1 vers la 2 ; {B} = auteur de la suivante."]
+};
+```
+
+Dans le texte du cours : `*mot*` met en gras une notion, `==phrase==` surligne l'idée clé.
+
 Formats d'exercices : `qcm`, `vf`, `fill`, `part`, `order`, `match`, `sort`, `schema`, `grid`, `flash`, `build`.
 Un `qcm` avec `passage` (et `src`) devient une **explication de texte** : le passage s'affiche à côté des propositions, et l'exercice apparaît dans « Appliquer ».
 Un exercice de citation (`part`, ou `fill` sans `plain: true`, ou `cite: true`) disparaît en mode « sans citations ».
