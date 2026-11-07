@@ -1,0 +1,450 @@
+/* Recto · Espace « Spécialité HLP ».
+   Cinq sections : Accueil, Littérature, Philosophie, Textes et auteurs, Bac blanc.
+   Les données sont dans contenus/hlp/hlp.js (chargées à la demande). Les fiches de textes sont aussi
+   transformées en exercices pour le moteur d'entraînement de Recto (contenu « hlp-textes »).
+   Les cours de spécialité, une fois fournis, seront des leçons Recto marquées space: "hlp" : elles
+   apparaîtront automatiquement dans leur discipline et débloqueront le bac blanc HLP. */
+(function () {
+  "use strict";
+  const Recto = window.Recto = window.Recto || {};
+  const C = Recto.core;
+  const DISCS = ["litterature", "philosophie"];
+  const label = t => `${t.a.short} · « ${t.title} »`;
+  /* Préparation des données et génération des exercices : sans interface, testées par tests/verifier.js */
+  Recto.hlpData = { prepare, corpusBook };
+  if (!C) return;
+  const { $, $$, esc, toast, store, X, ICON } = C;
+
+  const K = "recto.hlp";
+  const ST = Object.assign({ lib: { mode: "textes", disc: "tout", q: "" }, tab: {}, atab: {}, bac: { disc: "litterature", chs: ["ch1"], texts: [], fmt: "interpretation" } }, store.get(K) || {});
+  ST.lib = Object.assign({ mode: "textes", disc: "tout", q: "" }, ST.lib);
+  ST.bac = Object.assign({ disc: "litterature", chs: ["ch1"], texts: [], fmt: "interpretation" }, ST.bac);
+  const saveST = () => store.set(K, ST);
+  let H = null, QUIET = false;
+  const refresh = () => { QUIET = true; C.rerender(); };
+
+  const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"/></svg>';
+  const SECTIONS = [["accueil", "Accueil", "Accueil"], ["litterature", "Littérature", "Littér."], ["philosophie", "Philosophie", "Philo"], ["textes", "Textes et auteurs", "Textes"], ["bac", "Bac blanc", "Bac blanc"]];
+
+  /* =========================================================
+     Données : préparation et exercices
+     ========================================================= */
+  Recto.hlpLoaded = function () {
+    H = prepare(window.RECTO_HLP, C.LIB);
+    Recto.add("hlp-textes", corpusBook(H));
+  };
+  function ensure(cb) {
+    if (H) return cb();
+    C.loadBook("hlp-textes", err => { if (err || !H) return toast("Impossible de charger la spécialité HLP."); cb(); });
+  }
+  function prepare(D, lib) {
+    const T = {}, A = {}, CH = {};
+    D.authors.forEach(a => { A[a.id] = a; a.texts = []; });
+    D.chapters.forEach(c => { CH[c.id] = c; });
+    /* Ordre de lecture : par chapitre, puis littérature avant philosophie, puis chronologique */
+    const chi = id => D.chapters.findIndex(c => c.id === id);
+    D.texts.sort((a, b) => chi(a.chapter) - chi(b.chapter) || DISCS.indexOf(a.discipline) - DISCS.indexOf(b.discipline) || a.yearN - b.yearN);
+    D.texts.forEach(t => { T[t.id] = t; t.a = A[t.author]; t.a.texts.push(t); t.disc = D.disciplines[t.discipline]; t.ch = CH[t.chapter]; });
+    D.authors.forEach(a => { a.texts.sort((x, y) => x.yearN - y.yearN); a.discs = [...new Set(a.texts.map(t => t.discipline))]; });
+    const cites = [];
+    D.texts.forEach(t => t.citations.forEach((c, i) => cites.push(Object.assign({ text: t, i, who: c.who || t.a.short }, c))));
+    const courses = d => (lib || []).filter(m => m.space === "hlp" && m.discipline === d && m.type === "lecon");
+    return Object.assign({}, D, { T, A, CH, cites, courses, active: D.chapters.filter(c => !c.planned) });
+  }
+  const tone = d => (H.disciplines[d] || {}).tone || "#0b7a8a";
+
+  /* Les fiches deviennent des exercices (identifiants stables, aucun hasard à la génération) */
+  function corpusBook(H) {
+    const parts = [{ n: 0, roman: "", name: "Repères", label: "Repères", title: "Les textes de la spécialité", essence: "" }];
+    const partOf = {};
+    H.active.forEach(c => DISCS.forEach(d => {
+      if (!H.texts.some(t => t.chapter === c.id && t.discipline === d)) return;
+      const n = parts.length;
+      parts.push({ n, roman: ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"][n] || String(n), name: H.disciplines[d].title, label: H.disciplines[d].title + " · ch. " + c.n,
+        title: H.disciplines[d].title + " · " + c.title, metaphor: c.question, essence: H.texts.filter(t => t.chapter === c.id && t.discipline === d).map(t => t.a.short).filter((x, i, a) => a.indexOf(x) === i).join(", ") });
+      partOf[c.id + "|" + d] = n;
+    }));
+    const notions = {};
+    H.texts.forEach(t => {
+      notions[t.id] = { part: partOf[t.chapter + "|" + t.discipline], title: label(t), essentiel: t.these, retenir: t.idees.slice(0, 4),
+        citation: t.citations[0] && t.citations[0].t, piege: t.piege, link: "#/hlp/texte/" + t.id };
+    });
+    const ex = [], push = e => ex.push(e);
+    const byDisc = d => H.texts.filter(t => t.discipline === d);
+    const others = (t, list, k) => { const i = list.indexOf(t); return list.filter(x => x !== t).sort((a, b) => ((list.indexOf(a) - i + list.length) % list.length) - ((list.indexOf(b) - i + list.length) % list.length)).slice(0, k); };
+    const authorsAll = H.authors;
+    H.texts.forEach(t => {
+      const same = byDisc(t.discipline);
+      push({ id: "these-" + t.id, type: "flash", notion: t.id, f: `${t.a.short}, « ${t.title} » : quelle est la thèse ?`, b: t.these });
+      push({ id: "qthese-" + t.id, type: "qcm", notion: t.id, q: `Quelle idée résume le texte « ${t.title} » (${t.a.short}) ?`,
+        options: [t.short].concat(others(t, same, 3).map(o => o.short)), answer: 0, explain: t.these });
+      t.citations.filter(c => !c.who).slice(0, 2).forEach((c, i) => {
+        const wrong = others(t.a, authorsAll, authorsAll.length).filter(a => !t.a.texts.some(x => x.author === a.id)).slice(i * 3, i * 3 + 3);
+        push({ id: "qui-" + t.id + "-" + i, type: "qcm", cite: true, notion: t.id, q: `Qui a écrit : « ${c.t} » ?`, options: [t.a.name].concat(wrong.map(a => a.name)), answer: 0,
+          explain: `${t.a.short}, ${t.work} : ${c.sens}` });
+      });
+      t.citations.forEach((c, i) => { if (c.fill) push({ id: "fill-" + t.id + "-" + i, type: "fill", notion: t.id, text: c.fill, explain: `${c.who || t.a.short}, ${t.work}. ${c.sens}` }); });
+      (t.vf || []).forEach((v, i) => push({ id: "vf-" + t.id + "-" + i, type: "vf", notion: t.id, s: v.s, a: v.a, explain: v.explain }));
+      const o = (t.oppositions || [])[0], ot = o && H.T[o.to];
+      if (ot) {
+        const linked = new Set([t.id, ...t.liens.map(l => l.to), ...t.oppositions.map(l => l.to)]);
+        const pool = H.texts.filter(x => !linked.has(x.id) && !(x.liens || []).concat(x.oppositions || []).some(l => l.to === t.id));
+        push({ id: "opp-" + t.id, type: "qcm", notion: t.id, ns: [t.id, ot.id], q: `Quel texte peut-on opposer à « ${t.title} » (${t.a.short}) ?`,
+          options: [label(ot)].concat(others(t, pool.concat([t]), 3).filter(x => x !== t).map(label)), answer: 0, explain: o.t });
+      }
+    });
+    DISCS.forEach(d => {
+      const list = byDisc(d);
+      for (let k = 0; k * 5 < list.length; k++) {
+        const chunk = list.slice(k * 5, k * 5 + 5);
+        if (chunk.length < 3) continue;
+        push({ id: "match-" + d + "-" + k, type: "match", part: partOf["ch1|" + d], q: "Associe chaque texte à son idée principale.", pairs: chunk.map(t => ({ l: label(t), r: t.short, n: t.id })) });
+      }
+      const seen = new Set(), dated = list.filter(t => !/confirmer/.test(t.year) && !seen.has(t.author) && seen.add(t.author)).sort((a, b) => a.yearN - b.yearN).slice(0, 6);
+      if (dated.length >= 3) push({ id: "order-" + d, type: "order", part: partOf["ch1|" + d], ns: dated.map(t => t.id), q: "Range ces textes du plus ancien au plus récent.",
+        items: dated.map(t => `${t.a.short}, ${t.work.replace(/^« [^»]*? », /, "").replace(/\s*\([^)]*\)/g, "")}`), explain: dated.map(t => `${t.a.short} (${t.yearN})`).join(" · ") });
+      const auth = [...new Set(list.map(t => t.author))].map(id => H.A[id]);
+      const B3 = ["XVIe-XVIIIe siècles", "XIXe siècle", "XXe-XXIe siècles"], bk = a => a.century <= 18 ? 0 : a.century === 19 ? 1 : 2;
+      if (auth.length >= 4) push({ id: "sort-" + d, type: "sort", part: partOf["ch1|" + d], q: "Classe ces auteurs selon leur époque.", buckets: B3,
+        items: auth.map(a => ({ t: a.name, b: bk(a), n: a.texts.find(t => t.discipline === d).id })), explain: auth.map(a => `${a.short} : ${a.dates}`).join(" · ") });
+    });
+    return {
+      unit: { one: "partie", many: "parties", fem: true },
+      exam: { kind: "épreuve de spécialité HLP", format: "une interprétation de texte et un essai" },
+      plan: { priority: parts.slice(1).map(p => p.n) },
+      overview: { title: "Les textes de la spécialité", intro: H.active.map(c => "Chapitre " + c.n + " · " + c.title + " : " + c.question).join(" "), boxes: [
+        { t: "Les fiches", b: "Chaque texte a sa fiche complète dans l'espace HLP : thèse, arguments, citations, liens, document d'origine." },
+        { t: "Sans citations", b: "Le mode « sans citations » retire les questions sur les formules exactes." }] },
+      tips: ["Pour chaque texte, sache dire en une phrase sa thèse et cite une formule exacte.", "Prépare des couples de textes qui s'opposent : ils font les meilleurs plans d'essai."],
+      parts, notions, exercises: ex
+    };
+  }
+
+  /* =========================================================
+     Carte de l'accueil général et onglets de l'espace
+     ========================================================= */
+  C.SPACE_FILL.hlp = el => ensure(() => {
+    if (!el.isConnected) return;
+    const n = d => H.texts.filter(t => t.discipline === d).length, cc = d => H.courses(d).length;
+    el.innerHTML = DISCS.map(d => `<button class="sp-row" data-go="#/hlp/${d}" style="--tone:${tone(d)}"><span class="sp-dot"></span><span class="sp-rt"><b>${esc(H.disciplines[d].title)}</b><small>${n(d)} textes · ${cc(d) ? cc(d) + " cours" : "cours à importer"}</small></span><span class="sp-rp">${C.ICON.chev}</span></button>`).join("")
+      + `<button class="sp-row" data-go="#/hlp/textes" style="--tone:#0b7a8a"><span class="sp-dot"></span><span class="sp-rt"><b>Textes et auteurs</b><small>${H.texts.length} fiches · ${H.authors.length} auteurs · ${H.cites.length} citations</small></span><span class="sp-rp">${C.ICON.chev}</span></button>`;
+  });
+  C.SPACE_NAV.hlp = prm => SECTIONS.map(([k, l, s]) => ({ href: k === "accueil" ? "#/hlp" : "#/hlp/" + k, l, s, on: (prm.sub === "texte" || prm.sub === "auteur" ? "textes" : prm.sub || "accueil") === k }));
+
+  C.VIEWS.hlp = function (root, prm) {
+    if (!H) root.innerHTML = `<section class="view hlp-wait"><div class="card"><div class="eyebrow hlp">Spécialité HLP</div><div class="sk-lines"><i></i><i></i><i></i></div></div></section>`;
+    ensure(() => {
+      if (C.view() !== "hlp") return;
+      const sub = prm.sub || "accueil";
+      const fn = { accueil: home, litterature: disc, philosophie: disc, textes: library, texte: textPage, auteur: authorPage, bac: bacPage }[sub] || home;
+      fn(root, prm);
+      QUIET = false;
+    });
+  };
+
+  /* =========================================================
+     Accueil HLP
+     ========================================================= */
+  function home(root) {
+    const ch = H.active[0];
+    const nd = d => H.texts.filter(t => t.discipline === d).length;
+    root.innerHTML = `
+    <section class="view hlp-home">
+      <div class="card hh-hero">
+        <div class="eyebrow hlp">Spécialité HLP · ${esc(H.level)}</div>
+        <h1 class="hh-t">Humanités, littérature <span class="hl">et philosophie</span></h1>
+        <p class="hh-p">Tes textes étudiés, remis en fiches : la thèse, les arguments, les citations exactes et les liens utiles pour l'essai. Tes cours de spécialité viendront s'ajouter ici.</p>
+        <div class="hh-facts"><div><b class="cnt" data-v="${H.texts.length}">${H.texts.length}</b><span>textes en fiches</span></div><div><b class="cnt" data-v="${H.authors.length}">${H.authors.length}</b><span>auteurs</span></div><div><b class="cnt" data-v="${H.cites.length}">${H.cites.length}</b><span>citations relevées</span></div></div>
+        <div class="hh-acts"><a class="btn primary lg" href="#/hlp/textes">Textes et auteurs</a><a class="btn secondary lg" href="#/hlp-textes/train">S'entraîner sur les textes</a></div>
+      </div>
+      <div class="card hh-chap">
+        <div class="eyebrow">${esc((H.objets.find(o => o.id === ch.objet) || {}).title || "")} · ${esc((H.objets.find(o => o.id === ch.objet) || {}).sem || "")}</div>
+        <h2>Chapitre ${ch.n} · ${esc(ch.title)}</h2>
+        <p class="hh-q">${esc(ch.question)}</p>
+        <p class="small muted">${esc(ch.periode)}</p>
+        <div class="hh-disc">${DISCS.map(d => `<a class="hh-d" href="#/hlp/${d}" style="--tone:${tone(d)}"><b>${esc(H.disciplines[d].title)}</b><span>${nd(d)} textes · ${H.courses(d).length ? H.courses(d).length + " cours" : "cours à importer"}</span><small>${esc([...new Set(H.texts.filter(t => t.discipline === d && t.chapter === ch.id).sort((a, b) => a.yearN - b.yearN).map(t => t.a.short))].join(", "))}</small></a>`).join("")}</div>
+        <div class="hh-foot"><button class="btn ghost sm" id="chPres">Présentation du chapitre</button><span class="small muted">Ensuite : ${esc(H.chapters.filter(c => c.planned).slice(0, 2).map(c => c.title).join(" · "))}…</span></div>
+      </div>
+      <a class="card hh-bac" href="#/hlp/bac"><span class="hh-lock">${LOCK}</span><div><div class="eyebrow">Bac blanc HLP</div><b>Prêt dès l'arrivée de tes cours</b><span>Choix de la discipline, des chapitres et des textes : déjà en place.</span></div>${C.ICON.chev}</a>
+    </section>`;
+    $("#chPres", root).onclick = () => chapterModal(ch);
+    if (!QUIET) { X.wordsIn($(".hh-t", root)); X.stagger($$(".hh-chap, .hh-bac", root), { y: 14, step: 90 }); C.countAll(root); }
+  }
+  function chapterModal(ch) {
+    const studied = new Set(H.texts.filter(t => t.chapter === ch.id).map(t => t.a.short.toLowerCase()));
+    const isStudied = b => [...studied].some(a => b.toLowerCase().startsWith(a) || b.toLowerCase().startsWith("j. " + a));
+    C.openModal(`<div class="modal-head"><h3>Chapitre ${ch.n} · ${esc(ch.title)}</h3><button class="icon-btn" data-close aria-label="Fermer">${ICON.close}</button></div>
+      <div class="ch-modal">
+        <p class="hh-q">${esc(ch.question)} <span class="small muted">· ${esc(ch.periode)}</span></p>
+        <div class="eyebrow">Présentation du programme (B.O.), résumée</div>
+        <ul class="ch-pres">${ch.presentation.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
+        <div class="eyebrow">Bibliographie indicative (B.O.) · <span class="ch-mark">en couleur</span> : auteurs dont tu as un texte</div>
+        <p class="ch-bib">${ch.bibliographie.map(b => `<span class="${isStudied(b) ? "on" : ""}">${esc(b)}</span>`).join(" · ")}</p>
+        <p class="note">Source : photo ${esc(ch.photo)} (dossier images/).</p>
+      </div>`, "chapter");
+  }
+
+  /* =========================================================
+     Littérature / Philosophie
+     ========================================================= */
+  function disc(root, prm) {
+    const d = prm.sub, D = H.disciplines[d];
+    const ch = H.CH[prm.ch] && !H.CH[prm.ch].planned ? H.CH[prm.ch] : H.active[0];
+    const texts = H.texts.filter(t => t.discipline === d && t.chapter === ch.id).sort((a, b) => a.yearN - b.yearN);
+    const authors = [...new Set(texts.map(t => t.author))].map(id => H.A[id]);
+    const courses = H.courses(d).filter(m => !m.chapter || m.chapter === ch.id);
+    const quotes = texts.map(t => Object.assign({ text: t }, t.citations[0]));
+    root.innerHTML = `
+    <section class="view hlp-disc" style="--tone:${D.tone}">
+      <aside class="card hd-side">
+        <div class="eyebrow hlp">Spécialité HLP</div>
+        <h1>${esc(D.title)}</h1>
+        <p class="hd-p">${esc(D.blurb)}</p>
+        ${d === "philosophie" ? `<p class="hd-warn">Philosophie de spécialité : elle reste séparée de la philosophie du tronc commun (Le langage, L'art, Discours de la méthode).</p>` : ""}
+        <div class="hd-sec">Chapitres</div>
+        <div class="hd-chs">${H.chapters.map(c => c.planned
+          ? `<div class="hd-ch off" title="Intitulé du programme officiel, à confirmer avec tes cours"><span class="r">·</span><span class="t">${esc(c.title)}</span><span class="s">à venir</span></div>`
+          : `<a class="hd-ch ${c === ch ? "on" : ""}" href="#/hlp/${d}?ch=${c.id}"><span class="r">${c.n}</span><span class="t">${esc(c.title)}</span><span class="s">${H.texts.filter(t => t.discipline === d && t.chapter === c.id).length} textes</span></a>`).join("")}</div>
+      </aside>
+      <div class="card hd-main scroll">
+        <header class="hd-head"><div class="eyebrow">Chapitre ${ch.n} · ${esc(D.title)}</div><h2>${esc(ch.title)}</h2><p class="hh-q">${esc(ch.question)}</p></header>
+        <section class="hd-block"><h3>Cours</h3>${courses.length
+          ? `<div class="hd-courses">${courses.map(m => `<a class="hd-course" href="#/${m.id}" style="--tone:${m.tone || D.tone}"><b>${esc(m.title)}</b><span>${esc(m.tagline || "")}</span></a>`).join("")}</div>`
+          : `<div class="hd-empty"><b>Tes cours de ${esc(D.title.toLowerCase())} arriveront ici.</b><span>Dès qu'ils seront importés : le cours page par page, les fiches de révision, les exercices et le bac blanc ${d === "litterature" ? "littéraire" : "philosophique"}. Rien n'est inventé en attendant.</span></div>`}</section>
+        <section class="hd-block"><h3>Textes étudiés <span class="n">${texts.length}</span></h3><div class="tx-list">${texts.map(textRow).join("")}</div></section>
+        <section class="hd-block"><h3>${d === "philosophie" ? "Philosophes et penseurs" : "Auteurs"} <span class="n">${authors.length}</span></h3><div class="chips">${authors.map(a => `<a class="chip" href="#/hlp/auteur/${a.id}">${esc(a.name)}</a>`).join("")}</div></section>
+        <section class="hd-block"><h3>Une citation par texte</h3><div class="hd-quotes">${quotes.map(q => `<a class="hd-q" href="#/hlp/texte/${q.text.id}?tab=citations"><span>« ${esc(q.t)} »</span><small>${esc(q.who || q.text.a.short)}, ${esc(q.text.title)}</small></a>`).join("")}</div></section>
+      </div>
+    </section>`;
+    if (!QUIET) X.stagger($$(".tx-row", root), { y: 8, step: 40 });
+  }
+  function textRow(t) {
+    return `<a class="tx-row" href="#/hlp/texte/${t.id}" style="--tone:${tone(t.discipline)}"><span class="tx-y tabnum">${esc(String(t.yearN))}</span><span class="tx-m"><b>${esc(t.title)}</b><small>${esc(t.a.name)} · ${esc(t.work)}</small></span><span class="tx-p">${esc(t.doc.photos.join(", "))}</span></a>`;
+  }
+
+  /* =========================================================
+     Textes et auteurs
+     ========================================================= */
+  function library(root) {
+    const L = ST.lib, q = C.fold(L.q || "").trim();
+    const discOk = d => L.disc === "tout" || d === L.disc;
+    const match = s => !q || C.fold(s).includes(q);
+    const texts = H.texts.filter(t => discOk(t.discipline) && match([t.title, t.a.name, t.work, t.these, t.short].join(" ")));
+    const authors = H.authors.filter(a => a.discs.some(discOk) && match([a.name, a.epoque].concat(a.idees).join(" ")));
+    const cites = H.cites.filter(c => discOk(c.text.discipline) && match([c.t, c.who, c.text.title, c.sens].join(" ")));
+    const docs = H.docs.filter(dc => !q || match([dc.id, dc.what, dc.note].join(" ")));
+    const modes = [["textes", "Textes", texts.length], ["auteurs", "Auteurs", authors.length], ["citations", "Citations", cites.length], ["photos", "Photos", docs.length]];
+    let body = "";
+    if (L.mode === "auteurs") body = `<div class="hl-grid">${authors.map(a => `<a class="au-card" href="#/hlp/auteur/${a.id}"><span class="au-ini">${esc(a.short.charAt(0))}</span><span class="au-m"><b>${esc(a.name)}</b><small>${esc(a.dates)} · ${esc(a.epoque)}</small><span class="au-t">${a.texts.map(t => `<i style="--tone:${tone(t.discipline)}">${esc(t.title)}</i>`).join("")}</span></span></a>`).join("") || emptyRes()}</div>`;
+    else if (L.mode === "citations") body = `<div class="ci-list2">${cites.map(c => `<a class="ci2" href="#/hlp/texte/${c.text.id}?tab=citations" style="--tone:${tone(c.text.discipline)}"><span class="ci2-q">« ${esc(c.t)} »</span><span class="ci2-s">${esc(c.who)} · ${esc(c.text.title)}${c.where ? " · " + esc(c.where) : ""}</span><span class="ci2-m">${esc(c.sens)}</span></a>`).join("") || emptyRes()}</div>`;
+    else if (L.mode === "photos") body = `<p class="note hl-note">Les photos restent dans le dossier images/ de ton ordinateur : elles ne sont pas publiées avec le site. Chaque fiche renvoie à la sienne.</p><div class="doc-list">${docs.map(dc => `<div class="doc"><span class="doc-id">${esc(dc.id)}</span><span class="doc-m"><b>${esc(dc.what)}</b><small>${dc.header ? "En-tête « Chapitre 1 » visible" : "Pas d'en-tête de chapitre : classement d'après le thème"}${dc.note ? " · " + esc(dc.note) : ""}</small><span class="doc-t">${dc.texts.map(id => `<a href="#/hlp/texte/${id}">${esc(label(H.T[id]))}</a>`).join("") || `<a href="#" data-chpres>Présentation du chapitre</a>`}</span></span></div>`).join("") || emptyRes()}</div>`;
+    else body = `<div class="hl-grid">${texts.map(t => `<a class="tx-card" href="#/hlp/texte/${t.id}" style="--tone:${tone(t.discipline)}"><span class="tx-k">${esc(t.disc.title)} · ch. ${t.ch.n}</span><b>${esc(t.title)}</b><span class="tx-a">${esc(t.a.name)}</span><span class="tx-w">${esc(t.work)} · ${esc(t.year)}</span><span class="tx-s">${esc(t.short)}</span><span class="tx-f"><span>${esc(t.doc.photos.join(", "))}</span><span>${t.citations.length} citations</span></span></a>`).join("") || emptyRes()}</div>`;
+    root.innerHTML = `
+    <section class="view hlp-lib">
+      <div class="hl-head">
+        <div><div class="eyebrow hlp">Spécialité HLP</div><h1>Textes et auteurs</h1></div>
+        <div class="hl-tools">
+          <div class="segmented big" id="hlMode">${modes.map(([k, l, n]) => `<button data-m="${k}" class="${L.mode === k ? "on" : ""}">${l} <span class="n">${n}</span></button>`).join("")}</div>
+          <div class="hl-filters"><div class="segmented" id="hlDisc">${[["tout", "Tout"], ["litterature", "Littérature"], ["philosophie", "Philosophie"]].map(([k, l]) => `<button data-d="${k}" class="${L.disc === k ? "on" : ""}">${l}</button>`).join("")}</div>
+            <input class="hl-q" id="hlQ" type="search" placeholder="Filtrer : auteur, idée, mot…" value="${esc(L.q || "")}" autocomplete="off" spellcheck="false" aria-label="Filtrer"></div>
+        </div>
+      </div>
+      <div class="hl-body scroll">${body}</div>
+    </section>`;
+    $$("#hlMode button", root).forEach(b => b.onclick = () => { L.mode = b.dataset.m; saveST(); refresh(); });
+    $$("#hlDisc button", root).forEach(b => b.onclick = () => { L.disc = b.dataset.d; saveST(); refresh(); });
+    const inp = $("#hlQ", root);
+    let tm = 0;
+    inp.addEventListener("input", () => { clearTimeout(tm); tm = setTimeout(() => { L.q = inp.value; saveST(); refresh(); const i2 = $("#hlQ"); if (i2) { i2.focus(); i2.setSelectionRange(i2.value.length, i2.value.length); } }, 250); });
+    const cp = $("[data-chpres]", root); if (cp) cp.onclick = e => { e.preventDefault(); chapterModal(H.active[0]); };
+    if (!QUIET) X.stagger($$(".tx-card, .au-card, .ci2, .doc", root).slice(0, 24), { y: 10, step: 35 });
+  }
+  const emptyRes = () => `<div class="hl-empty"><b>Rien ne correspond.</b><span>Change le filtre ou la recherche.</span></div>`;
+
+  /* =========================================================
+     Fiche d'un texte
+     ========================================================= */
+  const TABS = [["comprendre", "Comprendre"], ["dissertation", "Pour l'essai"], ["citations", "Citations"], ["document", "Document"]];
+  const LECT = { sure: "lisible", probable: "lecture probable", partielle: "en partie illisible", incertaine: "lecture incertaine" };
+  function linkList(list) {
+    return `<ul class="tx-links">${list.map(l => { const o = H.T[l.to]; return o ? `<li><a href="#/hlp/texte/${o.id}" style="--tone:${tone(o.discipline)}"><b>${esc(label(o))}</b></a><span>${esc(l.t)}</span></li>` : ""; }).join("")}</ul>`;
+  }
+  function textPage(root, prm) {
+    const t = H.T[prm.id];
+    if (!t) { location.replace("#/hlp/textes"); return; }
+    const tab = TABS.some(x => x[0] === prm.tab) ? prm.tab : ST.tab[t.id] || "comprendre";
+    const i = H.texts.indexOf(t), prev = H.texts[i - 1], next = H.texts[i + 1];
+    const block = (title, inner, cls) => inner ? `<section class="tx-b ${cls || ""}"><h4>${esc(title)}</h4>${inner}</section>` : "";
+    const ul = a => a && a.length ? `<ul>${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+    let panel = "";
+    if (tab === "comprendre") panel = `<div class="tx-cols">
+        <div>${block("Sujet", `<p>${esc(t.sujet)}</p>`)}${block("Problématique", `<p>${esc(t.problematique)}</p>`)}<section class="tx-b tx-these"><h4>Thèse</h4><p>${esc(t.these)}</p></section>${block("L'éducation est-elle neutre ? Ce que répond le texte", `<p>${esc(t.neutre)}</p>`)}</div>
+        <div>${block("Idées principales", ul(t.idees))}${block(t.discipline === "litterature" ? "Procédés et arguments" : "Arguments", ul(t.arguments))}${block("Exemples", ul(t.exemples))}${t.piege ? `<p class="tx-piege"><b>Piège</b>${esc(t.piege)}</p>` : ""}</div>
+      </div>`;
+    else if (tab === "dissertation") panel = `<div class="tx-cols">
+        <div>${block("Connaissances essentielles", ul(t.connaissances))}${block("Arguments réutilisables", ul(t.dissertation))}${(t.manuel.bac || []).length ? block("Sujets relevés dans le document", `<ul class="tx-bac">${t.manuel.bac.map(b => `<li><span class="tag ghost">${esc(b.k)}</span>${esc(b.q)}</li>`).join("")}</ul>`) : ""}</div>
+        <div>${block("Rapprochements", t.liens.length ? linkList(t.liens) : "")}${block("Oppositions et nuances", t.oppositions.length ? linkList(t.oppositions) : "")}</div>
+      </div>`;
+    else if (tab === "citations") panel = `<div class="tx-cites">${t.citations.map(c => `<figure class="tx-c"><blockquote>« ${esc(c.t)} »</blockquote><figcaption>${esc(c.who || t.a.name)}${c.where ? " · " + esc(c.where) : ""} · <span class="src-doc">${esc(t.doc.photos.join(", "))}</span>${c.verif ? ` · <span class="tag warn">à vérifier</span>` : ""}</figcaption><p><b>Sens.</b> ${esc(c.sens)}</p><p><b>Dans un essai.</b> ${esc(c.usage)}</p></figure>`).join("")}</div>
+        <p class="note">Citations recopiées depuis la photo du document, sans modification. « […] » marque une coupe.</p>`;
+    else panel = `<div class="tx-cols">
+        <div>
+          ${block("Document d'origine", `<dl class="tx-dl"><dt>Photo</dt><dd>${esc(t.doc.photos.join(", "))} <span class="muted">(dossier images/)</span>${t.doc.pages ? " · " + esc(t.doc.pages) : ""}${t.doc.extraits ? " · " + t.doc.extraits + " extraits" : ""}</dd><dt>Numéro imprimé</dt><dd>${esc(t.doc.printed || "aucun")}${t.doc.hand ? ` · à la main : « ${esc(t.doc.hand)} »` : ""}</dd><dt>Chapitre</dt><dd>${t.classement.chapitre === "en-tete" ? "Indiqué en haut de la feuille" : "Pas d'en-tête : classé d'après le thème (à confirmer)"}</dd><dt>Discipline</dt><dd>${esc(t.classement.discipline)}</dd>${t.a.bio ? `<dt>Manuel</dt><dd>${esc(t.a.bio)}</dd>` : ""}</dl>`)}
+          ${t.chapeau ? block("Chapeau du manuel (résumé)", `<p>${esc(t.chapeau)}</p>`) : ""}
+          ${t.manuel.notes && t.manuel.notes.length ? block("Notes du manuel", ul(t.manuel.notes)) : ""}
+          ${t.manuel.encadre ? block("Encadré du manuel (résumé)", `<p>${esc(t.manuel.encadre)}</p>`) : ""}
+          ${t.manuel.saviez ? block("« Le saviez-vous ? » (résumé)", `<p>${esc(t.manuel.saviez)}</p>`) : ""}
+          ${t.manuel.questions && t.manuel.questions.length ? block("Questions du manuel (résumées)", ul(t.manuel.questions)) : ""}
+        </div>
+        <div>
+          ${block("Tes annotations retenues", t.annotations.filter(a => a.keep).length ? `<ul class="tx-ann">${t.annotations.filter(a => a.keep).map(a => `<li><span>${esc(a.t)}</span>${a.lecture && a.lecture !== "sure" ? ` <span class="tag ghost">${esc(LECT[a.lecture] || a.lecture)}</span>` : ""}${a.why ? `<small>${esc(a.why)}</small>` : ""}</li>`).join("")}</ul>` : `<p class="muted">Aucune annotation utile sur ce document.</p>`)}
+          ${t.annotations.some(a => !a.keep) ? block("Annotations écartées", `<ul class="tx-ann off">${t.annotations.filter(a => !a.keep).map(a => `<li><span>${esc(a.t)}</span>${a.why ? `<small>${esc(a.why)}</small>` : ""}</li>`).join("")}</ul>`) : ""}
+          ${t.alertes.length ? `<section class="tx-b tx-alert"><h4>À vérifier</h4>${ul(t.alertes)}</section>` : ""}
+          ${t.complement.length ? `<section class="tx-b tx-comp"><h4>Complément <span class="tag ghost">hors de tes documents</span></h4>${ul(t.complement)}</section>` : ""}
+        </div>
+      </div>`;
+    root.innerHTML = `
+    <section class="view tx" style="--tone:${tone(t.discipline)}">
+      <header class="card tx-head">
+        <div class="tx-top"><a class="btn ghost sm" href="#/hlp/textes">${ICON.back} Textes et auteurs</a><span class="grow"></span>${prev ? `<a class="icon-btn" href="#/hlp/texte/${prev.id}" title="Texte précédent" aria-label="Texte précédent">${ICON.back}</a>` : ""}${next ? `<a class="icon-btn" href="#/hlp/texte/${next.id}" title="Texte suivant" aria-label="Texte suivant">${ICON.chev}</a>` : ""}</div>
+        <div class="eyebrow tx-eye">${esc(t.disc.title)} · Chapitre ${t.ch.n} · ${esc(t.ch.title)}</div>
+        <h1>${esc(t.title)}</h1>${t.titleNote ? `<p class="small muted">${esc(t.titleNote)}</p>` : ""}
+        <p class="tx-ref"><a href="#/hlp/auteur/${t.a.id}">${esc(t.a.name)}</a> · <i>${esc(t.work)}</i>${t.ref ? ", " + esc(t.ref) : ""} · ${esc(t.year)} · ${esc(t.genre)}</p>
+        <div class="tx-meta"><span class="tag ghost">Photo ${esc(t.doc.photos.join(", "))}</span>${t.alertes.length ? `<span class="tag warn">${t.alertes.length} point${t.alertes.length > 1 ? "s" : ""} à vérifier</span>` : ""}<span class="grow"></span><button class="btn secondary sm" id="txTrain">S'entraîner sur ce texte</button></div>
+        <div class="segmented big tx-tabs" id="txTabs">${TABS.map(([k, l]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${l}${k === "citations" ? ` <span class="n">${t.citations.length}</span>` : ""}</button>`).join("")}</div>
+      </header>
+      <div class="card tx-body scroll">${panel}</div>
+    </section>`;
+    $$("#txTabs button", root).forEach(b => b.onclick = () => { ST.tab[t.id] = b.dataset.t; saveST(); QUIET = true; location.hash = "#/hlp/texte/" + t.id + "?tab=" + b.dataset.t; });
+    $("#txTrain", root).onclick = () => trainText(t);
+    if (!QUIET) X.stagger($$(".tx-b, .tx-c", root), { y: 8, step: 40 });
+  }
+  function trainText(t) {
+    const bk = C.BOOKS["hlp-textes"];
+    const ids = bk.exercises.filter(e => e.nlist.includes(t.id) && !(C.G().noQuotes && e.cite)).map(e => e.id);
+    C.startIn("hlp-textes", { title: "Texte · " + t.a.short, ids: C.shuffle(ids).slice(0, 8), back: location.hash });
+  }
+
+  /* =========================================================
+     Fiche d'un auteur
+     ========================================================= */
+  const ATABS = [["idees", "Idées et thèses"], ["citations", "Citations"], ["textes", "Textes"], ["liens", "Liens"]];
+  function authorPage(root, prm) {
+    const a = H.A[prm.id];
+    if (!a) { location.replace("#/hlp/textes"); return; }
+    const tab = ATABS.some(x => x[0] === prm.tab) ? prm.tab : ST.atab[a.id] || "idees";
+    /* Les citations de l'auteur (pas celles d'un encadré attribué à un autre, comme Diderot chez Ferry) */
+    const cites = H.cites.filter(c => c.text.author === a.id && c.who.startsWith(a.short));
+    const rel = kind => {
+      const out = [];
+      a.texts.forEach(t => (t[kind] || []).forEach(l => { const o = H.T[l.to]; if (o && o.author !== a.id) out.push({ t, o, txt: l.t }); }));
+      H.texts.filter(t => t.author !== a.id).forEach(t => (t[kind] || []).forEach(l => { const o = H.T[l.to]; if (o && o.author === a.id && !out.some(x => x.o === t && x.t === o)) out.push({ t: o, o: t, txt: l.t }); }));
+      return out;
+    };
+    const relHTML = list => list.length ? `<ul class="tx-links">${list.map(x => `<li><a href="#/hlp/auteur/${x.o.author}" style="--tone:${tone(x.o.discipline)}"><b>${esc(x.o.a.name)}</b></a><span>${esc(x.txt)}</span><small>${esc(x.t.title)} ↔ ${esc(x.o.title)}</small></li>`).join("")}</ul>` : `<p class="muted">Aucun lien relevé.</p>`;
+    let panel = "";
+    if (tab === "idees") panel = `<div class="tx-cols">
+        <div><section class="tx-b"><h4>Idées principales <span class="tag ghost">d'après tes documents</span></h4><ul>${a.idees.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>
+          <section class="tx-b"><h4>Thèses défendues dans les textes étudiés</h4><ul class="au-theses">${a.texts.map(t => `<li><a href="#/hlp/texte/${t.id}">« ${esc(t.title)} »</a><span>${esc(t.these)}</span></li>`).join("")}</ul></section>
+          <section class="tx-b"><h4>Arguments importants</h4><ul>${a.texts.flatMap(t => t.arguments.slice(0, 2)).map(x => `<li>${esc(x)}</li>`).join("")}</ul></section></div>
+        <div><section class="tx-b tx-comp"><h4>Présentation <span class="tag ghost">complément</span></h4><p>${esc(a.presentation)}</p></section>
+          <section class="tx-b tx-comp"><h4>Époque et contexte <span class="tag ghost">complément</span></h4><p><b>${esc(a.epoque)}.</b> ${esc(a.contexte)}</p></section>
+          <section class="tx-b"><h4>Repères des documents</h4><p>${a.datesDoc ? `Dates indiquées sur la photo : ${esc(a.dates)}.` : `Dates absentes des photos (complément) : ${esc(a.dates)}.`}${a.bio ? ` Le manuel renvoie à sa ${esc(a.bio)}.` : ""}</p>${a.alerte ? `<p class="tx-piege"><b>À vérifier</b>${esc(a.alerte)}</p>` : ""}</section></div>
+      </div>`;
+    else if (tab === "citations") panel = `<div class="tx-cites">${cites.map(c => `<figure class="tx-c"><blockquote>« ${esc(c.t)} »</blockquote><figcaption><a href="#/hlp/texte/${c.text.id}?tab=citations">${esc(c.text.title)}</a>${c.where ? " · " + esc(c.where) : ""} · <span class="src-doc">${esc(c.text.doc.photos.join(", "))}</span></figcaption><p><b>Sens.</b> ${esc(c.sens)}</p><p><b>Dans un essai.</b> ${esc(c.usage)}</p></figure>`).join("")}</div>`;
+    else if (tab === "textes") panel = `<div class="tx-list">${a.texts.map(textRow).join("")}</div>`;
+    else panel = `<div class="tx-cols"><div><section class="tx-b"><h4>Rapprochements</h4>${relHTML(rel("liens"))}</section></div><div><section class="tx-b"><h4>Oppositions et nuances</h4>${relHTML(rel("oppositions"))}</section></div></div>`;
+    root.innerHTML = `
+    <section class="view tx" style="--tone:${tone(a.discs[0])}">
+      <header class="card tx-head">
+        <div class="tx-top"><a class="btn ghost sm" href="#/hlp/textes">${ICON.back} Textes et auteurs</a></div>
+        <div class="eyebrow tx-eye">Auteur · ${a.discs.map(d => esc(H.disciplines[d].title)).join(" et ")} · ${a.texts.length} texte${a.texts.length > 1 ? "s" : ""}</div>
+        <h1>${esc(a.name)}</h1>
+        <p class="tx-ref">${esc(a.dates)}${a.datesDoc ? "" : " (complément)"} · ${esc(a.epoque)}</p>
+        <div class="segmented big tx-tabs" id="auTabs">${ATABS.map(([k, l]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${l}${k === "citations" ? ` <span class="n">${cites.length}</span>` : ""}</button>`).join("")}</div>
+      </header>
+      <div class="card tx-body scroll">${panel}</div>
+    </section>`;
+    $$("#auTabs button", root).forEach(b => b.onclick = () => { ST.atab[a.id] = b.dataset.t; saveST(); QUIET = true; location.hash = "#/hlp/auteur/" + a.id + "?tab=" + b.dataset.t; });
+    if (!QUIET) X.stagger($$(".tx-b, .tx-c, .tx-row", root), { y: 8, step: 40 });
+  }
+
+  /* =========================================================
+     Bac blanc HLP : sélection en place, génération verrouillée
+     tant qu'aucun cours de la discipline n'est importé
+     ========================================================= */
+  const HFMT = {
+    interpretation: { litterature: "Interprétation littéraire", philosophie: "Interprétation philosophique", sub: "Répondre à une question sur un texte" },
+    essai: { litterature: "Essai littéraire", philosophie: "Essai philosophique", sub: "Réfléchir à une question en s'appuyant sur ses lectures" }
+  };
+  function bacPage(root) {
+    const S = ST.bac, d = DISCS.includes(S.disc) ? S.disc : "litterature", D = H.disciplines[d];
+    const avail = H.active.filter(c => H.texts.some(t => t.chapter === c.id && t.discipline === d) || H.courses(d).some(m => m.chapter === c.id));
+    S.chs = S.chs.filter(id => avail.some(c => c.id === id));
+    const pool = H.texts.filter(t => t.discipline === d && S.chs.includes(t.chapter));
+    S.texts = S.texts.filter(id => pool.some(t => t.id === id));
+    const chosen = S.texts.length ? pool.filter(t => S.texts.includes(t.id)) : pool;
+    const courses = H.courses(d).filter(m => S.chs.includes(m.chapter));
+    const ready = courses.length > 0;
+    /* Disciplines séparées : un sujet d'interprétation philosophique ne s'affiche pas en littérature, et inversement */
+    const other = d === "litterature" ? /philosoph/i : /littéra/i;
+    const sujets = chosen.flatMap(t => (t.manuel.bac || []).filter(b => !other.test(b.k)).map(b => ({ t, b })));
+    const fmt = HFMT[S.fmt] ? S.fmt : "interpretation";
+    root.innerHTML = `
+    <section class="view bac hlp-bac" style="--tone:${D.tone}">
+      <aside class="card bac-pick">
+        <div class="eyebrow hlp">Bac blanc · Spécialité HLP</div>
+        <h1>Prépare ton épreuve</h1>
+        <div class="bac-sec">1. Discipline</div>
+        <div class="segmented big bac-disc" id="hbDisc">${DISCS.map(k => `<button data-d="${k}" class="${k === d ? "on" : ""}">${esc(H.disciplines[k].title)}</button>`).join("")}</div>
+        <div class="bac-sec">2. Chapitres <button class="btn ghost sm" id="hbAllCh">Tous les chapitres disponibles</button></div>
+        <div class="chips bac-chips">${H.chapters.map(c => { const ok = avail.includes(c); return `<button class="chip ${S.chs.includes(c.id) ? "on" : ""}" data-ch="${c.id}" ${ok ? "" : "disabled title=\"Chapitre à venir\""}>${c.n ? "Ch. " + c.n + " · " : ""}${esc(c.title)}${ok ? "" : " · à venir"}</button>`; }).join("")}</div>
+        <div class="bac-sec">3. Textes <span class="muted">(facultatif)</span> <button class="btn ghost sm" id="hbAllTx">Tous</button></div>
+        <div class="chips bac-chips">${pool.map(t => `<button class="chip ${S.texts.includes(t.id) ? "on" : ""}" data-t="${t.id}">${esc(t.a.short)} · ${esc(C.clip(t.title, 34))}</button>`).join("") || `<span class="muted small">Choisis d'abord un chapitre.</span>`}</div>
+        <div class="bac-sec">4. Exercice</div>
+        <div class="bac-fmts two">${Object.keys(HFMT).map(k => `<button class="bac-f ${k === fmt ? "on" : ""}" data-f="${k}"><b>${esc(HFMT[k][d])}</b><small>${esc(HFMT[k].sub)}</small></button>`).join("")}</div>
+        <div class="bac-go">
+          <p class="note">${ready ? `Prêt : ${courses.length} cours de ${esc(D.title.toLowerCase())} importé${courses.length > 1 ? "s" : ""}.` : `Génération verrouillée : aucun cours de ${esc(D.title.toLowerCase())} importé pour ${S.chs.length > 1 ? "ces chapitres" : "ce chapitre"}.`}</p>
+          <button class="btn primary lg" id="hbGen" ${ready && S.chs.length ? "" : "disabled"}>${ready ? "Générer le sujet" : LOCK + " Disponible avec tes cours"}</button>
+        </div>
+      </aside>
+      <div class="card bac-main" id="hbMain">
+        <div class="bac-lock">
+          <span class="bac-lock-i">${LOCK}</span>
+          <h2>${ready ? "Ton sujet apparaîtra ici" : "Les sujets arriveront avec tes cours"}</h2>
+          <p>${ready ? "Choisis tes chapitres et tes textes, puis génère un sujet." : `Le bac blanc HLP a besoin de tes cours de ${esc(D.title.toLowerCase())} pour proposer des sujets fidèles à ce que tu as étudié. Dès qu'ils seront importés, ce bouton fonctionnera avec la sélection ci-contre. Les ${H.texts.filter(t => t.discipline === d).length} fiches de textes de ${esc(D.title.toLowerCase())} sont déjà prêtes.`}</p>
+          <dl class="bac-stat">
+            <dt>Discipline</dt><dd>${esc(D.title)} <span class="muted">· séparée de l'autre discipline</span></dd>
+            <dt>Chapitres</dt><dd>${S.chs.length ? S.chs.map(id => "Ch. " + H.CH[id].n + " · " + esc(H.CH[id].title)).join(", ") : "aucun"}</dd>
+            <dt>Textes</dt><dd>${chosen.length} fiche${chosen.length > 1 ? "s" : ""} ${S.texts.length ? "choisie" + (chosen.length > 1 ? "s" : "") : "(tous les textes du chapitre)"}</dd>
+            <dt>Cours</dt><dd>${courses.length ? courses.length + " importé" + (courses.length > 1 ? "s" : "") : "0 importé · en attente"}</dd>
+            <dt>Exercice</dt><dd>${esc(HFMT[fmt][d])}</dd>
+          </dl>
+          ${sujets.length ? `<div class="bac-docsuj"><div class="eyebrow">Sujets relevés dans tes documents (pour information)</div><ul>${sujets.map(x => `<li><span class="tag ghost">${esc(x.b.k)}</span>${esc(x.b.q)} <a href="#/hlp/texte/${x.t.id}?tab=dissertation">${esc(x.t.a.short)}</a></li>`).join("")}</ul></div>` : ""}
+          <p class="note">Repère (complément) : l'épreuve écrite de HLP dure 4 heures ; elle porte sur un texte et comprend une interprétation, dans la discipline du texte, puis un essai, dans l'autre discipline.</p>
+        </div>
+      </div>
+    </section>`;
+    $$("#hbDisc button", root).forEach(b => b.onclick = () => { S.disc = b.dataset.d; S.texts = []; saveST(); refresh(); });
+    $$("[data-ch]", root).forEach(b => b.onclick = () => { const id = b.dataset.ch; S.chs = S.chs.includes(id) ? S.chs.filter(x => x !== id) : S.chs.concat(id); saveST(); refresh(); });
+    $("#hbAllCh", root).onclick = () => { S.chs = avail.map(c => c.id); saveST(); refresh(); };
+    $$("[data-t]", root).forEach(b => b.onclick = () => { const id = b.dataset.t; S.texts = S.texts.includes(id) ? S.texts.filter(x => x !== id) : S.texts.concat(id); saveST(); refresh(); });
+    $("#hbAllTx", root).onclick = () => { S.texts = []; saveST(); refresh(); };
+    $$(".bac-f", root).forEach(b => b.onclick = () => { S.fmt = b.dataset.f; saveST(); refresh(); });
+    $("#hbGen", root).onclick = () => { if (ready) generateHLP(root, d, courses); };
+  }
+  /* Quand des cours seront importés : les sujets de dissertation (« build ») des leçons HLP du chapitre
+     deviennent des sujets d'essai, travaillés avec le même lecteur que le tronc commun. */
+  function generateHLP(root, d, courses) {
+    let left = courses.length;
+    const go = () => {
+      const subs = courses.flatMap(m => (C.BOOKS[m.id] ? C.BOOKS[m.id].exercises.filter(e => e.type === "build").map(e => ({ b: m.id, e })) : []));
+      if (!subs.length) return toast("Ces cours ne contiennent pas encore de sujets.");
+      const pick = C.shuffle(subs).slice(0, 3);
+      const main = $("#hbMain", root);
+      main.innerHTML = `<div class="bac-sheet-h"><div><div class="eyebrow">Bac blanc HLP · ${esc(H.disciplines[d].title)}</div><h2>Choisis un sujet</h2></div></div><div class="bac-list scroll">${pick.map((x, i) => `<button class="bac-s diss" data-b="${x.b}" data-e="${x.e.id}"><span class="bac-s-k">Sujet ${i + 1}</span><span class="bac-s-q">${esc(x.e.q)}</span><span class="bac-s-f"><span class="bac-s-go">Travailler ce sujet ${ICON.chev}</span></span></button>`).join("")}</div>`;
+      $$(".bac-s", main).forEach(b => b.onclick = () => C.startIn(b.dataset.b, { title: "Bac blanc HLP", ids: [b.dataset.e], from: "reflexion" }));
+    };
+    courses.forEach(m => C.loadBook(m.id, () => { if (!--left) go(); }));
+  }
+})();

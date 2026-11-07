@@ -4,8 +4,11 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "6"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "7"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
+  /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
+  const inTC = m => !!m && (!m.space || m.space === "tc");
+  const TCLIB = LIB.filter(inTC);
   const BOOKS = {}, WAIT = {};
   window.Recto = {
     add(id, data) {
@@ -16,7 +19,8 @@
   };
   const KIND = {
     livre: { one: "Livre", many: "Livres", the: "le livre", all: "tout le livre", this: "ce livre", in: "dans le livre" },
-    lecon: { one: "Leçon", many: "Leçons", the: "la leçon", all: "toute la leçon", this: "cette leçon", in: "dans la leçon" }
+    lecon: { one: "Leçon", many: "Leçons", the: "la leçon", all: "toute la leçon", this: "cette leçon", in: "dans la leçon" },
+    corpus: { one: "Textes", many: "Textes", the: "les textes", all: "tous les textes", this: "ces textes", in: "dans les textes" }
   };
   function loadBook(id, cb) {
     if (BOOKS[id]) return cb();
@@ -243,7 +247,7 @@
     S = loadState(id); MC = null; P = null; PLAN_SEL = null;
     TYPES.part.help = B.course ? PART_HELP.lecon : PART_HELP.livre;
     pickState.parts.clear(); pickState.types.clear();
-    store.set(K_LAST, id);
+    if (inTC(B.meta)) store.set(K_LAST, id);
     saveSummary();
   }
   const avail = e => !(G.noQuotes && e.cite);
@@ -387,7 +391,11 @@
      Routage (#/  ·  #/bibliotheque  ·  #/<contenu>/<vue>?param=…)
      ========================================================= */
   const BOOK_VIEWS = ["cours", "plan", "carte", "train", "reflexion", "citations", "bilan", "lecture", "player"];
-  const defView = () => B && B.course ? "cours" : "plan";
+  /* Vues hors contenu : accueil des espaces, accueil du tronc commun, bibliothèque, bac blanc, espace HLP */
+  const SPACE_VIEWS = ["spaces", "home", "library", "tcbac", "hlp"];
+  const SPACE_NAV = {};   /* onglets propres à un espace (fournis par les modules) */
+  const isCorpus = () => !!(B && B.meta.type === "corpus");
+  const defView = () => isCorpus() ? "train" : B && B.course ? "cours" : "plan";
   let VIEW = "home", PARAMS = {};
   let CLEAN = [];
   const app = $("#app");
@@ -398,15 +406,20 @@
     const seg = (path || "").split("/").filter(Boolean);
     const q = {};
     (qs || "").split("&").filter(Boolean).forEach(kv => { const i = kv.indexOf("="); q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? "1" : decodeURIComponent(kv.slice(i + 1)); });
-    if (!seg.length) return { view: "home" };
+    if (!seg.length) return { view: "spaces", q };
+    if (seg[0] === "tronc-commun") return { view: seg[1] === "bac-blanc" ? "tcbac" : "home", q };
+    if (seg[0] === "hlp") return { view: "hlp", q: Object.assign({}, q, { sub: seg[1] || "accueil", id: seg[2] || null }) };
     if (seg[0] === "bibliotheque" || seg[0] === "livres") return { view: "library", q };
     return { book: seg[0], view: seg[1] || null, q };
   }
+  const qsOf = params => { const q = Object.keys(params || {}).filter(k => params[k] != null && params[k] !== false && typeof params[k] !== "object").map(k => encodeURIComponent(k) + "=" + encodeURIComponent(params[k] === true ? 1 : params[k])); return q.length ? "?" + q.join("&") : ""; };
   function hashFor(view, params) {
-    if (view === "home") return "#/";
+    if (view === "spaces") return "#/";
+    if (view === "home") return "#/tronc-commun";
+    if (view === "tcbac") return "#/tronc-commun/bac-blanc" + qsOf(params);
+    if (view === "hlp") { const p = Object.assign({}, params), sub = p.sub || "accueil", id = p.id; delete p.sub; delete p.id; return "#/hlp" + (sub !== "accueil" || id ? "/" + sub : "") + (id ? "/" + encodeURIComponent(id) : "") + qsOf(p); }
     if (view === "library") return "#/bibliotheque" + (params && params.type ? "?type=" + params.type : "");
-    const q = Object.keys(params || {}).filter(k => params[k] != null && params[k] !== false && typeof params[k] !== "object").map(k => encodeURIComponent(k) + "=" + encodeURIComponent(params[k] === true ? 1 : params[k]));
-    return "#/" + B.id + "/" + view + (q.length ? "?" + q.join("&") : "");
+    return "#/" + B.id + "/" + view + qsOf(params);
   }
   function go(view, params) {
     const h = hashFor(view, params);
@@ -421,18 +434,23 @@
   }
   function route() {
     const r = parseHash();
+    if (r.view && !r.book && !VIEWS[r.view]) { location.replace("#/"); return; }
     if (r.view === "home" || r.view === "library") {
-      const fid = store.get(K_LAST) || (LIB[0] && LIB[0].id);
+      /* Accueil et bibliothèque du tronc commun : on recharge le dernier contenu du tronc commun ouvert */
+      const last = store.get(K_LAST);
+      const fid = TCLIB.find(b => b.id === last) ? last : (TCLIB[0] && TCLIB[0].id);
       const prm = r.q || {};
-      if (!fid || !LIB.find(b => b.id === fid)) { VIEW = r.view; PARAMS = prm; return render(); }
+      if (!fid) { VIEW = r.view; PARAMS = prm; return render(); }
       return loadBook(fid, () => { if (BOOKS[fid]) useBook(fid); VIEW = r.view; PARAMS = prm; render(); });
     }
+    if (r.view && !r.book) { VIEW = r.view; PARAMS = r.q || {}; return render(); }
     if (!LIB.find(b => b.id === r.book)) { location.replace("#/"); return; }
     loadBook(r.book, err => {
       if (err) { toast("Impossible de charger ce contenu."); location.replace("#/"); return; }
       useBook(r.book);
       let view = BOOK_VIEWS.includes(r.view) ? r.view : defView();
       if (view === "player" && !P) view = "train";
+      if (isCorpus() && !["carte", "train", "bilan", "player"].includes(view)) view = "train";
       if (view === "cours" && !B.course) view = "plan";
       if (view === "lecture" && B.course) view = "cours";
       const prm = Object.assign({}, r.q);
@@ -459,25 +477,35 @@
     renderPill();
   }
   function navItems() {
+    if (isCorpus()) return [["carte", "Fiches", "Fiches"], ["train", "Entraînement", "Exos"], ["bilan", "Bilan", "Bilan"]];
     const L = !!(B && B.course);
     return [L && ["cours", "Cours", "Cours"], ["plan", "Plan", "Plan"], ["carte", L ? "Fiches" : "Carte", L ? "Fiches" : "Carte"], ["train", "Entraînement", "Exos"], ["reflexion", L ? "Appliquer" : "Réflexion", L ? "Appliquer" : "Réflexion"], ["bilan", "Bilan", "Bilan"]].filter(Boolean);
   }
+  const crumbLink = (href, t) => `<span class="sep"></span><a href="${href}">${esc(t)}</a>`;
   function renderTopbar() {
-    const inBook = B && !["home", "library"].includes(VIEW);
-    document.body.classList.toggle("in-item", !!inBook);
-    $("#crumb").innerHTML = inBook ? `<span class="sep"></span><a href="#/${B.id}">${esc(B.meta.title)}</a>` : "";
-    $("#nav").hidden = !inBook;
+    const inBook = B && !SPACE_VIEWS.includes(VIEW);
+    const spaceNav = !inBook && SPACE_NAV[VIEW] ? SPACE_NAV[VIEW](PARAMS || {}) : null;
+    document.body.classList.toggle("in-item", !!(inBook || spaceNav));
+    const hlpItem = inBook && B.meta.space === "hlp";
+    document.body.dataset.space = hlpItem || VIEW === "hlp" ? "hlp" : VIEW === "spaces" ? "" : "tc";
+    $("#crumb").innerHTML = inBook ? crumbLink(hlpItem ? "#/hlp" : "#/tronc-commun", hlpItem ? "HLP" : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
+      : ["home", "library", "tcbac"].includes(VIEW) ? crumbLink("#/tronc-commun", "Philosophie · Tronc commun")
+      : VIEW === "hlp" ? crumbLink("#/hlp", "Spécialité HLP") : "";
+    $("#nav").hidden = !inBook && !spaceNav;
     if (inBook) {
       $("#nav").innerHTML = navItems().map(([v, l, s]) => `<button data-view="${v}"><span class="l">${esc(l)}</span><span class="s">${esc(s)}</span></button>`).join("");
       $$("#nav button").forEach(b => b.onclick = () => go(b.dataset.view, {}));
+    } else if (spaceNav) {
+      $("#nav").innerHTML = spaceNav.map(n => `<button data-href="${esc(n.href)}" class="${n.on ? "on" : ""}"><span class="l">${esc(n.l)}</span><span class="s">${esc(n.s || n.l)}</span></button>`).join("");
+      $$("#nav button").forEach(b => b.onclick = () => { if (location.hash === b.dataset.href) route(); else location.hash = b.dataset.href; });
     }
-    $("#topIcons").innerHTML = `<a class="top-icon ${VIEW === "home" ? "on" : ""}" href="#/" title="Accueil" aria-label="Accueil">${ICON.home}</a><a class="top-icon ${VIEW === "library" ? "on" : ""}" href="#/bibliotheque" title="Bibliothèque" aria-label="Bibliothèque">${ICON.library}</a><button class="top-icon" id="openSettings" title="Réglages" aria-label="Réglages">${ICON.gear}</button>`;
+    $("#topIcons").innerHTML = `<a class="top-icon ${VIEW === "spaces" ? "on" : ""}" href="#/" title="Accueil" aria-label="Accueil">${ICON.home}</a><a class="top-icon ${VIEW === "library" ? "on" : ""}" href="#/bibliotheque" title="Bibliothèque du tronc commun" aria-label="Bibliothèque du tronc commun">${ICON.library}</a><button class="top-icon" id="openSettings" title="Réglages" aria-label="Réglages">${ICON.gear}</button>`;
     $("#openSettings").onclick = openSettings;
     const br = $(".brand");
     if (br && !br.dataset.fx) { br.dataset.fx = 1; br.addEventListener("pointerenter", flipLogo); }
     renderSearch(inBook);
     const navKey = VIEW === "player" ? (P && (P.from === "reflexion" || P.from === "citations") ? "reflexion" : "train") : VIEW === "lecture" ? "plan" : VIEW === "citations" ? "reflexion" : VIEW;
-    $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.view === navKey));
+    if (inBook) $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.view === navKey));
   }
 
   /* =========================================================
@@ -501,7 +529,7 @@
   }
   const soonHTML = type => `<div class="cover soon"><span class="cv-title">${SOON[type].t}</span><span class="cv-author">${SOON[type].s}</span></div>`;
   function bindCovers(root) { $$("[data-book]", root).forEach(b => b.onclick = () => openBook(b.dataset.book)); }
-  const ofType = t => LIB.filter(m => m.type === t);
+  const ofType = t => TCLIB.filter(m => m.type === t);
 
   let HOME_TAB = "lecon";
   VIEWS.home = function (root) {
@@ -520,10 +548,10 @@
     root.innerHTML = `
     <section class="view home">
       <div class="card hero">
-        <div class="eyebrow accent">Tes cours, remis au propre</div>
+        <div class="eyebrow accent">Philosophie · Tronc commun</div>
         <h1 class="hero-t">Apprends.<br><span class="hl">Applique.</span></h1>
         <p class="hero-p">Recto remet tes leçons au propre, une idée par page, puis t'entraîne à t'en servir : exercices, fiches, sujets de dissertation et bilan de ce qui te manque.</p>
-        <div class="hero-cta">${B ? `<button class="btn primary xl" id="start">${cta} · ${esc(B.meta.title)}</button>` : ""}</div>
+        <div class="hero-cta">${B ? `<button class="btn primary xl" id="start">${cta} · ${esc(B.meta.title)}</button>` : ""}<a class="btn secondary xl" href="#/tronc-commun/bac-blanc" id="toBac">Bac blanc</a></div>
         ${prog}
         ${B ? `<div class="hero-facts">${daysHTML()}${facts}</div>` : ""}
       </div>
@@ -539,10 +567,57 @@
     homeFx(root);
   };
 
+  /* =========================================================
+     Accueil général : les deux espaces (tronc commun et HLP)
+     ========================================================= */
+  const SPACE_ICON = {
+    tc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="6.2"/><path d="M12 3v18"/></svg>',
+    hlp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 4.5C13 5.5 8.5 10 6.5 17.5"/><path d="M19.5 4.5c-.4 5.6-4.2 9.6-10.4 11.2"/><path d="M6.5 17.5L5 20.5"/><path d="M4 20.5h9"/></svg>'
+  };
+  const SPACE_FILL = {};   /* remplissage asynchrone d'une carte d'espace (fourni par les modules) */
+  VIEWS.spaces = function (root) {
+    const last = store.get(K_LAST), lastMeta = TCLIB.find(m => m.id === last);
+    const sums = TCLIB.map(m => ({ m, s: store.get(kSum(m.id)) }));
+    const started = sums.filter(x => x.s && x.s.answered);
+    const tcPct = started.length ? Math.round(avg(started.map(x => x.s.pct))) : null;
+    const row = (m, s) => `<button class="sp-row" data-book="${m.id}" style="--tone:${m.tone || "#1d1d1f"}"><span class="sp-dot"></span><span class="sp-rt"><b>${esc(m.title)}</b><small>${esc((KIND[m.type] || KIND.livre).one + (m.author ? " · " + m.author : ""))}</small></span><span class="sp-rp">${s && s.answered ? s.pct + " %" : "Nouveau"}</span></button>`;
+    root.innerHTML = `
+    <section class="view spaces">
+      <header class="sp-head">
+        <div><div class="eyebrow accent">Recto · tes révisions</div><h1 class="sp-t">Que révises-tu <span class="hl">aujourd'hui ?</span></h1></div>
+        <div class="sp-days">${daysHTML()}</div>
+      </header>
+      <article class="card space sp-tc" data-go="#/tronc-commun" aria-label="Philosophie, tronc commun">
+        <div class="sp-top"><span class="sp-badge">${SPACE_ICON.tc}</span><div><div class="eyebrow">Philosophie</div><h2>Tronc commun</h2></div>${tcPct != null ? `<span class="sp-pct"><b class="cnt" data-v="${tcPct}">${tcPct}</b><small>% de préparation</small></span>` : ""}</div>
+        <p class="sp-p">Tes leçons remises au propre, le livre au programme, les exercices, et un bac blanc sur les notions de ton choix.</p>
+        <div class="sp-list">${sums.map(x => row(x.m, x.s)).join("")}</div>
+        <div class="sp-acts"><button class="btn primary lg" data-go="#/tronc-commun">Ouvrir le tronc commun</button><button class="btn secondary lg" data-go="#/tronc-commun/bac-blanc">Bac blanc</button></div>
+        ${lastMeta ? `<p class="sp-resume">Dernier contenu ouvert : <a href="#/${lastMeta.id}">${esc(lastMeta.title)}</a></p>` : ""}
+      </article>
+      <article class="card space sp-hlp" data-go="#/hlp" aria-label="Spécialité HLP">
+        <div class="sp-top"><span class="sp-badge">${SPACE_ICON.hlp}</span><div><div class="eyebrow">Spécialité</div><h2>HLP</h2></div></div>
+        <p class="sp-p">Humanités, littérature et philosophie : tes textes étudiés en fiches (thèse, arguments, citations exactes), tes auteurs, et la place pour tes cours.</p>
+        <div class="sp-list" id="spHlp"><div class="sp-row ghost"></div><div class="sp-row ghost"></div><div class="sp-row ghost"></div></div>
+        <div class="sp-acts"><button class="btn primary lg" data-go="#/hlp">Ouvrir la spécialité</button><button class="btn secondary lg" data-go="#/hlp/textes">Textes et auteurs</button></div>
+      </article>
+    </section>`;
+    root.querySelector(".spaces").addEventListener("click", e => {
+      if (e.target.closest("a")) return;
+      const b = e.target.closest("[data-book]"); if (b) { openBook(b.dataset.book); return; }
+      const g = e.target.closest("[data-go]"); if (g) location.hash = g.dataset.go;
+    });
+    if (SPACE_FILL.hlp) SPACE_FILL.hlp($("#spHlp", root));
+    if (!LOGO_DONE) { LOGO_DONE = true; setTimeout(flipLogo, 150); }
+    X.wordsIn($(".sp-t", root));
+    X.stagger($$(".space", root), { y: 16, step: 90, duration: 520 });
+    $$(".space", root).forEach(c => X.spotlight(c));
+    countAll(root);
+  };
+
   let LIB_SUBJ = "Toutes";
   VIEWS.library = function (root, prm) {
     const type = prm.type === "livre" || prm.type === "lecon" ? prm.type : "tout";
-    const base = LIB.filter(m => type === "tout" || m.type === type);
+    const base = TCLIB.filter(m => type === "tout" || m.type === type);
     const subjects = ["Toutes", ...new Set(base.map(b => b.subject).filter(Boolean))];
     if (!subjects.includes(LIB_SUBJ)) LIB_SUBJ = "Toutes";
     const list = base.filter(b => LIB_SUBJ === "Toutes" || b.subject === LIB_SUBJ);
@@ -894,7 +969,7 @@
   /* Pastille de session (barre du haut) : bloc en cours, compte à rebours, temps total restant */
   function renderPill() {
     const slot = $("#pillSlot");
-    const inBook = B && S && !["home", "library"].includes(VIEW);
+    const inBook = B && S && !SPACE_VIEWS.includes(VIEW);
     if (!inBook || !S.run) {
       slot.innerHTML = "";
       return;
@@ -1029,7 +1104,7 @@
   const FILTER_WORDS = { exo: "exo", exos: "exo", exercice: "exo", exercices: "exo", fiche: "fiche", fiches: "fiche", lecon: "cours", lecons: "cours", cours: "cours", page: "cours", entrainement: "train", sujet: "train", sujets: "train" };
   let SEARCH = { q: "", f: "all", shown: 4, res: { toks: [], list: [] }, sel: -1, timer: 0 };
   let SEARCH_HIT = null;
-  const globalSearch = () => LIB.filter(m => m.type === "lecon").length >= SEARCH_GLOBAL_MIN;
+  const globalSearch = () => TCLIB.filter(m => m.type === "lecon").length >= SEARCH_GLOBAL_MIN;
   /* minuscules sans accents, en gardant la longueur (pour surligner au bon endroit) */
   function fold(s) { let o = ""; for (const c of String(s == null ? "" : s).toLowerCase()) o += c === "’" ? "'" : [...c.normalize("NFD")][0]; return o; }
   const tokSrc = t => rxEsc(t).replace(/oe/g, "(?:oe|œ)").replace(/ae/g, "(?:ae|æ)");
@@ -1105,10 +1180,10 @@
     return (a > 0 ? "…" : "") + markAll(text.slice(a, b), toks) + (b < text.length ? "…" : "");
   }
   function searchBooks(cb) {
-    if (B && !["home", "library"].includes(VIEW)) return cb([B]);
-    let left = LIB.length; const out = [];
+    if (B && !SPACE_VIEWS.includes(VIEW)) return cb([B]);
+    let left = TCLIB.length; const out = [];
     if (!left) return cb(out);
-    LIB.forEach(m => loadBook(m.id, () => { if (BOOKS[m.id]) out.push(BOOKS[m.id]); if (!--left) cb(out); }));
+    TCLIB.forEach(m => loadBook(m.id, () => { if (BOOKS[m.id]) out.push(BOOKS[m.id]); if (!--left) cb(out); }));
   }
   function renderSearch(inBook) {
     const slot = $("#searchSlot");
@@ -1166,7 +1241,7 @@
     SEARCH.timer = setTimeout(() => {
       const key = SEARCH.q + "|" + SEARCH.f, t0 = Date.now(), delay = G.fx ? SEARCH_DELAY : 0;
       box.classList.add("loading");
-      $("#sres").innerHTML = `<div class="s-wait"><span>Recherche dans ${esc(B && !["home", "library"].includes(VIEW) ? B.meta.title : "la bibliothèque")}</span><i></i><i></i><i></i></div><div class="s-skel"><i></i><i></i><i></i></div>`;
+      $("#sres").innerHTML = `<div class="s-wait"><span>Recherche dans ${esc(B && !SPACE_VIEWS.includes(VIEW) ? B.meta.title : "la bibliothèque")}</span><i></i><i></i><i></i></div><div class="s-skel"><i></i><i></i><i></i></div>`;
       searchBooks(books => {
         const r = runSearch(q, SEARCH.f, books);
         SEARCH.timer = setTimeout(() => {
@@ -1474,6 +1549,7 @@
           <button class="btn primary sm" data-train-notion="${id}">S'entraîner</button>
           ${n.video ? `<a class="btn secondary sm" href="${yt(n.video)}" target="_blank" rel="noopener">Vidéos ${ICON.ext}</a>` : ""}
           ${B.pageOf && B.pageOf[id] ? `<button class="btn ghost sm" data-goto-page="${B.pageOf[id]}">Relire le cours</button>` : ""}
+          ${n.link ? `<a class="btn ghost sm" href="${esc(n.link)}" data-close>Fiche complète</a>` : ""}
           ${n.part && RD(n.part).link ? `<a class="btn ghost sm" href="${RD(n.part).link}" target="_blank" rel="noopener">Texte ${ICON.ext}</a>` : ""}
         </div>
       </div>
@@ -1628,7 +1704,7 @@
   function startSession(o) {
     if (!o.ids || !o.ids.length) { toast("Rien à proposer ici pour le moment."); return; }
     closeModal();
-    P = { title: o.title, ids: o.ids, idx: 0, res: [], origin: o.origin || null, from: o.from || "train", done: false };
+    P = { title: o.title, ids: o.ids, idx: 0, res: [], origin: o.origin || null, from: o.from || "train", back: o.back || null, done: false };
     go("player");
   }
   const segCls = s => s == null ? "" : s >= 0.99 ? "ok" : s > 0 ? "mid" : "ko";
@@ -1642,7 +1718,12 @@
       default: return ex.q;
     }
   }
-  function leaveSession() { applyKit(); const back = P && P.origin === "plan" ? "plan" : P && P.from === "citations" ? "citations" : P && P.from === "reflexion" ? "reflexion" : "train"; P = null; go(back); }
+  function leaveSession() {
+    applyKit();
+    /* Série lancée depuis un autre écran (bac blanc, fiche HLP) : on y revient */
+    if (P && P.back) { const h = P.back; P = null; location.hash = h; return; }
+    const back = P && P.origin === "plan" ? "plan" : P && P.from === "citations" ? "citations" : P && P.from === "reflexion" ? "reflexion" : "train"; P = null; go(back);
+  }
 
   VIEWS.player = function (root) {
     if (!P) return go("train");
@@ -1781,7 +1862,7 @@
     if (p === 100 && n >= 5) unlock("perfect", "Première série parfaite");
     if (P.title === "Diagnostic éclair") unlock("diag", "Diagnostic fait");
     if (P.title === "Simulation d'épreuve" && p >= 75) unlock("sim", "Simulation réussie");
-    const rd = $("#redo"); if (rd) rd.onclick = () => startSession({ title: "Correction · " + P.title, ids: shuffle(errs), origin: P.origin, from: P.from });
+    const rd = $("#redo"); if (rd) rd.onclick = () => startSession({ title: "Correction · " + P.title, ids: shuffle(errs), origin: P.origin, from: P.from, back: P.back });
     const nb = $("#nextBlock"); if (nb) nb.onclick = () => { P = null; advanceRun(); };
     const bk = $("#back"); if (bk) bk.onclick = leaveSession;
     $("#toBilan").onclick = () => { P = null; go("bilan"); };
@@ -2564,7 +2645,7 @@
     const st = g >= 80 ? "good" : g >= 50 ? "mid" : "weak";
     const tested = NIDS.filter(id => mm[id] != null).length;
     const { answered, acc } = stats();
-    const caption = !answered ? "Rien encore : lance le diagnostic, puis suis le plan." : g < 35 ? "Tu débutes. Suis le plan : diagnostic, lecture, exercices." : g < 60 ? "Les bases sont là. Concentre-toi sur les notions en rouge." : g < 80 ? "Bonne préparation. Consolide les dernières notions fragiles." : "Tu es prêt. Une simulation d'épreuve, puis au lit.";
+    const caption = !answered ? (isCorpus() ? "Rien encore : lance un mix intelligent dans Entraînement." : "Rien encore : lance le diagnostic, puis suis le plan.") : g < 35 ? (isCorpus() ? "Tu débutes. Relis les fiches des textes, puis entraîne-toi." : "Tu débutes. Suis le plan : diagnostic, lecture, exercices.") : g < 60 ? "Les bases sont là. Concentre-toi sur les notions en rouge." : g < 80 ? "Bonne préparation. Consolide les dernières notions fragiles." : "Tu es prêt. Une simulation d'épreuve, puis au lit.";
     const errsBy = {};
     errorIds().forEach(id => EX[id].nlist.forEach(n => { errsBy[n] = (errsBy[n] || 0) + 1; }));
     const weak = rankWeak();
@@ -2782,5 +2863,27 @@
   /* Accès console, pour tester : Recto.start(["schema-1"]) dans un contenu ouvert */
   Object.assign(window.Recto, { start: ids => startSession({ title: "Test", ids }), report: () => buildReport().text });
 
-  route();
+  /* =========================================================
+     API interne pour les modules (bac blanc, spécialité HLP)
+     ========================================================= */
+  function withBook(id, fn) {
+    loadBook(id, err => { if (err || !BOOKS[id]) return toast("Impossible de charger ce contenu."); useBook(id); fn(BOOKS[id]); });
+  }
+  window.Recto.core = {
+    V, $, $$, esc, md, ICON, toast, store, X, shuffle, clip, sum, avg, fold, dayKey, fmtHMS, kSum,
+    G: () => G, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV, SPACE_FILL,
+    view: () => VIEW, params: () => PARAMS, hash: (v, p) => hashFor(v, p),
+    go: (v, p) => { const h = hashFor(v, p); if (location.hash === h) route(); else location.hash = h; },
+    rerender: () => render(), onClean: f => CLEAN.push(f),
+    loadBook, openBook, withBook, openModal, closeModal, switchHTML, bindSwitch, countAll,
+    /* Lance une série d'exercices dans un contenu (leçon, livre, textes HLP) */
+    startIn: (id, o) => withBook(id, () => startSession(o)),
+    /* Ouvre la fiche d'une notion d'un contenu, sans quitter la page */
+    ficheIn: (id, n) => withBook(id, bk => { if (bk.notions[n]) openFiche(n); }),
+    notion: (id, n) => BOOKS[id] && BOOKS[id].notions[n]
+  };
+
+  /* Les modules se déclarent après ce fichier : on démarre une fois la page entièrement lue */
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", route);
+  else setTimeout(route, 0);
 })();

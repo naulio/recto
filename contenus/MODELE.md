@@ -83,6 +83,33 @@ Formats d'exercices : `qcm`, `vf`, `fill`, `part`, `order`, `match`, `sort`, `sc
 Un `qcm` avec `passage` (et `src`) devient une **explication de texte** : le passage s'affiche à côté des propositions, et l'exercice apparaît dans « Appliquer ».
 Un exercice de citation (`part`, ou `fill` sans `plain: true`, ou `cite: true`) disparaît en mode « sans citations ».
 
-## 3. Nouvelle version
+## 3. Bac blanc du tronc commun
 
-Après une modification, change le numéro de version `V` dans `assets/app.js`, `sw.js` et les `?v=` de `index.html` : les navigateurs et l'app installée prendront la nouvelle version.
+Fichier : `contenus/bac/tronc-commun.js`.
+
+- `notions` : les notions proposées, avec les contenus qui les nourrissent (`src`).
+- `map` : à quelles notions se rattachent les fiches de chaque contenu (pour les questions de réflexion tirées des cartes mémoire).
+- Les sujets de dissertation (`build`) des leçons sont repris automatiquement ; `buildNotions` précise ceux qui croisent deux notions.
+- `subjects` : d'autres sujets (`ns` : la liste exacte des notions mobilisées, `termes`, `prob`, `plan`, `refs` vers des fiches, `piege`).
+- `texts` : les textes à expliquer (`text`, `src`, `these`, `probleme`, `mouvement`, `enjeux`, `questions`, `refs`, `piege`). Chaque `mouvement.from` doit être recopié du texte.
+
+Règle : un sujet n'est tiré que si **toutes** ses notions sont cochées. Pour une nouvelle leçon (par exemple *La conscience*), ajouter son id dans `map` avec `def: ["conscience"]`, et ses sujets de dissertation seront proposés.
+
+## 4. Spécialité HLP
+
+**Un texte étudié** : une entrée dans `texts` de `contenus/hlp/hlp.js` (identification, `doc.photos` = le nom de la photo, `classement`, compréhension, `citations` recopiées de la photo, `annotations`, `alertes`, `complement` pour ce qui ne vient pas du document), et la photo dans `docs`. Un auteur nouveau : une entrée dans `authors`. Les exercices « S'entraîner sur les textes » sont générés tout seuls.
+
+**Un chapitre** : retirer `planned: true` de son entrée dans `chapters` et lui donner `n`, `question`, `periode`, `presentation`.
+
+**Un cours de spécialité** : une leçon Recto ordinaire (section 2), déclarée dans `contenus/bibliotheque.js` avec :
+
+```js
+{ id: "hlp-philo-ch1", type: "lecon", space: "hlp", discipline: "philosophie", chapter: "ch1",
+  file: "contenus/lecons/hlp-philo-ch1.js", title: "…", subject: "HLP", level: "Terminale", tone: "#5856d6" }
+```
+
+Elle apparaît alors dans la section de sa discipline (et nulle part dans le tronc commun), avec cours, fiches, exercices et bilan. Le bac blanc HLP de cette discipline et de ce chapitre se débloque : ses sujets de dissertation (`build`) deviennent des sujets d'essai.
+
+## 5. Nouvelle version
+
+Après une modification, change le numéro de version `V` dans `assets/app.js`, `sw.js` et les `?v=` de `index.html` : les navigateurs et l'app installée prendront la nouvelle version. Un nouveau fichier doit aussi être ajouté à la liste `CORE` de `sw.js`. Puis lance `node tests/verifier.js`.

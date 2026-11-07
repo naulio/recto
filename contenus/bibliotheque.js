@@ -35,6 +35,20 @@ window.RECTO_LIBRARY = {
       level: "Lycée",
       tagline: "Douter de tout pour trouver une première certitude.",
       tone: "#1f2a44"
+    },
+    /* Spécialité HLP : les textes étudiés, transformés en exercices (moteur d'entraînement de Recto).
+       space: "hlp" les tient à l'écart du tronc commun. Les futurs cours HLP seront des leçons
+       déclarées ici avec space: "hlp", discipline ("litterature" ou "philosophie") et chapter (ex. "ch1"). */
+    {
+      id: "hlp-textes",
+      type: "corpus",
+      space: "hlp",
+      file: "contenus/hlp/hlp.js",
+      title: "Textes HLP",
+      subject: "HLP",
+      level: "Terminale",
+      tagline: "Les textes étudiés en spécialité : thèses, citations, auteurs, liens.",
+      tone: "#0b7a8a"
     }
   ]
 };
