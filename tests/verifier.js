@@ -277,5 +277,25 @@ section("10. Fichiers publiés : aucune trace des documents de travail");
   ok(nf > 10, `fichiers publiés contrôlés (${nf})`);
 }
 
+/* ------------------------------------------------------------------ */
+section("11. Styles : pas deux composants sous le même nom de classe");
+{
+  /* Une classe définie seule dans style.css et redéfinie seule dans espaces.css écrase la première partout
+     (la frise des textes avait ainsi aplati la grille des vues d'ensemble). Exceptions : extensions voulues. */
+  const EXTENDED = new Set(["crumb"]);
+  const classes = f => {
+    const css = fs.readFileSync(path.join(ROOT, "assets", f), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    const out = new Set(), re = /([^{}]+)\{[^{}]*\}/g; let m;
+    while ((m = re.exec(css))) m[1].split(",").map(s => s.trim()).forEach(s => {
+      const c = (s.match(/^\.([\w-]+)(?::[\w-]+(?:\([^)]*\))?)*$/) || [])[1];
+      if (c) out.add(c);
+    });
+    return out;
+  };
+  const base = classes("style.css"), extra = classes("espaces.css");
+  ok(base.size > 100 && extra.size > 100, `classes lues (${base.size} + ${extra.size})`);
+  extra.forEach(c => ok(!base.has(c) || EXTENDED.has(c), `.${c} est défini dans style.css et redéfini dans espaces.css`));
+}
+
 console.log(`\n${fails ? "ÉCHECS : " + fails : "Tout est bon"} · ${oks} vérifications réussies`);
 process.exit(fails ? 1 : 0);

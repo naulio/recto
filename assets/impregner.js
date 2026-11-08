@@ -52,7 +52,7 @@
       ? `<a class="fr-dot ${x === cur ? "on" : ""}" href="#/hlp/texte/${x.id}" style="left:${pos(i)}%" title="${esc(x.a.short)} · ${esc(x.year)}" aria-label="${esc(x.a.short)}, ${esc(x.year)}"></a>`
       : `<span class="fr-dot ${x === cur ? "on" : ""}" style="left:${pos(i)}%" title="${esc(x.a.short)} · ${esc(x.year)}"></span>`;
     const lab = pos(ci), side = lab < 18 ? "l" : lab > 82 ? "r" : "";
-    return `<div class="frise" role="img" aria-label="${esc(cur.a.short)}, ${esc(cur.year)}, parmi les textes du chapitre">
+    return `<div class="tfrise" role="img" aria-label="${esc(cur.a.short)}, ${esc(cur.year)}, parmi les textes du chapitre">
       <div class="fr-line"></div>${L.map(dot).join("")}
       <div class="fr-cur ${side}" style="left:${lab}%"><b>${esc(cur.year)}</b><span>${esc(cur.a.short)}</span></div>
       ${cents.map(o => `<span class="fr-c" style="left:${pos(o.i)}%">${ROMAN[o.c] || o.c}<sup>e</sup></span>`).join("")}

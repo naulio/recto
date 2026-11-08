@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "13"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "14"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -1614,6 +1614,7 @@
     </section>`;
     $$(".c-nav-item").forEach(b => b.onclick = () => b.hasAttribute("data-ov") ? go("carte", {}) : go("carte", { part: +b.dataset.part }));
     const main = $("#cmain");
+    main.classList.toggle("is-ov", mode === "ov");
     if (mode === "ov") main.innerHTML = overviewHTML();
     else if (mode === "p") main.innerHTML = partHTML(prm.part);
     else main.innerHTML = ficheHTML(prm.notion, { back: true });
@@ -1627,13 +1628,17 @@
   };
   function overviewHTML() {
     const ov = B.overview || { title: B.meta.title + " en un coup d'œil", intro: B.meta.tagline || "", boxes: [] };
+    /* Jusqu'à six parties : une ligne, encadrés en bas. Au-delà : deux lignes de cartes compactes
+       (chiffre à côté du titre) et les encadrés montent à côté du titre pour leur laisser la hauteur */
+    const many = CH.length > 6, cols = many ? Math.ceil(CH.length / 2) : CH.length;
+    const boxes = ov.boxes.map(x => `<div class="ov-box"><b>${esc(x.t)}</b>${esc(x.b)}</div>`).join("");
     return `
-      <div class="ov-head"><div><div class="eyebrow">Vue d'ensemble</div><h1 style="margin-top:6px">${esc(ov.title)}</h1><p>${esc(ov.intro)}</p></div></div>
-      <div class="frise" style="grid-template-columns:repeat(${Math.min(CH.length, 6)},minmax(0,1fr))">${CH.map(p => {
+      <div class="ov-head${many ? " many" : ""}"><div><div class="eyebrow">Vue d'ensemble</div><h1 style="margin-top:6px">${esc(ov.title)}</h1><p>${esc(ov.intro)}</p></div>${many && boxes ? `<div class="ov-side">${boxes}</div>` : ""}</div>
+      <div class="frise${many ? " many" : ""}" style="--cols:${cols}">${CH.map((p, i) => {
         const sc = partScore(p);
-        return `<button class="fr-col" data-part="${p}"><span class="r">${PARTS[p].roman}</span><span class="m">${esc(PARTS[p].metaphor || "")}</span><span class="t">${esc(PARTS[p].label)}</span><span class="e">${esc(PARTS[p].essence || "")}</span><div class="bar ${status(partTested(p) ? sc : null)}"><i style="width:${pct(sc)}%"></i></div></button>`;
+        return `<button class="fr-col${(i + 1) % cols ? "" : " eol"}" data-part="${p}"><span class="r">${PARTS[p].roman}</span><span class="m">${esc(PARTS[p].metaphor || "")}</span><span class="t">${esc(PARTS[p].label)}</span><span class="e">${esc(PARTS[p].essence || "")}</span><div class="bar ${status(partTested(p) ? sc : null)}"><i style="width:${pct(sc)}%"></i></div></button>`;
       }).join("")}</div>
-      ${ov.boxes.length ? `<div class="ov-foot">${ov.boxes.map(x => `<div class="ov-box"><b>${esc(x.t)}</b>${esc(x.b)}</div>`).join("")}</div>` : ""}`;
+      ${!many && boxes ? `<div class="ov-foot">${boxes}</div>` : ""}`;
   }
   function partHTML(p) {
     const ids = NIDS.filter(id => NOTIONS[id].part === p);
