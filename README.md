@@ -26,8 +26,8 @@ Les textes à expliquer (Descartes, Bergson, Baudelaire) viennent de Wikisource,
 
 ### Spécialité HLP
 
-- **Textes et auteurs** : les 18 textes du chapitre 1 (*Éducation, transmission et émancipation*) en fiches (thèse, arguments, citations exactes, rapprochements, oppositions, points à vérifier), une fiche par auteur, toutes les citations. Les photos des documents ne sont pas publiées.
-- **Cours de philosophie, chapitre 1** : *Éducation, émancipation et transmission*, remis au propre à partir des 11 pages de notes de la classe : 32 pages, 35 fiches, 191 exercices, 10 sujets d'essai. Chaque page indique sa page de notes ; l'illisible, le douteux ou le sans-source est signalé « À vérifier ».
+- **Textes et auteurs** : les 18 textes du chapitre 1 (*Éducation, transmission et émancipation*) en fiches (thèse, arguments, citations exactes, rapprochements, oppositions), une fiche par auteur, toutes les citations. Dates, œuvres et références sont vérifiées dans des sources fiables.
+- **Cours de philosophie, chapitre 1** : *Éducation, émancipation et transmission* : 32 pages, 35 fiches, 191 exercices, 10 sujets d'essai. Dates et attributions vérifiées dans des sources fiables ; ce qui ne peut pas l'être n'est pas affiché.
 - **S'entraîner sur les textes** : les fiches deviennent des exercices.
 - **Bac blanc HLP** : corrigés et épreuve en philosophie (10 essais, 9 interprétations) ; la littérature s'ouvrira avec son cours.
 

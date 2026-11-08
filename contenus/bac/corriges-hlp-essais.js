@@ -19,7 +19,7 @@ Object.assign(window.RECTO_CORRIGES, {
         transition: "Mais une éducation qui assume ses valeurs peut glisser vers la domination : où passe la limite ?" },
       { titre: "III. Le danger : un pouvoir absolu ou une éducation réduite à l'utile",
         args: [
-          { idee: "La relation éducative est nécessairement une relation de pouvoir ; devenu absolu, ce pouvoir provoque le décrochage et manque le but : que l'élève s'élève.", ref: "Michel Foucault, d'après le cours" },
+          { idee: "La relation éducative est nécessairement une relation de pouvoir ; devenu absolu, ce pouvoir provoque le décrochage et manque le but : que l'élève s'élève.", ref: "Michel Foucault" },
           { idee: "N'apprendre que l'utile réduit la culture et prive les enfants de tout choix dans leur vie : ce serait une éducation de propagande.", ref: "Arendt, La Crise de la culture : la critique du pragmatisme" },
           { idee: "Une éducation non neutre se justifie donc si elle conduit à l'autonomie, se donner sa propre loi : educere, c'est sortir du carcan.", ref: "Cours : autonomie, du grec autos (soi) et nomos (la loi)" }
         ] }
@@ -38,7 +38,7 @@ Object.assign(window.RECTO_CORRIGES, {
         transition: "Reste à savoir si cette contrainte enferme ou si elle rend une liberté possible." },
       { titre: "II. Une entrave qui libère : la règle devient gouvernail",
         args: [
-          { idee: "La règle maîtrisée permet de diriger son œuvre. Léonard de Vinci, qui perfectionne la perspective, en fait l'instrument même de la création picturale.", ref: "Léonard (formulation du cours) : « la perspective est la bride et le gouvernail de la peinture »" },
+          { idee: "La règle maîtrisée permet de diriger son œuvre. Léonard de Vinci, qui perfectionne la perspective, en fait l'instrument même de la création picturale.", ref: "Léonard : « la perspective est la bride et le gouvernail de la peinture »" },
           { idee: "Une fois le savoir maîtrisé et intériorisé, on peut l'interroger : c'est là que commence l'autonomie. L'éducation impose d'abord, puis donne les moyens de passer au-dessus.", ref: "Cours : un processus éducatif, une déconstruction reconstruite" },
           { idee: "Cette liberté est propre à l'homme : l'animal obéit à la nature, l'homme se reconnaît libre d'acquiescer ou de résister ; perfectible, il est éducable.", ref: "Rousseau, Discours sur l'origine de l'inégalité, première partie" }
         ],
@@ -46,7 +46,7 @@ Object.assign(window.RECTO_CORRIGES, {
       { titre: "III. Contraindre sans dominer : accompagner et limiter le pouvoir",
         args: [
           { idee: "L'éducateur doit être un accompagnateur plutôt qu'un maître, et d'abord connaître l'enfant au lieu de chercher en lui l'adulte qu'il deviendra.", ref: "Rousseau, Émile, Préface : « Ils cherchent toujours l'homme dans l'enfant »" },
-          { idee: "La relation éducative est une relation de pouvoir, mais ce pouvoir ne doit pas être absolu : sinon l'élève décroche et ne peut plus s'élever.", ref: "Michel Foucault, d'après le cours" },
+          { idee: "La relation éducative est une relation de pouvoir, mais ce pouvoir ne doit pas être absolu : sinon l'élève décroche et ne peut plus s'élever.", ref: "Michel Foucault" },
           { idee: "Le contraire de l'éducation serait un pouvoir doux qui, au lieu de préparer à l'âge adulte, fixe les hommes dans l'enfance et rend le libre arbitre inutile.", ref: "Tocqueville, De la démocratie en Amérique, II, IV, 7 : le despotisme doux" }
         ] }
     ],
@@ -58,20 +58,20 @@ Object.assign(window.RECTO_CORRIGES, {
     parties: [
       { titre: "I. L'exigence d'un enseignement utile : Platon et Durkheim",
         args: [
-          { idee: "Platon constate que l'art n'aide ni les soldats ni les architectes : inutile à l'éducation, il faudrait le supprimer pour former un homme juste.", ref: "Platon, La République, d'après le cours (il vise surtout les arts qui imitent)" },
-          { idee: "Durkheim critique l'éducation classique : le gavage ne permet ni de connaître ni d'utiliser le savoir. Comme en sciences, un savoir doit pouvoir servir.", ref: "Émile Durkheim, d'après le cours : contre le gavage" }
+          { idee: "Platon constate que l'art n'aide ni les soldats ni les architectes : inutile à l'éducation, il faudrait le supprimer pour former un homme juste.", ref: "Platon, La République (il vise surtout les arts qui imitent)" },
+          { idee: "Durkheim critique l'éducation classique : le gavage ne permet ni de connaître ni d'utiliser le savoir. Comme en sciences, un savoir doit pouvoir servir.", ref: "Émile Durkheim : contre le gavage" }
         ],
         transition: "Pourtant, exiger qu'un savoir serve ne revient pas à n'enseigner que ce qui sert tout de suite : l'utilité immédiate appauvrit." },
       { titre: "II. Réduire l'éducation à l'utile, c'est réduire l'individu",
         args: [
           { idee: "Si tout devait servir à un métier pratique, on fermerait les portes aux connaissances nécessaires à toutes les disciplines : en réalité, rien ne sert à rien.", ref: "Cours : l'autonomie et le manque de curiosité pour l'inutile" },
-          { idee: "Une connaissance limitée à l'ici, ce que perçoivent les sens, et au maintenant, le seul présent, ne serait presque rien : le savoir dépasse l'usage immédiat.", ref: "Cours : l'ici et le maintenant (attribution à Heidegger à vérifier)" },
+          { idee: "Le savoir de l'ici, ce que perçoivent les sens, et du maintenant, le seul présent, paraît le plus riche mais se révèle le plus pauvre : connaître dépasse l'usage immédiat.", ref: "Hegel, Phénoménologie de l'esprit : l'ici et le maintenant" },
           { idee: "Nietzsche dénonce dans l'enseignement d'État « un dressage brutal » qui rend vite les jeunes gens utilisables : la profession y remplace la vocation, qui demande du temps.", ref: "Nietzsche, Crépuscule des idoles (texte étudié)" }
         ],
         transition: "Si l'utile appauvrit, il faut dire ce que l'école doit transmettre de plus, et pourquoi." },
       { titre: "III. Transmettre une culture large : un devoir, contre la propagande",
         args: [
-          { idee: "Arendt attribue la crise de l'éducation au pragmatisme : n'apprendre que l'utile réduit la culture, ce qui est dangereux intellectuellement, et peut-être politiquement.", ref: "Hannah Arendt, La Crise de la culture, d'après le cours" },
+          { idee: "Arendt attribue la crise de l'éducation au pragmatisme : n'apprendre que l'utile réduit la culture, ce qui est dangereux intellectuellement, et peut-être politiquement.", ref: "Hannah Arendt, La Crise de la culture" },
           { idee: "Transmettre les avancées des ancêtres est un devoir moral : l'école doit apprendre aux enfants « ce qu'est le monde ». Réduits au strict nécessaire, ils n'auraient pas de choix : ce serait une propagande.", ref: "Arendt, La crise de l'éducation (texte étudié)" }
         ] }
     ],
@@ -116,8 +116,8 @@ Object.assign(window.RECTO_CORRIGES, {
       { titre: "II. Transmettre n'est pas dicter : mettre à disposition pour un usage",
         args: [
           { idee: "Transmettre, c'est mettre un savoir à la disposition de l'autre pour qu'il en fasse usage, en lui laissant la liberté d'essayer de s'en servir.", ref: "Cours : les écoles d'art, des techniques mais une personnalité pour chacun" },
-          { idee: "Mieux vaut savoir se servir de son savoir que l'accumuler : avoir moins de connaissances n'est pas grave si l'on sait les utiliser.", ref: "Montaigne, Essais, I, 26 : « Plutôt la tête bien faite que bien pleine »" },
-          { idee: "Érasme demande aux précepteurs de quitter leur rigidité pour la bienveillance : la manière de transmettre compte autant que le contenu.", ref: "Érasme, d'après le cours" }
+          { idee: "Mieux vaut savoir se servir de son savoir que l'accumuler : avoir moins de connaissances n'est pas grave si l'on sait les utiliser.", ref: "Montaigne, Essais, I, 26 : « un conducteur qui eût plutôt la tête bien faite que bien pleine »" },
+          { idee: "Érasme demande aux précepteurs de quitter leur rigidité pour la bienveillance : la manière de transmettre compte autant que le contenu.", ref: "Érasme" }
         ],
         transition: "Faut-il alors transmettre moins pour imposer moins ? Arendt montre au contraire que l'héritage conditionne le choix." },
       { titre: "III. Transmettre est un devoir : sans héritage, pas de choix",
@@ -134,22 +134,22 @@ Object.assign(window.RECTO_CORRIGES, {
     parties: [
       { titre: "I. Une autorité du maître : relation de pouvoir et savoir imposé",
         args: [
-          { idee: "La relation entre l'élève et l'enseignant est nécessairement une relation de pouvoir : celui qui sait dirige, et le savoir s'impose d'abord.", ref: "Michel Foucault, d'après le cours" },
+          { idee: "La relation entre l'élève et l'enseignant est nécessairement une relation de pouvoir : celui qui sait dirige, et le savoir s'impose d'abord.", ref: "Michel Foucault" },
           { idee: "L'éducation ne peut se passer d'autorité : l'enfant doit être introduit dans un monde plus vieux que lui, et l'on ne peut le traiter comme une grande personne.", ref: "Arendt : « l'éducation ne peut faire fi de l'autorité, ni de la tradition »" }
         ],
         transition: "Mais reconnaître une autorité, est-ce réduire l'élève à l'obéissance ? Une soumission passive permet-elle d'apprendre ?" },
       { titre: "II. L'obéissance seule produit gavage et décrochage",
         args: [
-          { idee: "Le gavage remplit l'élève sans lui permettre ni de connaître ni d'utiliser le savoir : celui qui reçoit docilement ne sait pas s'en servir.", ref: "Émile Durkheim, d'après le cours" },
+          { idee: "Le gavage remplit l'élève sans lui permettre ni de connaître ni d'utiliser le savoir : celui qui reçoit docilement ne sait pas s'en servir.", ref: "Émile Durkheim" },
           { idee: "La dissymétrie éducative sépare le maître qui parle de l'élève qui absorbe en silence : l'élève ne voit plus l'attrait de la matière.", ref: "Cours : la démarche venue des États-Unis, inspirée de John Dewey" },
-          { idee: "Un pouvoir absolu provoque le décrochage : si l'élève ne saisit pas l'enseignement à travers son intérêt, il ne peut pas s'élever.", ref: "Foucault, d'après le cours : un pouvoir qui ne doit pas être absolu" }
+          { idee: "Un pouvoir absolu provoque le décrochage : si l'élève ne saisit pas l'enseignement à travers son intérêt, il ne peut pas s'élever.", ref: "Foucault : un pouvoir qui ne doit pas être absolu" }
         ],
         transition: "Il faut donc repenser le rôle du maître : non plus commander, mais conduire l'élève à vouloir apprendre." },
       { titre: "III. Un maître qui accompagne : l'élève devient acteur",
         args: [
-          { idee: "Érasme veut des précepteurs bienveillants plutôt que rigides ; Rousseau, un éducateur qui soit un accompagnateur plutôt qu'un maître.", ref: "Érasme, d'après le cours ; Rousseau, Émile ou De l'éducation" },
+          { idee: "Érasme veut des précepteurs bienveillants plutôt que rigides ; Rousseau, un éducateur qui soit un accompagnateur plutôt qu'un maître.", ref: "Érasme; Rousseau, Émile ou De l'éducation" },
           { idee: "Pour accompagner, il faut connaître l'enfant au lieu de chercher en lui l'adulte qu'il sera : l'éducateur doit d'abord observer.", ref: "Rousseau, Émile, Préface : « Commencez donc par mieux étudier vos élèves »" },
-          { idee: "Le professeur doit montrer l'intérêt de la matière : l'élève devient acteur de ses apprentissages au lieu de simplement absorber.", ref: "John Dewey, d'après le cours" }
+          { idee: "Le professeur doit montrer l'intérêt de la matière : l'élève devient acteur de ses apprentissages au lieu de simplement absorber.", ref: "John Dewey" }
         ] }
     ],
     conclusion: "Apprendre exige une autorité : celui qui ne sait pas reçoit d'abord d'un autre, et l'éducation ne peut se passer de tradition. Mais l'obéissance seule ne fait pas apprendre : elle produit le gavage et, si le pouvoir devient absolu, le décrochage. Il ne suffit donc pas d'obéir au maître : il faut un maître qui accompagne, connaisse l'élève et montre l'intérêt de la matière."
@@ -161,14 +161,14 @@ Object.assign(window.RECTO_CORRIGES, {
       { titre: "I. Un refus justifié par un prétendu rôle naturel",
         args: [
           { idee: "On prétend que les femmes n'ont pas les compétences intellectuelles : leur éducation, presque uniquement religieuse, doit en faire de bonnes épouses et des hôtesses agréables.", ref: "Cours : une ignorance voulue ; les couvents, une instruction sans sciences" },
-          { idee: "Rousseau, qui veut un accompagnateur pour Émile, refuse que les femmes soient élevées comme les hommes : elles auraient un rôle subalterne.", ref: "Rousseau, Émile, d'après le cours : l'éducation de Sophie" }
+          { idee: "Rousseau, qui veut un accompagnateur pour Émile, refuse que les femmes soient élevées comme les hommes : elles auraient un rôle subalterne.", ref: "Rousseau, Émile : l'éducation de Sophie" }
         ],
         transition: "Mais cette prétendue nature est-elle une cause, ou le produit de l'éducation qu'elle sert à justifier ?" },
       { titre: "II. En réalité, une volonté de contrôle",
         args: [
           { idee: "Cantonnées au domestique et maintenues dans l'ignorance, les femmes sont plus faciles à contrôler : leurs maîtres veulent plus que leur obéissance, ils veulent leurs sentiments.", ref: "Mill, De l'assujettissement des femmes : « toute la force de l'éducation »" },
           { idee: "La nature invoquée est fabriquée : dès le berceau, on nourrit les garçons qui pleurent et l'on fait attendre les filles.", ref: "Françoise Héritier, La Différence des sexes : les modèles de formatage" },
-          { idee: "Des autodidactes prouvent la capacité refusée : Émilie du Châtelet se forme seule à la physique et aux mathématiques, puis traduit Newton.", ref: "Cours : les autodidactes, un accès au savoir rare et privilégié" }
+          { idee: "Des femmes prouvent la capacité refusée : Émilie du Châtelet se forme à la physique et aux mathématiques hors de l'université, par ses lectures et des leçons particulières, puis traduit Newton.", ref: "Cours : les autodidactes, un accès au savoir rare et privilégié" }
         ],
         transition: "L'ignorance étant voulue, l'instruction des femmes ne pouvait venir que d'un combat." },
       { titre: "III. Les combats pour l'éducation des femmes",
@@ -184,9 +184,9 @@ Object.assign(window.RECTO_CORRIGES, {
   "A-hlp-ch1-education-build-8": {
     intro: "On a parlé de ministère de l'Instruction publique avant de parler d'Éducation nationale. Instruire, c'est transmettre un savoir intellectuel, un socle commun ; éduquer, c'est conduire hors de l'ignorance sans oublier le corps et la morale. Le changement de nom suggère que l'un ne suffit pas à l'autre. L'école transmet des savoirs ; mais un esprit bien rempli est-il pour autant un homme formé ? On verra qu'instruire est nécessaire, que l'instruction ne suffit pourtant pas, et qu'éduquer consiste à former un homme complet et autonome.",
     parties: [
-      { titre: "I. Instruire est nécessaire : sans instruction, l'esprit reste en friche",
+      { titre: "I. Instruire est nécessaire : sans enseignement, l'esprit ne produit rien",
         args: [
-          { idee: "Sans instruction, l'esprit reste stérile, comme une terre en friche : pour que l'humain soit autonome, il faut d'abord l'instruire.", ref: "Cicéron, Tusculanes, II (formulation du cours)" },
+          { idee: "Sans enseignement, l'esprit ne produit rien, comme un champ sans culture : pour que l'humain soit autonome, il faut d'abord l'instruire.", ref: "Cicéron, Tusculanes, II, 13" },
           { idee: "L'école de Ferry transmet à tous un socle commun : elle sépare les croyances, personnelles et libres, des « connaissances qui sont communes et indispensables à tous ».", ref: "Jules Ferry, Lettre aux instituteurs (texte étudié)" }
         ],
         transition: "Mais si l'instruction est indispensable, elle reste strictement intellectuelle : suffit-elle à former toute la personne ?" },
@@ -194,7 +194,7 @@ Object.assign(window.RECTO_CORRIGES, {
         args: [
           { idee: "L'instruction ne peut suffire à épanouir un individu, alors qu'éduquer forme aussi le corps et la morale. Un contenu de connaissance n'est pas le fait de faire connaissance.", ref: "Cours : instruire, éduquer, apprendre" },
           { idee: "Ferry lui-même place l'enseignement moral au premier rang : pas de morale sans savoir, mais l'école doit aussi former au devoir et au droit.", ref: "Ferry, Lettre aux instituteurs ; Helvétius et Diderot (encadré du manuel)" },
-          { idee: "Un esprit qui sait se servir de son savoir vaut mieux qu'un esprit simplement rempli : avoir moins de connaissances n'est pas grave si l'on sait les utiliser.", ref: "Montaigne, Essais, I, 26 : « Plutôt la tête bien faite que bien pleine »" }
+          { idee: "Un esprit qui sait se servir de son savoir vaut mieux qu'un esprit simplement rempli : avoir moins de connaissances n'est pas grave si l'on sait les utiliser.", ref: "Montaigne, Essais, I, 26 : « un conducteur qui eût plutôt la tête bien faite que bien pleine »" }
         ],
         transition: "L'instruction est donc un moyen : reste à dire à quelle fin elle doit servir." },
       { titre: "III. Éduquer, c'est former un homme complet et autonome",
@@ -212,21 +212,21 @@ Object.assign(window.RECTO_CORRIGES, {
     parties: [
       { titre: "I. Une école née pour réduire les inégalités",
         args: [
-          { idee: "Condorcet défend une instruction universelle et publique : qu'un maximum de personnes sache lire et compter.", ref: "Condorcet, d'après le cours : nationaliser l'éducation" },
+          { idee: "Condorcet défend une instruction universelle et publique : qu'un maximum de personnes sache lire et compter.", ref: "Condorcet : nationaliser l'éducation" },
           { idee: "Les lois Ferry rendent l'école obligatoire, gratuite et laïque, et l'ouvrent aux filles : apparaît la méritocratie, l'idéal que tout le monde puisse s'élever.", ref: "Cours : les lois Ferry (1881-1882) et l'école républicaine" },
           { idee: "Ferry fonde cette école sur ce qui est commun à tous : des règles morales aussi universellement acceptées que celles du langage ou du calcul.", ref: "Jules Ferry, Lettre aux instituteurs (texte étudié)" }
         ],
         transition: "Mais ouvrir l'école à tous ne suffit pas à rendre les chances égales : le milieu d'origine continue de peser." },
       { titre: "II. Le poids du milieu et une égalité inachevée",
         args: [
-          { idee: "Dans les Rougon-Macquart, Zola montre que le poids social est plus fort que n'importe quelle volonté : la liberté individuelle dépend du social.", ref: "Émile Zola, d'après le cours : l'inné et l'acquis" },
+          { idee: "Dans les Rougon-Macquart, Zola montre que le poids social est plus fort que n'importe quelle volonté : la liberté individuelle dépend du social.", ref: "Émile Zola : l'inné et l'acquis" },
           { idee: "L'égalité reste inachevée : sous Ferry, filles et garçons n'ont pas les mêmes programmes ; aujourd'hui, la même éducation en France laisse des inégalités dans le monde et de salaires.", ref: "Cours : vers l'égalité" },
           { idee: "Une école d'État peut aussi produire une égalité d'uniformité, qui rend les esprits semblables au lieu de les libérer.", ref: "Tocqueville : « la diversité comme la liberté en disparaissent chaque jour »" }
         ],
         transition: "L'école ne peut donc tout corriger. Mais elle peut réduire l'écart si elle transmet à tous de quoi s'émanciper." },
       { titre: "III. Corriger en partie : émanciper par une culture large",
         args: [
-          { idee: "L'école corrige si elle ne réduit pas le savoir à l'utile : sans culture large, les enfants n'auraient pas de choix dans leur vie, comme dans une éducation de propagande.", ref: "Hannah Arendt, La Crise de la culture, d'après le cours" },
+          { idee: "L'école corrige si elle ne réduit pas le savoir à l'utile : sans culture large, les enfants n'auraient pas de choix dans leur vie, comme dans une éducation de propagande.", ref: "Hannah Arendt, La Crise de la culture" },
           { idee: "Le risque inverse est une école de masse qui dresse au lieu de former, pour rendre vite les jeunes gens utilisables par l'État.", ref: "Nietzsche, Crépuscule des idoles (texte étudié), dont la critique reste élitiste" }
         ] }
     ],
@@ -234,18 +234,18 @@ Object.assign(window.RECTO_CORRIGES, {
   },
 
   "A-hlp-ch1-education-build-10": {
-    intro: "Montaigne semble avoir tranché : « Plutôt la tête bien faite que bien pleine ». Un esprit bien plein accumule des connaissances ; un esprit bien fait sait juger et se servir de ce qu'il sait. L'opposition paraît donner l'avantage au jugement, mais juger suppose une matière. Faut-il accumuler des connaissances ou former le jugement, et peut-on former le jugement sans connaissances ? On verra qu'un esprit bien plein est nécessaire, que le savoir accumulé sans usage n'est pourtant que du gavage, et que l'esprit bien fait suppose des savoirs appropriés.",
+    intro: "Montaigne semble avoir tranché : il veut pour l'enfant « un conducteur qui eût plutôt la tête bien faite que bien pleine ». Un esprit bien plein accumule des connaissances ; un esprit bien fait sait juger et se servir de ce qu'il sait. L'opposition paraît donner l'avantage au jugement, mais juger suppose une matière. Faut-il accumuler des connaissances ou former le jugement, et peut-on former le jugement sans connaissances ? On verra qu'un esprit bien plein est nécessaire, que le savoir accumulé sans usage n'est pourtant que du gavage, et que l'esprit bien fait suppose des savoirs appropriés.",
     parties: [
       { titre: "I. Un esprit bien plein est nécessaire : l'idéal encyclopédique",
         args: [
-          { idee: "Les humanistes veulent former un homme complet : Érasme définit une éducation encyclopédique, proche de la culture antique, latine et grecque.", ref: "Érasme, d'après le cours" },
-          { idee: "Sans instruction, l'esprit reste stérile comme une terre en friche : le jugement ne s'exerce que sur ce qu'on connaît.", ref: "Cicéron, Tusculanes, II (formulation du cours)" },
+          { idee: "Les humanistes veulent former un homme complet : Érasme définit une éducation encyclopédique, proche de la culture antique, latine et grecque.", ref: "Érasme" },
+          { idee: "Sans enseignement, l'esprit ne produit rien, comme un champ sans culture : le jugement ne s'exerce que sur ce qu'on connaît.", ref: "Cicéron, Tusculanes, II, 13" },
           { idee: "L'école doit apprendre aux enfants ce qu'est le monde : réduire la culture au strict nécessaire les priverait de tout choix.", ref: "Hannah Arendt, La crise de l'éducation (texte étudié)" }
         ],
         transition: "Mais accumuler ne suffit pas : un savoir dont on ne sait rien faire reste extérieur à l'esprit." },
       { titre: "II. Sans usage, le savoir est gavage : mieux vaut un esprit bien fait",
         args: [
-          { idee: "Durkheim critique l'éducation classique : le gavage remplit l'élève sans lui permettre ni de connaître ni d'utiliser le savoir.", ref: "Émile Durkheim, d'après le cours" },
+          { idee: "Durkheim critique l'éducation classique : le gavage remplit l'élève sans lui permettre ni de connaître ni d'utiliser le savoir.", ref: "Émile Durkheim" },
           { idee: "Montaigne veut de l'instruction, le grec et le latin, mais avoir moins de connaissances n'est pas grave si l'on sait utiliser son savoir : le savoir est subordonné au jugement.", ref: "Montaigne, Essais, I, 26, De l'institution des enfants" },
           { idee: "Un enseignement pressé dresse les jeunes gens pour les rendre vite utilisables, alors que la haute culture demande du temps : « à trente ans » on est encore un débutant.", ref: "Nietzsche, Crépuscule des idoles (texte étudié)" }
         ],
@@ -253,7 +253,7 @@ Object.assign(window.RECTO_CORRIGES, {
       { titre: "III. Un esprit bien fait suppose des savoirs appropriés",
         args: [
           { idee: "Apprendre, c'est prendre avec soi, assimiler des savoirs pour pouvoir en jouer : le jugement se forme sur des connaissances devenues siennes.", ref: "Cours : instruction et apprentissage" },
-          { idee: "Le professeur doit montrer l'intérêt de la matière, pour que l'élève soit acteur de ses apprentissages au lieu d'absorber en silence.", ref: "John Dewey, d'après le cours : contre la dissymétrie éducative" }
+          { idee: "Le professeur doit montrer l'intérêt de la matière, pour que l'élève soit acteur de ses apprentissages au lieu d'absorber en silence.", ref: "John Dewey : contre la dissymétrie éducative" }
         ] }
     ],
     conclusion: "Mieux vaut un esprit bien fait qu'un esprit bien plein, mais l'alternative est trompeuse. Sans connaissances, le jugement n'a rien sur quoi s'exercer ; sans jugement, le savoir accumulé n'est que du gavage. Montaigne lui-même veut de l'instruction. L'esprit bien fait est un esprit riche de savoirs appropriés, qu'un élève acteur a faits siens et sait employer."

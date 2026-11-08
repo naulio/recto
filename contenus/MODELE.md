@@ -97,7 +97,7 @@ Règle : un sujet n'est tiré que si **toutes** ses notions sont cochées. Pour 
 
 ## 4. Spécialité HLP
 
-**Un texte étudié** : une entrée dans `texts` de `contenus/hlp/hlp.js` (identification, `doc.photos` = le nom de la photo, `classement`, compréhension, `citations` recopiées de la photo, `annotations`, `alertes`, `complement` pour ce qui ne vient pas du document), et la photo dans `docs`. Un auteur nouveau : une entrée dans `authors`. Les exercices « S'entraîner sur les textes » sont générés tout seuls.
+**Un texte étudié** : une entrée dans `texts` de `contenus/hlp/hlp.js` (identification, compréhension, `citations` exactes et courtes, `complement` pour les connaissances ajoutées). Un auteur nouveau : une entrée dans `authors`. Les exercices « S'entraîner sur les textes » sont générés tout seuls.
 
 **Un chapitre** : retirer `planned: true` de son entrée dans `chapters` et lui donner `n`, `question`, `periode`, `presentation`.
 
@@ -112,8 +112,7 @@ Elle apparaît alors dans la section de sa discipline (et nulle part dans le tro
 
 Exemple complet : `contenus/lecons/hlp-ch1-education.js`. Ce qu'un cours HLP peut ajouter :
 
-- `src: "Tes notes, p. 3"` sur une page : la page des notes d'origine, affichée en haut du cours.
-- Un encadré `{ k: "check", t: "…" }` (« À vérifier ») : un mot illisible, une date douteuse, un chiffre sans source. On le signale, on ne le complète pas.
+- Rien d'incertain n'est affiché sur le site : pas d'encadré « À vérifier », pas de mention de l'origine du contenu. Une date ou une attribution se vérifie dans une source fiable (Wikisource, Gallica, Légifrance, encyclopédie) ; ce qui ne peut pas être vérifié n'est pas écrit.
 - Sur un sujet `build` : `tx: ["id-du-texte", …]`, les textes étudiés de la même discipline à mobiliser (fiches de `contenus/hlp/hlp.js`). L'épreuve complète du bac blanc choisit un essai qui prolonge le texte tiré.
 - Sur une fiche : `link: "#/hlp/texte/id"` et `linkLabel: "Texte étudié : …"`, un bouton vers la fiche du texte.
 

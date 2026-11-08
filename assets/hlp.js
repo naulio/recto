@@ -237,7 +237,6 @@
     const texts = H.texts.filter(t => discOk(t.discipline) && match([t.title, t.a.name, t.work, t.these, t.short].join(" ")));
     const authors = H.authors.filter(a => a.discs.some(discOk) && match([a.name, a.epoque].concat(a.idees).join(" ")));
     const cites = H.cites.filter(c => discOk(c.text.discipline) && match([c.t, c.who, c.text.title, c.sens].join(" ")));
-    const docs = H.docs.filter(dc => !q || match([dc.id, dc.what, dc.note].join(" ")));
     const modes = [["textes", "Textes", texts.length], ["auteurs", "Auteurs", authors.length], ["citations", "Citations", cites.length]];
     if (!modes.some(m => m[0] === L.mode)) L.mode = "textes";
     let body = "";
@@ -269,14 +268,14 @@
   /* =========================================================
      Fiche d'un texte
      ========================================================= */
-  const TABS = [["comprendre", "Comprendre"], ["dissertation", "Pour l'essai"], ["citations", "Citations"], ["document", "Document"]];
-  const LECT = { sure: "lisible", probable: "lecture probable", partielle: "en partie illisible", incertaine: "lecture incertaine" };
+  const TABS = [["comprendre", "Comprendre"], ["dissertation", "Pour l'essai"], ["citations", "Citations"], ["document", "Manuel"]];
   function linkList(list) {
     return `<ul class="tx-links">${list.map(l => { const o = H.T[l.to]; return o ? `<li><a href="#/hlp/texte/${o.id}" style="--tone:${tone(o.discipline)}"><b>${esc(label(o))}</b></a><span>${esc(l.t)}</span></li>` : ""; }).join("")}</ul>`;
   }
   function textPage(root, prm) {
     const t = H.T[prm.id];
     if (!t) { location.replace("#/hlp/textes"); return; }
+    if (C.live) C.live.page("hlp-textes", t.id);
     const tab = TABS.some(x => x[0] === prm.tab) ? prm.tab : ST.tab[t.id] || "comprendre";
     const i = H.texts.indexOf(t), prev = H.texts[i - 1], next = H.texts[i + 1];
     const block = (title, inner, cls) => inner ? `<section class="tx-b ${cls || ""}"><h4>${esc(title)}</h4>${inner}</section>` : "";
@@ -287,25 +286,21 @@
         <div>${block("Idées principales", ul(t.idees))}${block(t.discipline === "litterature" ? "Procédés et arguments" : "Arguments", ul(t.arguments))}${block("Exemples", ul(t.exemples))}${t.piege ? `<p class="tx-piege"><b>Piège</b>${esc(t.piege)}</p>` : ""}</div>
       </div>`;
     else if (tab === "dissertation") panel = `<div class="tx-cols">
-        <div>${block("Connaissances essentielles", ul(t.connaissances))}${block("Arguments réutilisables", ul(t.dissertation))}${(t.manuel.bac || []).length ? block("Sujets relevés dans le document", `<ul class="tx-bac">${t.manuel.bac.map(b => `<li><span class="tag ghost">${esc(b.k)}</span>${esc(b.q)}</li>`).join("")}</ul>`) : ""}</div>
+        <div>${block("Connaissances essentielles", ul(t.connaissances))}${block("Arguments réutilisables", ul(t.dissertation))}${(t.manuel.bac || []).length ? block("Sujets du manuel", `<ul class="tx-bac">${t.manuel.bac.map(b => `<li><span class="tag ghost">${esc(b.k)}</span>${esc(b.q)}</li>`).join("")}</ul>`) : ""}</div>
         <div>${block("Rapprochements", t.liens.length ? linkList(t.liens) : "")}${block("Oppositions et nuances", t.oppositions.length ? linkList(t.oppositions) : "")}</div>
       </div>`;
-    else if (tab === "citations") panel = `<div class="tx-cites">${t.citations.map(c => `<figure class="tx-c"><blockquote>« ${esc(c.t)} »</blockquote><figcaption>${esc(c.who || t.a.name)}${c.where ? " · " + esc(c.where) : ""}${c.verif ? ` · <span class="tag warn">à vérifier</span>` : ""}</figcaption><p><b>Sens.</b> ${esc(c.sens)}</p><p><b>Dans un essai.</b> ${esc(c.usage)}</p></figure>`).join("")}</div>
+    else if (tab === "citations") panel = `<div class="tx-cites">${t.citations.map(c => `<figure class="tx-c"><blockquote>« ${esc(c.t)} »</blockquote><figcaption>${esc(c.who || t.a.name)}${c.where ? " · " + esc(c.where) : ""}</figcaption><p><b>Sens.</b> ${esc(c.sens)}</p><p><b>Dans un essai.</b> ${esc(c.usage)}</p></figure>`).join("")}</div>
         <p class="note">« […] » : coupe.</p>`;
     else panel = `<div class="tx-cols">
         <div>
-          ${block("Document d'origine", `<dl class="tx-dl"><dt>Chapitre</dt><dd>${t.classement.chapitre === "en-tete" ? "Indiqué en haut de la feuille" : "Pas d'en-tête : classé d'après le thème (à confirmer)"}</dd><dt>Discipline</dt><dd>${esc(t.classement.discipline)}</dd>${t.a.bio ? `<dt>Manuel</dt><dd>${esc(t.a.bio)}</dd>` : ""}</dl>`)}
-          ${t.chapeau ? block("Chapeau du manuel (résumé)", `<p>${esc(t.chapeau)}</p>`) : ""}
+          ${t.chapeau ? block("Présentation du manuel", `<p>${esc(t.chapeau)}</p>`) : ""}
           ${t.manuel.notes && t.manuel.notes.length ? block("Notes du manuel", ul(t.manuel.notes)) : ""}
-          ${t.manuel.encadre ? block("Encadré du manuel (résumé)", `<p>${esc(t.manuel.encadre)}</p>`) : ""}
-          ${t.manuel.saviez ? block("« Le saviez-vous ? » (résumé)", `<p>${esc(t.manuel.saviez)}</p>`) : ""}
-          ${t.manuel.questions && t.manuel.questions.length ? block("Questions du manuel (résumées)", ul(t.manuel.questions)) : ""}
+          ${t.manuel.encadre ? block("Encadré du manuel", `<p>${esc(t.manuel.encadre)}</p>`) : ""}
+          ${t.manuel.saviez ? block("« Le saviez-vous ? »", `<p>${esc(t.manuel.saviez)}</p>`) : ""}
         </div>
         <div>
-          ${block("Annotations du document", t.annotations.filter(a => a.keep).length ? `<ul class="tx-ann">${t.annotations.filter(a => a.keep).map(a => `<li><span>${esc(a.t)}</span>${a.lecture && a.lecture !== "sure" ? ` <span class="tag ghost">${esc(LECT[a.lecture] || a.lecture)}</span>` : ""}${a.why ? `<small>${esc(a.why)}</small>` : ""}</li>`).join("")}</ul>` : `<p class="muted">Aucune.</p>`)}
-          ${t.annotations.some(a => !a.keep) ? block("Annotations écartées", `<ul class="tx-ann off">${t.annotations.filter(a => !a.keep).map(a => `<li><span>${esc(a.t)}</span>${a.why ? `<small>${esc(a.why)}</small>` : ""}</li>`).join("")}</ul>`) : ""}
-          ${t.alertes.length ? `<section class="tx-b tx-alert"><h4>À vérifier</h4>${ul(t.alertes)}</section>` : ""}
-          ${t.complement.length ? `<section class="tx-b tx-comp"><h4>Complément <span class="tag ghost">hors du document</span></h4>${ul(t.complement)}</section>` : ""}
+          ${t.manuel.questions && t.manuel.questions.length ? block("Questions du manuel", ul(t.manuel.questions)) : ""}
+          ${t.complement.length ? block("Pour aller plus loin", ul(t.complement)) : ""}
         </div>
       </div>`;
     root.innerHTML = `
@@ -313,9 +308,9 @@
       <header class="card tx-head">
         <div class="tx-top"><a class="btn ghost sm" href="#/hlp/textes">${ICON.back} Textes et auteurs</a><span class="grow"></span>${prev ? `<a class="icon-btn" href="#/hlp/texte/${prev.id}" title="Texte précédent" aria-label="Texte précédent">${ICON.back}</a>` : ""}${next ? `<a class="icon-btn" href="#/hlp/texte/${next.id}" title="Texte suivant" aria-label="Texte suivant">${ICON.chev}</a>` : ""}</div>
         <div class="eyebrow tx-eye">${esc(t.disc.title)} · Chapitre ${t.ch.n} · ${esc(t.ch.title)}</div>
-        <h1>${esc(t.title)}</h1>${t.titleNote ? `<p class="small muted">${esc(t.titleNote)}</p>` : ""}
+        <h1>${esc(t.title)}</h1>
         <p class="tx-ref"><a href="#/hlp/auteur/${t.a.id}">${esc(t.a.name)}</a> · <i>${esc(t.work)}</i>${t.ref ? ", " + esc(t.ref) : ""} · ${esc(t.year)} · ${esc(t.genre)}</p>
-        <div class="tx-meta">${t.alertes.length ? `<span class="tag warn">${t.alertes.length} point${t.alertes.length > 1 ? "s" : ""} à vérifier</span>` : ""}<span class="grow"></span><button class="btn secondary sm" id="txTrain">S'entraîner sur ce texte</button></div>
+        <div class="tx-meta"><span class="grow"></span><button class="btn secondary sm" id="txTrain">S'entraîner sur ce texte</button></div>
         <div class="segmented big tx-tabs" id="txTabs">${TABS.map(([k, l]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${l}${k === "citations" ? ` <span class="n">${t.citations.length}</span>` : ""}</button>`).join("")}</div>
       </header>
       <div class="card tx-body scroll">${panel}</div>
@@ -354,7 +349,7 @@
           <section class="tx-b"><h4>Arguments importants</h4><ul>${a.texts.flatMap(t => t.arguments.slice(0, 2)).map(x => `<li>${esc(x)}</li>`).join("")}</ul></section></div>
         <div><section class="tx-b tx-comp"><h4>Présentation <span class="tag ghost">complément</span></h4><p>${esc(a.presentation)}</p></section>
           <section class="tx-b tx-comp"><h4>Époque et contexte <span class="tag ghost">complément</span></h4><p><b>${esc(a.epoque)}.</b> ${esc(a.contexte)}</p></section>
-          <section class="tx-b"><h4>Repères des documents</h4><p>${a.datesDoc ? `Dates indiquées dans le document : ${esc(a.dates)}.` : `Dates (complément) : ${esc(a.dates)}.`}${a.bio ? ` Le manuel renvoie à sa ${esc(a.bio)}.` : ""}</p>${a.alerte ? `<p class="tx-piege"><b>À vérifier</b>${esc(a.alerte)}</p>` : ""}</section></div>
+          <section class="tx-b"><h4>Repères</h4><p>${esc(a.dates)}${a.epoque ? " · " + esc(a.epoque) : ""}</p></section></div>
       </div>`;
     else if (tab === "citations") panel = `<div class="tx-cites">${cites.map(c => `<figure class="tx-c"><blockquote>« ${esc(c.t)} »</blockquote><figcaption><a href="#/hlp/texte/${c.text.id}?tab=citations">${esc(c.text.title)}</a>${c.where ? " · " + esc(c.where) : ""}</figcaption><p><b>Sens.</b> ${esc(c.sens)}</p><p><b>Dans un essai.</b> ${esc(c.usage)}</p></figure>`).join("")}</div>`;
     else if (tab === "textes") panel = `<div class="tx-list">${a.texts.map(textRow).join("")}</div>`;
@@ -452,6 +447,7 @@
     const ready = courses.length > 0;
     const fmt = HFMT[S.fmt] ? S.fmt : "epreuve";
     S.fmt = fmt;
+    if (prm.tab && BTABS.some(t => t[0] === prm.tab) && !prm.s) { S.tab = prm.tab; saveST(); }
     const tab = BTABS.some(t => t[0] === S.tab) ? S.tab : "plan";
     try { sessionStorage.removeItem("recto.back"); } catch (e) { /* stockage indisponible */ }
     root.innerHTML = `<section class="view bac hlp-bac" style="--tone:${D.tone}"><div class="card bac-pick"><div class="eyebrow hlp">Bac blanc · HLP</div><div class="sk-lines"><i></i><i></i><i></i></div></div><div class="card bac-main"></div></section>`;
@@ -528,7 +524,7 @@
     for (let i = 0; i < chosen.length; i += 3) { const g = chosen.slice(i, i + 3); units.push({ book: "hlp-textes", fiches: g.map(t => t.id), short: "Textes : " + g.map(t => t.a.short).join(", ") }); }
     const items = makeItems(bacPool(H, C.BOOKS, { disc: d, chs: S.chs, texts: S.texts }), courses).filter(x => UI().CORR()[x.id]);
     UI().planTab(el, {
-      state: S.plan, save: saveST, refresh, quiet: () => QUIET,
+      state: S.plan, save: saveST, refresh, quiet: () => QUIET, home: "#/hlp/bac", label: "Bac blanc HLP",
       units, buildName: "Plans d'essai", methods: ["interpretation", "essai", "epreuve"], methodName: mt, bookName: b => b === "hlp-textes" ? "Textes étudiés" : courseTitle(b),
       subjects: us => { const fs2 = us.flatMap(u => u.fiches); const sc = x => x.kind === "interp" ? (fs2.includes(x.t) ? 2 : 0) : (x.refs || []).filter(r => fs2.includes(r[1])).length + (x.tx || []).filter(t => fs2.includes(t)).length; const hit = items.filter(x => sc(x) > 0).sort((a, b) => sc(b) - sc(a)); return (hit.length ? hit : items).map(x => ({ id: x.id, q: (x.kind === "interp" ? "Interprétation · " : "Essai · ") + x.q })); },
       open: u => { UI().markBack("Bac blanc"); location.hash = u.book === "hlp-textes" ? "#/hlp/texte/" + u.fiches[0] : "#/" + u.book + "/cours?part=" + u.part; },

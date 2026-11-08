@@ -548,3 +548,33 @@ a.chip, a.chip:hover { text-decoration: none; color: var(--text); }
   .bp-b .bp-time { display: none; }
   .bp-b .bp-dur { grid-area: t; }
 }
+
+/* ---------- Retour « ‹ Bac blanc » et chrono de séance, dans la barre du haut ---------- */
+.bacbar { display: inline-flex; align-items: center; gap: 0.375rem; height: 2.125rem; max-width: 26rem; padding: 0 0.875rem 0 0.5rem; border-radius: 61rem; background: var(--accent-soft); color: var(--accent-text); font-size: 0.875rem; font-weight: 600; white-space: nowrap; text-decoration: none; transition: background .15s, transform .15s; }
+.bacbar[hidden] { display: none; }
+.bacbar { min-width: 0; overflow: hidden; }
+.bacbar .bb-l, .bacbar .bb-v, .bacbar .bb-t { flex: none; }
+.bacbar:hover { text-decoration: none; background: rgba(0, 113, 227, .15); }
+.bacbar:active { transform: scale(.97); }
+.bacbar svg { width: 1rem; height: 1rem; flex: none; }
+.bacbar .bb-b { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--text-2); font-weight: 500; }
+.bacbar .bb-b::before { content: "·"; margin-right: 0.375rem; color: var(--text-3); }
+.bacbar .bb-t { padding: 0.0625rem 0.5rem; border-radius: 61rem; background: #fff; color: var(--text); font-variant-numeric: tabular-nums; }
+.bacbar .bb-t.late { color: var(--red); }
+.bacbar .bb-v { padding: 0.0625rem 0.4375rem; border-radius: 61rem; background: #fff; color: var(--text-2); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.bacbar .bb-v.ahead, .bacbar .bb-v.fin { color: var(--green); }
+.bacbar .bb-v.behind { color: var(--orange); }
+.bp-live .live-line { margin-top: 0.5rem; }
+body.has-bacbar .crumb { display: none; }
+.bp-run { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 0.375rem; }
+.bp-left { font-size: 0.875rem; font-weight: 600; color: var(--accent-text); margin-right: 0.25rem; }
+.bp-left.late { color: var(--red); }
+.bp-b.now { background: #fff; box-shadow: inset 0 0 0 2px var(--accent), inset 0.375rem 0 0 var(--accent); }
+.hlp-bac .bp-b.now { box-shadow: inset 0 0 0 2px var(--tone), inset 0.375rem 0 0 var(--tone); }
+@media (max-width: 680px) {
+  .bacbar { height: 2rem; padding: 0 0.625rem 0 0.375rem; font-size: 0.8125rem; }
+  .bacbar .bb-b { display: none; }
+  body.has-bacbar #pillSlot { display: none; }
+  .bp-h { flex-wrap: wrap; align-items: flex-start; }
+  .bp-run { justify-content: flex-start; }
+}

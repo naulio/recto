@@ -34,7 +34,7 @@ ok(LIB.filter(m => !m.space || m.space === "tc").length === 3, "la bibliothèque
 ok(LIB.filter(m => m.space === "hlp").every(m => m.type !== "lecon" || (m.discipline && m.chapter)), "toute leçon HLP déclare sa discipline et son chapitre");
 
 /* ------------------------------------------------------------------ */
-section("2. Spécialité HLP : textes, classement, doublons, pages");
+section("2. Spécialité HLP : textes, doublons, disciplines");
 const T = {}, A = {};
 H0.authors.forEach(a => { ok(!A[a.id], "auteur unique : " + a.id); A[a.id] = a; });
 H0.texts.forEach(t => { ok(!T[t.id], "texte unique : " + t.id); T[t.id] = t; });
@@ -43,8 +43,8 @@ H0.texts.forEach(t => {
   ok(A[t.author], `${t.id} : auteur connu`);
   ok(["litterature", "philosophie"].includes(t.discipline), `${t.id} : discipline valide`);
   ok(chapters.has(t.chapter), `${t.id} : chapitre existant et ouvert`);
-  ok(t.classement && ["en-tete", "theme"].includes(t.classement.chapitre) && t.classement.discipline, `${t.id} : origine du classement indiquée`);
-  ok(t.doc && t.doc.photos && t.doc.photos.length, `${t.id} : référence à une photo`);
+  ["doc", "annotations", "alertes", "titleNote", "classement", "verif"].forEach(k => ok(!(k in t), `${t.id} : aucun champ de travail « ${k} » dans les données publiées`));
+  t.citations.forEach((c, i) => ok(!("verif" in c), `${t.id} citation ${i + 1} : aucun drapeau de travail`));
   ["sujet", "problematique", "these", "neutre", "short"].forEach(k => ok(t[k] && t[k].length > 10, `${t.id} : champ ${k}`));
   ["idees", "arguments", "exemples", "connaissances", "dissertation"].forEach(k => ok(Array.isArray(t[k]) && t[k].length >= 1, `${t.id} : liste ${k}`));
   ok(t.citations.length >= 3, `${t.id} : au moins 3 citations`);
@@ -55,34 +55,22 @@ H0.texts.forEach(t => {
   });
   (t.liens || []).concat(t.oppositions || []).forEach(l => ok(T[l.to] || H0.texts.some(x => x.id === l.to), `${t.id} : lien vers ${l.to} existant`));
   (t.liens || []).concat(t.oppositions || []).forEach(l => ok(l.to !== t.id, `${t.id} : pas de lien vers lui-même`));
-  (t.annotations || []).forEach(a => ok(typeof a.keep === "boolean", `${t.id} : annotation triée (retenue ou écartée)`));
 });
 /* Doublons : pas deux fiches pour la même œuvre et la même référence, aucune citation partagée */
-const keys = H0.texts.map(t => t.author + "|" + norm(t.work) + "|" + norm(t.ref || ""));
-ok(new Set(keys).size === keys.length, "aucun texte en double (auteur + œuvre + référence)");
+const keys = H0.texts.map(t => t.author + "|" + norm(t.work) + "|" + norm(t.ref || "") + "|" + norm(t.title));
+ok(new Set(keys).size === keys.length, "aucun texte en double (auteur, œuvre, référence, titre)");
 const seenQ = {};
 H0.texts.forEach(t => t.citations.forEach(c => { const k = norm(c.t); ok(!seenQ[k] || seenQ[k] === t.id, `citation présente dans deux fiches : « ${c.t.slice(0, 40)} »`); seenQ[k] = t.id; }));
-/* Photos : chaque fichier du dossier images/ est inventorié, chaque fiche renvoie à des photos inventoriées */
-const imgDir = path.join(ROOT, "images");
-const files = fs.existsSync(imgDir) ? fs.readdirSync(imgDir).filter(f => /\.heic$/i.test(f)).map(f => f.replace(/\.heic$/i, "")) : [];
-const docs = {}; H0.docs.forEach(d => { docs[d.id] = d; });
-if (files.length) files.forEach(f => ok(docs[f], "photo inventoriée : " + f));
-else console.log("  (dossier images/ absent : inventaire des fichiers non vérifié)");
-H0.texts.forEach(t => t.doc.photos.forEach(p => ok(docs[p] && docs[p].texts.includes(t.id), `${t.id} ↔ ${p} : renvoi dans les deux sens`)));
-H0.docs.forEach(d => d.texts.forEach(id => ok(T[id] && T[id].doc.photos.includes(d.id), `${d.id} → ${id} : renvoi dans les deux sens`)));
-ok(H0.docs.filter(d => !d.texts.length).every(d => /Présentation du chapitre/.test(d.what)), "seule la page de présentation du chapitre n'est pas un texte");
-/* Pages successives : le TEXTE 6 de Tocqueville tient sur deux feuilles d'une même photo */
-ok(T["tocqueville-despotisme"].doc.pages && /deux feuilles/.test(T["tocqueville-despotisme"].doc.pages), "pages successives associées (Tocqueville, TEXTE 6)");
-ok(T["camus-maitre"].doc.extraits === 2, "deux extraits d'une même page réunis dans une seule fiche (Camus)");
+ok(!("docs" in H0) && H0.chapters.every(c => !("photo" in c)), "aucun inventaire de documents dans les données publiées");
 /* Séparation des disciplines et des espaces */
 const byDisc = d => H0.texts.filter(t => t.discipline === d).length;
 ok(byDisc("litterature") > 0 && byDisc("philosophie") > 0, `textes classés dans les deux disciplines (${byDisc("litterature")} / ${byDisc("philosophie")})`);
 ok(H0.courses.litterature.length === 0 && H0.courses.philosophie.length === 0, "aucun cours de spécialité inventé dans les données des textes");
 const HLPC = LIB.filter(m => m.space === "hlp" && m.type === "lecon");
-ok(HLPC.length === 1 && HLPC[0].id === "hlp-ch1-education", "un seul cours de spécialité : celui des notes de la classe");
+ok(HLPC.length === 1 && HLPC[0].id === "hlp-ch1-education", "un seul cours de spécialité (philosophie, chapitre 1)");
 H0.authors.forEach(a => ok(H0.texts.some(t => t.author === a.id), `${a.id} : l'auteur a au moins un texte`));
 H0.authors.forEach(a => ok(a.presentation && a.idees && a.idees.length, `${a.id} : fiche auteur complète`));
-console.log(`  ${H0.texts.length} textes · ${H0.authors.length} auteurs · ${H0.texts.reduce((n, t) => n + t.citations.length, 0)} citations · ${H0.docs.length} photos`);
+console.log(`  ${H0.texts.length} textes · ${H0.authors.length} auteurs · ${H0.texts.reduce((n, t) => n + t.citations.length, 0)} citations`);
 
 /* ------------------------------------------------------------------ */
 section("3. Spécialité HLP : exercices générés à partir des fiches");
@@ -150,7 +138,7 @@ ok(all.diss.length === 3, "toutes les notions : tirage complet");
 console.log(`  ${draws} tirages vérifiés sur ${subsets.length} sélections possibles`);
 
 /* ------------------------------------------------------------------ */
-section("6. Cours HLP : Éducation, émancipation et transmission (notes de la classe)");
+section("6. Cours HLP : Éducation, émancipation et transmission");
 const CB = BOOKS["hlp-ch1-education"], CM = LIB.find(m => m.id === "hlp-ch1-education");
 ok(CB, "cours HLP chargé");
 ok(CM.space === "hlp" && CM.discipline === "philosophie" && CM.chapter === "ch1", "cours rangé en spécialité, philosophie, chapitre 1");
@@ -159,19 +147,21 @@ ok(BANK.map && !BANK.map[CM.id], "le cours HLP ne nourrit pas le bac blanc du tr
 const CN = CB.notions, pages = CB.course;
 ok(CB.parts.every((p, i) => p.n === i), "parties numérotées dans l'ordre");
 ok(CB.parts.every(p => pages.some(x => x.part === p.n)), "chaque partie du cours (introduction, I à VIII) a ses pages");
-const notesPages = new Set();
 pages.forEach(p => {
-  const m = /^Notes de cours, p\. (\d+)(?:-(\d+))?$/.exec(p.src || "");
-  ok(m, `${p.id} : page des notes indiquée`);
-  if (m) for (let k = +m[1]; k <= +(m[2] || m[1]); k++) notesPages.add(k);
+  ok(!("src" in p), `${p.id} : aucune référence de travail (src)`);
   ok((p.side || []).length <= 2, `${p.id} : deux encadrés au plus`);
   (p.ns || []).forEach(n => ok(CN[n], `${p.id} : fiche ${n} existante`));
   (p.side || []).forEach(s => ok(["q", "def", "ex", "plus", "warn", "check"].includes(s.k), `${p.id} : encadré de type connu (${s.k})`));
 });
-for (let k = 1; k <= 11; k++) ok(notesPages.has(k), `page ${k} des notes reprise dans le cours`);
-const checks = pages.flatMap(p => (p.side || []).filter(s => s.k === "check").map(s => p.id + " " + s.t)).join("\n");
-[["alienation", /illisible/], ["autonomie", /Lisbonne/], ["dewey", /1859/], ["ici-maintenant", /Hegel/], ["traites", /1393/], ["dates", /sans source/], ["pervertir", /Beauvoir/], ["empirisme", /papillon/]]
-  .forEach(([id, rx]) => ok(new RegExp("^" + id + " .*" + rx.source, "m").test(checks), `« À vérifier » présent : ${id} (${rx.source})`));
+/* Le site parle en son nom : ni encadré « À vérifier », ni mention de notes, de feuille ou de vérification (les doutes sont dans le questionnaire) */
+ok(!pages.some(p => (p.side || []).some(s => s.k === "check")), "aucun encadré « À vérifier » dans le cours");
+const META = /à vérifier|à confirmer|vérifier la source|le cours (insiste|cite|évoque|rattache|associe|retient|en conclut|annonce)|(tes|les|des) notes|noté en cours|formulation du cours|en marge|papillon|sur la feuille|titre de travail|illisible|peu lisible/i;
+const shown = JSON.stringify([CB.course, CB.notions, CB.exercises, CB.kit, CB.overview, CB.tips, CB.plan]);
+ok(!META.test(shown), "cours HLP : aucune mention de vérification ni de prise de notes (" + ((shown.match(META) || [""])[0]) + ")");
+const META_TC = new RegExp(META.source.replace("|illisible|peu lisible", ""), "i");
+["le-langage", "l-art", "discours-de-la-methode"].forEach(id => { const b = BOOKS[id], t = JSON.stringify([b.course, b.notions, b.exercises, b.kit, b.overview, b.tips]); ok(!META_TC.test(t), id + " : aucune mention de vérification ni de prise de notes (" + ((t.match(META_TC) || [""])[0]) + ")"); });
+const HSHOWN = JSON.stringify(win.RECTO_HLP.texts.map(t => [t.title, t.work, t.ref, t.year, t.complement, t.manuel, t.idees, t.arguments, t.exemples, t.connaissances, t.citations]));
+ok(!/à vérifier|à confirmer|sur la feuille|titre de travail|photo/i.test(HSHOWN), "textes HLP : rien d'affiché ne parle de vérification ni de photo (" + ((HSHOWN.match(/à vérifier|à confirmer|sur la feuille|titre de travail|photo/i) || [""])[0]) + ")");
 Object.keys(CN).forEach(n => ok(pages.some(p => (p.ns || []).includes(n)), `fiche ${n} : reliée à une page du cours`));
 const HT = {}; H0.texts.forEach(t => { HT[t.id] = t; });
 Object.keys(CN).forEach(n => { if (CN[n].link) ok(HT[CN[n].link.replace("#/hlp/texte/", "")], `fiche ${n} : texte lié existant`); });
@@ -270,5 +260,22 @@ const pd = PLAN.program(U, "2026-10-28", "2026-10-23");
 ok(pd.days.map(d => d.key).join() === "2026-10-23,2026-10-24,2026-10-25,2026-10-26,2026-10-27,2026-10-28", "changement d'heure : jours consécutifs");
 
 /* ------------------------------------------------------------------ */
+
+/* ------------------------------------------------------------------ */
+section("10. Fichiers publiés : aucune trace des documents de travail");
+{
+  /* Tout ce que le site sert ou que le dépôt montre (hors tests) : pas de nom de photo, pas de mention de notes ni de retranscription */
+  const PUB = ["index.html", "sw.js", "README.md", "manifest.webmanifest", ".gitignore"].concat(
+    ...["assets", "contenus"].map(d => { const out = []; const walk = p => fs.readdirSync(p, { withFileTypes: true }).forEach(e => { const q = path.join(p, e.name); if (e.isDirectory()) walk(q); else if (/\.(js|css|html|md|json)$/.test(e.name)) out.push(path.relative(ROOT, q)); }); walk(path.join(ROOT, d)); return out; }));
+  const TRACES = /IMG_\d{3,}|images\/|\.heic|\bphotos?\b(?!graph)|photographi(e|é)s? (des|du|de la)|notes de cours|pages? de notes|notes (de la classe|manuscrites|d'élève)|retranscri|remis au propre|titre de travail|en marge|sur la feuille|papillon/i;
+  let nf = 0;
+  PUB.filter(p => fs.existsSync(path.join(ROOT, p))).forEach(p => {
+    nf++;
+    const lines = fs.readFileSync(path.join(ROOT, p), "utf8").split("\n");
+    lines.forEach((l, i) => { const m = TRACES.exec(l); ok(!m, `${p}:${i + 1} : trace des documents de travail (« ${m && m[0]} »)`); });
+  });
+  ok(nf > 10, `fichiers publiés contrôlés (${nf})`);
+}
+
 console.log(`\n${fails ? "ÉCHECS : " + fails : "Tout est bon"} · ${oks} vérifications réussies`);
 process.exit(fails ? 1 : 0);

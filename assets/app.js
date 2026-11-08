@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "11"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "12"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -200,6 +200,48 @@
     get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* stockage indisponible */ } }
   };
+  /* =========================================================
+     Suivi en direct des chronos : pages du cours lues, exercices faits.
+     Un chrono (plan d'une leçon, bac blanc) compare ces traces à son estimation.
+     ========================================================= */
+  const K_LIVE = "recto.live", K_PRUN = "recto.planrun";
+  const LIVE_ST = { ahead: "en avance", ok: "dans les temps", behind: "en retard", fin: "fait" };
+  const LIVE = {
+    get() { const L = store.get(K_LIVE); return L && typeof L === "object" ? { pages: Array.isArray(L.pages) ? L.pages : [], ex: L.ex || null } : { pages: [], ex: null }; },
+    /* Une page lue (cours d'une leçon, texte HLP) */
+    page(b, p) {
+      const L = LIVE.get(), now = Date.now();
+      L.pages = L.pages.filter(x => now - x.t < 864e5 && !(x.b === b && x.p === p)).concat({ b, p, t: now }).slice(-500);
+      store.set(K_LIVE, L);
+    },
+    /* La série d'exercices en cours : début, exercices faits, total */
+    ex(o) { const L = LIVE.get(); L.ex = o; store.set(K_LIVE, L); },
+    /* Avancement d'un bloc depuis t0 : pages à lire (blk.keys) ou exercices (blk.ex = nombre prévu) */
+    of(blk, t0) {
+      if (!blk || !t0 || !blk.min) return null;
+      const L = LIVE.get();
+      let done, total, u;
+      if (blk.keys && blk.keys.length) {
+        const K = new Set(blk.keys);
+        done = L.pages.filter(x => x.t >= t0 && K.has(x.b + "|" + x.p)).length; total = blk.keys.length; u = "p";
+      } else if (blk.ex) {
+        const e = L.ex && L.ex.start >= t0 ? L.ex : null;
+        done = e ? e.done : 0; total = e ? e.total : blk.ex; u = "ex";
+      } else return null;
+      if (!total) return null;
+      const frac = Math.min(1, Math.max(0, (Date.now() - t0) / (blk.min * 60000)));
+      const exp = Math.min(total, Math.round(frac * total)), tol = Math.max(1, Math.round(total * 0.1));
+      const st = done >= total ? "fin" : done - frac * total > tol ? "ahead" : frac * total - done > tol ? "behind" : "ok";
+      return { done: Math.min(done, total), total, exp, st, u, frac };
+    }
+  };
+  const liveTxt = lv => lv.done + "/" + lv.total + (lv.u === "p" ? " p." : " ex.");
+  function liveLong(lv) {
+    const w = lv.u === "p" ? (lv.done > 1 ? "pages lues" : "page lue") : (lv.done > 1 ? "exercices faits" : "exercice fait");
+    return lv.done + " " + w + " sur " + lv.total + (lv.st === "fin" ? "" : " · objectif à cette heure : " + lv.exp) + " · " + LIVE_ST[lv.st];
+  }
+  /* Barre d'avancement : le réel (rempli) et l'estimation (trait) */
+  const liveHTML = lv => lv ? `<div class="live-line ${lv.st}"><div class="live-bar"><i style="width:${Math.round(lv.done / lv.total * 100)}%"></i><b style="left:${Math.round(lv.frac * 100)}%"></b></div><span>${esc(liveLong(lv))}</span></div>` : "";
   (function migrate() {
     /* Reprend la progression des versions précédentes (« Méthode », puis « Ergo ») */
     const D = "discours-de-la-methode";
@@ -236,6 +278,7 @@
     if (!B || !S) return;
     store.set(kBook(B.id), S);
     saveSummary();
+    mirrorRun();
   }
   function saveSummary() {
     store.set(kSum(B.id), { pct: Math.round(globalScore() * 100), tested: NIDS.filter(id => mastery(id) != null).length, total: NIDS.length, answered: stats().answered, at: Date.now() });
@@ -245,6 +288,8 @@
     B = BOOKS[id];
     PARTS = B.parts; NOTIONS = B.notions; READING = B.reading; EXS = B.exercises; NIDS = B.NIDS; EX = B.EX; CH = B.CH; U = B.unit; W = KIND[B.meta.type] || KIND.livre;
     S = loadState(id); MC = null; P = null; PLAN_SEL = null;
+    /* Une séance plus récente que celle recopiée pour tout le site la remplace */
+    if (S.run) { const m = store.get(K_PRUN); if (!m || m.book === id || (m.blockStart || 0) < S.run.blockStart) mirrorRun(); }
     TYPES.part.help = B.course ? PART_HELP.lecon : PART_HELP.livre;
     pickState.parts.clear(); pickState.types.clear();
     if (inTC(B.meta)) store.set(K_LAST, id);
@@ -492,10 +537,9 @@
     const hlpItem = inBook && B.meta.space === "hlp";
     document.body.dataset.space = hlpItem || VIEW === "hlp" || (VIEW === "home" && store.get(HOME_TYPE) === "hlp") ? "hlp" : "tc";
     const hlpDisc = hlpItem && B.meta.discipline ? { litterature: "Littérature", philosophie: "Philosophie" }[B.meta.discipline] : "";
-    /* Ouvert depuis le plan du bac blanc : un retour direct */
-    let back = null;
-    try { back = JSON.parse(sessionStorage.getItem("recto.back") || "null"); if (back && VIEW === "home") { sessionStorage.removeItem("recto.back"); back = null; } } catch (e) { back = null; }
-    $("#crumb").innerHTML = (inBook && back && back.h ? `<a class="crumb-back" href="${esc(back.h)}">${ICON.back}${esc(back.l || "Retour")}</a>` : "") + (inBook ? crumbLink(hlpItem ? (hlpDisc ? "#/hlp/" + B.meta.discipline : "#/hlp") : "#/tronc-commun", hlpItem ? (hlpDisc ? "HLP · " + hlpDisc : "HLP") : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
+    /* Retour au bac blanc : barre « ‹ Bac blanc » gérée par assets/bac.js (oubliée en revenant à l'accueil) */
+    if (VIEW === "home") { try { sessionStorage.removeItem("recto.back"); } catch (e) { /* stockage indisponible */ } }
+    $("#crumb").innerHTML = (inBook ? crumbLink(hlpItem ? (hlpDisc ? "#/hlp/" + B.meta.discipline : "#/hlp") : "#/tronc-commun", hlpItem ? (hlpDisc ? "HLP · " + hlpDisc : "HLP") : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
       : ["library", "tcbac"].includes(VIEW) ? crumbLink("#/tronc-commun", "Philosophie · Tronc commun")
       : VIEW === "hlp" ? crumbLink("#/hlp", "Spécialité HLP") : "");
     $("#nav").hidden = !inBook && !spaceNav;
@@ -787,6 +831,20 @@
     return { rem, left, elapsed, end: now + left, progress: elapsed + left ? elapsed / (elapsed + left) : 0, curEnd };
   }
 
+  /* Le plan en cours est recopié à part : sa pastille reste visible sur tout le site */
+  function runBlk(b) {
+    const d = describe(b), o = { t: d.title, min: b.min };
+    if (b.type === "read" && B.course) o.keys = B.course.filter(p => p.part === b.part).map(p => B.id + "|" + p.id);
+    else if (["diag", "drill", "mixed", "reflect", "weak"].includes(b.type)) o.ex = d.n || (b.type === "diag" ? 10 : 12);
+    return o;
+  }
+  function mirrorRun() {
+    if (!B || !S) return;
+    const m = store.get(K_PRUN);
+    if (S.run && S.run.blocks[S.run.idx]) store.set(K_PRUN, { book: B.id, title: B.meta.title, idx: S.run.idx, blockStart: S.run.blockStart, startedAt: S.run.startedAt, blocks: S.run.blocks.map(runBlk) });
+    else if (m && m.book === B.id) { try { localStorage.removeItem(K_PRUN); } catch (e) { /* stockage indisponible */ } }
+  }
+
   let PLAN_SEL = null;
   VIEWS.plan = function (root) {
     const running = !!S.run;
@@ -909,6 +967,8 @@
     const T = timesFor(S.run.blocks);
     $$("#tl .tl-time").forEach((el, i) => { const v = clock(T[i]); if (el.textContent !== v) el.textContent = v; });
     const cd = $("#countdown"); if (cd) { cd.textContent = fmtClock(t.rem); cd.classList.toggle("late", t.rem < 0); }
+    const pl = $("#pdLive");
+    if (pl) { const h = liveHTML(LIVE.of(runBlk(S.run.blocks[S.run.idx]), S.run.blockStart)); if (pl.dataset.k !== h) { pl.innerHTML = h; pl.dataset.k = h; } }
   }
   function renderDetail(blocks, T) {
     const i = PLAN_SEL, b = blocks[i], d = describe(b);
@@ -918,7 +978,7 @@
       <div class="pd-top"><span class="sw" style="background:${CAT_COLOR[cat]};width:10px;height:10px;border-radius:3px"></span><span class="eyebrow">${esc(d.eyebrow || CAT_LABEL[cat])} · étape ${i + 1} sur ${blocks.length}</span></div>
       <h2 class="pd-title">${esc(d.title)}</h2>
       <div class="pd-when">${clock(T[i])} → ${clock(T[i] + b.min * 60000)} · ${b.min} min</div>
-      ${isNow ? `<div class="pd-run"><div><div class="small">En cours · temps restant sur ce bloc</div><div class="countdown tabnum" id="countdown">${fmtClock(runTimes().rem)}</div></div><button class="btn primary" id="nextBlock">Bloc suivant</button></div>` : ""}
+      ${isNow ? `<div class="pd-run"><div><div class="small">En cours · temps restant sur ce bloc</div><div class="countdown tabnum" id="countdown">${fmtClock(runTimes().rem)}</div></div><button class="btn primary" id="nextBlock">Bloc suivant</button></div><div id="pdLive">${liveHTML(LIVE.of(runBlk(b), S.run.blockStart))}</div>` : ""}
       <p class="pd-desc">${esc(d.desc)}</p>
       ${d.list && d.list.length ? `<ul class="pd-list">${d.list.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
       ${d.why ? `<div class="pd-why">${esc(d.why)}</div>` : ""}
@@ -970,29 +1030,45 @@
     }
   }
 
-  /* Pastille de session (barre du haut) : bloc en cours, compte à rebours, temps total restant */
+  /* Pastille de séance (barre du haut, sur tout le site) : bloc en cours, avancement en direct, compte à rebours */
+  function pillData() {
+    const m = store.get(K_PRUN);
+    if (!m || !Array.isArray(m.blocks) || !m.blocks[m.idx]) return null;
+    const here = !!(B && B.id === m.book && !SPACE_VIEWS.includes(VIEW));
+    /* Hors du contenu, seulement une séance récente */
+    if (!here && Date.now() - m.blockStart > 432e5) return null;
+    /* Une séance de bac blanc en cours a la priorité hors de ce contenu (barre « ‹ Bac blanc ») */
+    if (!here && document.body.classList.contains("has-bacrun")) return null;
+    const now = Date.now(), cur = m.blocks[m.idx];
+    const rem = m.blockStart + cur.min * 60000 - now, left = Math.max(0, rem) + sum(m.blocks.slice(m.idx + 1).map(b => b.min)) * 60000, el = now - m.startedAt;
+    return { m, here, cur, rem, left, progress: el + left ? el / (el + left) : 0, lv: LIVE.of(cur, m.blockStart), k: m.book + "|" + m.idx + "|" + here };
+  }
   function renderPill() {
-    const slot = $("#pillSlot");
-    const inBook = B && S && !SPACE_VIEWS.includes(VIEW);
-    if (!inBook || !S.run) {
-      slot.innerHTML = "";
-      return;
+    const slot = $("#pillSlot"); if (!slot) return;
+    const d = pillData();
+    if (!d) { slot.innerHTML = ""; slot.dataset.k = ""; return; }
+    if (slot.dataset.k !== d.k || !$("#pill", slot)) {
+      slot.dataset.k = d.k;
+      slot.innerHTML = `<button class="pill" id="pill"><span class="pill-dot"></span><span class="pill-txt">${d.here ? "" : esc(d.m.title) + " · "}${esc(d.cur.t)}</span><span class="pill-live" hidden></span><span class="pill-time"></span><span class="pill-left"></span><i class="pill-prog"></i></button>`;
+      $("#pill").onclick = () => { if (d.here) go("plan"); else location.hash = "#/" + d.m.book + "/plan"; };
     }
-    const b = S.run.blocks[S.run.idx], t = runTimes();
-    slot.innerHTML = `<button class="pill ${t.rem < 0 ? "late" : ""}" id="pill" title="Voir le plan"><span class="pill-dot"></span><span class="pill-txt">${esc(describe(b).title)}</span><span class="pill-time">${fmtClock(t.rem)}</span><span class="pill-left">reste ${fmtLeft(t.left)}</span><i class="pill-prog" style="transform:scaleX(${t.progress.toFixed(4)})"></i></button>`;
-    $("#pill").onclick = () => go("plan");
+    tickPill(d);
+  }
+  function tickPill(d) {
+    const p = $("#pill"); if (!p) return;
+    p.classList.toggle("late", d.rem < 0);
+    $(".pill-time", p).textContent = fmtClock(d.rem);
+    $(".pill-left", p).textContent = "reste " + fmtLeft(d.left);
+    $(".pill-prog", p).style.transform = `scaleX(${d.progress.toFixed(4)})`;
+    const lv = $(".pill-live", p);
+    lv.hidden = !d.lv;
+    if (d.lv) { lv.textContent = liveTxt(d.lv); lv.className = "pill-live " + d.lv.st; }
+    p.title = (d.here ? "Voir le plan" : "Voir le plan · " + d.m.title) + (d.lv ? " · " + liveLong(d.lv) : "");
   }
   setInterval(() => {
-    if (!S || !S.run) return;
-    const t = runTimes();
-    const p = $("#pill");
-    if (p) {
-      p.classList.toggle("late", t.rem < 0);
-      $(".pill-time", p).textContent = fmtClock(t.rem);
-      $(".pill-left", p).textContent = "reste " + fmtLeft(t.left);
-      $(".pill-prog", p).style.transform = `scaleX(${t.progress.toFixed(4)})`;
-    }
-    const hr = $("#homeRun"); if (hr) hr.textContent = "Session en cours · reste " + fmtLeft(t.left);
+    const d = pillData(), slot = $("#pillSlot");
+    if (!d || !slot || slot.dataset.k !== d.k || !$("#pill")) { if (d || $("#pill")) renderPill(); } else tickPill(d);
+    if (S && S.run) { const hr = $("#homeRun"); if (hr) hr.textContent = "Session en cours · reste " + fmtLeft(runTimes().left); }
     updatePlanClock();
   }, 1000);
 
@@ -1010,10 +1086,8 @@
       case "q": return `<figure class="co-card q"><blockquote>« ${md(c.t)} »</blockquote>${c.a ? `<figcaption>${esc(c.a)}</figcaption>` : ""}</figure>`;
       case "def": return `<div class="co-card def"><span class="tg">Définition</span><b>${esc(c.w)}</b><p>${md(c.t)}</p></div>`;
       case "ex": return `<div class="co-card ex"><span class="tg">${esc(c.w || "Exemple")}</span><p>${md(c.t)}</p></div>`;
-      case "plus": return `<div class="co-card plus"><span class="tg">${esc(c.w || "Complément")}</span><p>${md(c.t)}</p></div>`;
+      case "plus": return `<div class="co-card plus"><span class="tg">${esc(!c.w || c.w === "Complément" ? "Pour aller plus loin" : c.w)}</span><p>${md(c.t)}</p></div>`;
       case "warn": return `<div class="co-card warn"><span class="tg">Attention</span><p>${md(c.t)}</p></div>`;
-      /* Ce que les notes ne permettent pas d'affirmer (illisible, douteux, sans source) */
-      case "check": return `<div class="co-card check"><span class="tg">À vérifier</span><p>${md(c.t)}</p></div>`;
     }
     return "";
   }
@@ -1035,6 +1109,7 @@
     const seen = S.course.seen;
     if (!seen.includes(pg.id)) seen.push(pg.id);
     S.course.last = pg.id;
+    LIVE.page(B.id, pg.id);
     /* Une partie lue en entier compte comme « apprise » dans le plan */
     if (pg.part && !S.run && C.filter(x => x.part === pg.part).every(x => seen.includes(x.id)) && !S.plan.read.includes(pg.part)) S.plan.read = [...S.plan.read, pg.part].sort((a, b) => a - b);
     save();
@@ -1061,7 +1136,7 @@
         <div class="co-legend" aria-label="Repères de lecture"><mark class="hl">idée clé</mark><b>notion</b><span class="au">auteur</span><i class="wk">œuvre</i></div>
       </nav>
       <article class="card co-page ${G.skim ? "skim" : ""}" id="coPage">
-        <header class="co-head"><span class="eyebrow accent">${esc(where)}</span>${pg.extra ? `<span class="tag ghost">Complément</span>` : ""}${pg.src ? `<span class="co-src" title="Page des notes d'où vient cette page">${esc(pg.src)}</span>` : ""}<button class="co-skim ${G.skim ? "on" : ""}" id="coSkim" title="Lecture rapide : seules les idées clés restent en avant" aria-pressed="${!!G.skim}"><i></i>Lecture rapide</button><span class="co-count tabnum">${i + 1} / ${C.length}</span></header>
+        <header class="co-head"><span class="eyebrow accent">${esc(where)}</span>${pg.extra ? `<span class="tag ghost">Pour aller plus loin</span>` : ""}<button class="co-skim ${G.skim ? "on" : ""}" id="coSkim" title="Lecture rapide : seules les idées clés restent en avant" aria-pressed="${!!G.skim}"><i></i>Lecture rapide</button><span class="co-count tabnum">${i + 1} / ${C.length}</span></header>
         <h1 class="co-title">${esc(pg.title)}</h1>
         <p class="co-lead">${mdc(pg.lead)}</p>
         <div class="co-grid">
@@ -1708,9 +1783,11 @@
   function startSession(o) {
     if (!o.ids || !o.ids.length) { toast("Rien à proposer ici pour le moment."); return; }
     closeModal();
-    P = { title: o.title, ids: o.ids, idx: 0, res: [], origin: o.origin || null, from: o.from || "train", back: o.back || null, done: false };
+    P = { title: o.title, ids: o.ids, idx: 0, res: [], origin: o.origin || null, from: o.from || "train", back: o.back || null, done: false, t0: Date.now() };
     go("player");
   }
+  /* Où en est la série, pour le suivi en direct des chronos */
+  function liveEx() { if (P) LIVE.ex({ start: P.t0 || Date.now(), done: P.res.filter(x => x != null).length, total: P.ids.length }); }
   const segCls = s => s == null ? "" : s >= 0.99 ? "ok" : s > 0 ? "mid" : "ko";
   function promptOf(ex) {
     if (ex.prompt) return ex.prompt;
@@ -1731,6 +1808,7 @@
 
   VIEWS.player = function (root) {
     if (!P) return go("train");
+    liveEx();
     if (P.done) return renderEnd(root);
     const ex = EX[P.ids[P.idx]];
     CHECKED = false;
@@ -1788,6 +1866,7 @@
     const before = {}; ex.nlist.forEach(n => { before[n] = mastery(n); });
     record(ex, res);
     P.res[P.idx] = res.score;
+    liveEx();
     /* Kit de citations : on garde le premier essai, et une erreur revient en fin de série */
     if (ex.kit) {
       P.kitFirst = P.kitFirst || {}; P.requeued = P.requeued || {};
@@ -2237,13 +2316,16 @@
 
   R.part = function (ex, el, api) {
     const cols = Math.min(CH.length, 6);
-    el.innerHTML = `<div class="pq"><p class="quote">${esc(ex.quote)}</p><div class="part-btns" style="grid-template-columns:repeat(${cols},1fr)">${CH.map(p => `<button class="part-btn" data-p="${p}"><span class="r">${PARTS[p].roman}</span><span class="l">${esc(PARTS[p].label)}</span></button>`).join("")}</div></div>`;
+    el.innerHTML = `<div class="pq"><p class="quote">${esc(ex.quote)}</p>${recallWrap(`<div class="part-btns" style="grid-template-columns:repeat(${cols},1fr)">${CH.map(p => `<button class="part-btn" data-p="${p}"><span class="r">${PARTS[p].roman}</span><span class="l">${esc(PARTS[p].label)}</span></button>`).join("")}</div>`, "Situer de tête", "", "Afficher les choix")}</div>`;
+    const rv = bindReveal(el);
     let given = null;
     const btns = $$(".part-btn", el);
     btns.forEach(b => b.onclick = () => { if (CHECKED) return; given = +b.dataset.p; api.check(); });
     return {
-      key(k) { const n = parseInt(k, 10); if (n >= 1 && n <= btns.length) { btns[n - 1].click(); return true; } return false; },
+      reveal: rv.reveal,
+      key(k) { const n = parseInt(k, 10); if (n >= 1 && n <= btns.length) { if (rv.hidden()) { rv.reveal(); return true; } btns[n - 1].click(); return true; } return false; },
       check() {
+        rv.reveal();
         btns.forEach(b => { const p = +b.dataset.p; if (p === ex.a) b.classList.add("correct"); else if (p === given) b.classList.add("wrong"); });
         return { score: given === ex.a ? 1 : 0, given: given ? PARTS[given].name : "—", expected: PARTS[ex.a].name, expectedHTML: `<p><b>${esc(PARTS[ex.a].name)}</b> · ${esc(PARTS[ex.a].title)}</p>` };
       }
@@ -2875,6 +2957,8 @@
   window.Recto.core = {
     V, $, $$, esc, md, ICON, toast, store, X, shuffle, clip, sum, avg, fold, dayKey, fmtHMS, kSum,
     G: () => G, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV,
+    /* Suivi en direct des chronos */
+    live: LIVE, liveHTML, liveTxt, liveLong,
     view: () => VIEW, params: () => PARAMS, hash: (v, p) => hashFor(v, p),
     go: (v, p) => { const h = hashFor(v, p); if (location.hash === h) route(); else location.hash = h; },
     rerender: () => render(), onClean: f => CLEAN.push(f),

@@ -50,14 +50,12 @@ window.RECTO_LIBRARY = {
       tagline: "Les textes étudiés en spécialité : thèses, citations, auteurs, liens.",
       tone: "#0b7a8a"
     },
-    /* Cours de spécialité, remis au propre à partir des notes de la classe.
-       Discipline déduite du contenu (auteurs et notions de philosophie) : à confirmer, une seule ligne à changer. */
+    /* Cours de spécialité */
     {
       id: "hlp-ch1-education",
       type: "lecon",
       space: "hlp",
       discipline: "philosophie",
-      disciplineNote: "déduite du contenu, à confirmer",
       chapter: "ch1",
       file: "contenus/lecons/hlp-ch1-education.js",
       title: "Éducation, émancipation et transmission",

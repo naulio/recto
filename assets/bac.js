@@ -192,6 +192,16 @@
   }
 
   /* Les blocs d'une séance de « min » minutes pour un jour du programme */
+  /* Ce que le chrono suit en direct dans un bloc : les pages du cours à lire, ou le nombre d'exercices */
+  function liveKeys(b) {
+    if (b.k === "learn") {
+      const keys = b.units.flatMap(u => u.book === "hlp-textes" ? (u.fiches || []).map(f => "hlp-textes|" + f)
+        : ((C.BOOKS[u.book] || {}).course || []).filter(p => p.part === u.part).map(p => u.book + "|" + p.id));
+      return keys.length ? { keys } : {};
+    }
+    if ((b.k === "exos" || b.k === "build") && b.ids) return { ex: b.ids.length };
+    return {};
+  }
   function blocks(day, min, cfg, seed) {
     const out = [], us = day.units, books = [...new Set(us.map(u => u.book))];
     const fichesOf = b => [...new Set(us.filter(u => u.book === b).flatMap(u => u.fiches))];
@@ -254,6 +264,7 @@
     const bl = sel && sel.type !== "exam" ? blocks(sel, min, cfg, sel.key) : [];
     const doneL = (P.done[sel && sel.key + "|" + min] || []);
     const nDone = doneL.length;
+    const R = runGet(), live = !!(R && sel && R.home === cfg.home && R.key === sel.key && R.min === min);
     const count = prog.n == null ? "" : prog.n < 0 ? "Date passée" : prog.n === 0 ? "C'est aujourd'hui" : prog.n === 1 ? "Demain" : "J-" + prog.n;
     let t = 0;
     const exDate = fromKey(P.date);
@@ -268,11 +279,11 @@
           }).join("")}</ol>` : ""}
         </section>
         <section class="bp-sess">
-          ${sel ? `<header class="bp-h"><div><div class="eyebrow">${sel.key === tk ? "Aujourd'hui" : esc(dayLabel(fromKey(sel.key)))}</div><h3>${esc(DAY_TYPE[sel.type])}</h3></div>${bl.length ? `<span class="bp-prog tabnum">${nDone} / ${bl.length}</span>` : ""}</header>` : ""}
+          ${sel ? `<header class="bp-h"><div><div class="eyebrow">${sel.key === tk ? "Aujourd'hui" : esc(dayLabel(fromKey(sel.key)))}</div><h3>${esc(DAY_TYPE[sel.type])}</h3></div>${bl.length ? (live ? `<div class="bp-run"><span class="bp-left tabnum" id="bpLeft"></span><button class="btn secondary sm" id="bpNext">Bloc suivant</button><button class="btn ghost gray sm" id="bpStop">Arrêter</button></div>` : sel.key === tk ? `<button class="btn primary" id="bpStart">Commencer · ${fmtMin(min)}</button>` : `<span class="bp-prog tabnum">${nDone} / ${bl.length}</span>`) : ""}</header>` : ""}
           ${sel && sel.type === "exam" ? `<ol class="mt-jour">${(window.RECTO_METHODE ? window.RECTO_METHODE.jourJ : []).map(j => `<li>${esc(j)}</li>`).join("")}</ol>`
           : sel ? `<div class="bp-slider"><input type="range" id="bpMin" min="30" max="240" step="15" value="${min}" aria-label="Durée de la séance"><b class="tabnum">${fmtMin(min)}</b></div>
           <ol class="bp-blocks">${bl.map((b, i) => { const s = t; t += b.min; const ok = doneL.includes(i);
-            return `<li class="bp-b ${b.k} ${ok ? "done" : ""}"><span class="bp-time tabnum">${fmtMin(s)}</span><div class="bp-m"><b>${esc(b.t)}</b><span>${esc(b.d || "")}</span>${b.k === "learn" ? `<div class="bp-units">${b.units.map((u, j) => `<button class="chip" data-unit="${j}">${esc(u.short)}</button>`).join("")}</div>` : ""}</div><span class="bp-dur tabnum">${b.min} min</span><div class="bp-acts">${b.k !== "pause" && b.k !== "learn" ? `<button class="btn secondary sm" data-go="${i}">${b.k === "mock" ? "Lancer" : "Ouvrir"}</button>` : ""}<button class="bp-ck ${ok ? "on" : ""}" data-ck="${i}" aria-label="Fait" title="Fait">${C.ICON.check}</button></div></li>`; }).join("")}</ol>` : `<p class="note">Aucune séance.</p>`}
+            return `<li class="bp-b ${b.k} ${ok ? "done" : ""} ${live && R.idx === i ? "now" : ""}"><span class="bp-time tabnum">${fmtMin(s)}</span><div class="bp-m"><b>${esc(b.t)}</b><span>${esc(b.d || "")}</span>${b.k === "learn" ? `<div class="bp-units">${b.units.map((u, j) => `<button class="chip" data-unit="${j}">${esc(u.short)}</button>`).join("")}</div>` : ""}${live && R.idx === i ? `<div class="bp-live" data-live></div>` : ""}</div><span class="bp-dur tabnum">${b.min} min</span><div class="bp-acts">${b.k !== "pause" && b.k !== "learn" ? `<button class="btn secondary sm" data-go="${i}">${b.k === "mock" ? "Lancer" : "Ouvrir"}</button>` : ""}<button class="bp-ck ${ok ? "on" : ""}" data-ck="${i}" aria-label="Fait" title="Fait">${C.ICON.check}</button></div></li>`; }).join("")}</ol>` : `<p class="note">Aucune séance.</p>`}
         </section>
       </div>`;
     const date = $("#bpDate", el);
@@ -288,9 +299,34 @@
     $$("[data-ck]", el).forEach(b => b.onclick = () => {
       const k = sel.key + "|" + min, i = +b.dataset.ck, L = P.done[k] || [];
       P.done[k] = L.includes(i) ? L.filter(x => x !== i) : L.concat(i);
-      cfg.save(); if (!L.includes(i)) X.pop(b); cfg.refresh();
+      cfg.save(); if (!L.includes(i)) X.pop(b);
+      if (live && !L.includes(i)) { if (R.idx === i) runNext(R, i); else { R.blocks[i].done = true; runSet(R); } }
+      cfg.refresh();
     });
-    const mark = i => { const k = sel.key + "|" + min, L = P.done[k] || []; if (!L.includes(i)) { P.done[k] = L.concat(i); cfg.save(); } };
+    /* Chrono : la séance se suit sur tout le site (barre du haut) */
+    const st = $("#bpStart", el);
+    if (st) st.onclick = () => {
+      const first = bl.findIndex((b, i) => !doneL.includes(i));
+      runSet({ home: cfg.home, label: cfg.label, key: sel.key, min, idx: first < 0 ? 0 : first, start: Date.now(), blockStart: Date.now(), blocks: bl.map((b, i) => Object.assign({ t: b.t, min: b.min, done: doneL.includes(i) }, liveKeys(b))) });
+      X.pop(st); cfg.refresh();
+    };
+    const nx = $("#bpNext", el);
+    if (nx) nx.onclick = () => { const k = sel.key + "|" + min, L = P.done[k] || []; if (!L.includes(R.idx)) { P.done[k] = L.concat(R.idx); cfg.save(); } runNext(R, R.idx); cfg.refresh(); };
+    const sp = $("#bpStop", el);
+    if (sp) sp.onclick = () => { runSet(null); cfg.refresh(); };
+    const lf = $("#bpLeft", el);
+    if (lf && live) {
+      const tick = () => { const r = runGet(); if (!r) return; const t2 = runTimes(r); lf.textContent = "Bloc " + (r.idx + 1) + "/" + r.blocks.length + " · " + mmss(t2.left) + " · reste " + mmss(t2.total); lf.classList.toggle("late", t2.left < 0);
+        const lv = $("[data-live]", el);
+        if (lv && C.live) { const h = C.liveHTML(C.live.of(r.blocks[r.idx], r.blockStart)); if (lv.dataset.k !== h) { lv.innerHTML = h; lv.dataset.k = h; } }
+      };
+      tick(); const iv = setInterval(tick, 1000); C.onClean(() => clearInterval(iv));
+    }
+    /* Ouvrir un bloc : il devient le bloc courant du chrono ; sans chrono, il est coché */
+    const mark = i => {
+      if (live) { if (R.idx !== i) { R.idx = i; R.blockStart = Date.now(); runSet(R); } return; }
+      const k = sel.key + "|" + min, L = P.done[k] || []; if (!L.includes(i)) { P.done[k] = L.concat(i); cfg.save(); }
+    };
     $$("[data-go]", el).forEach(b => b.onclick = () => { const i = +b.dataset.go, bk = bl[i]; mark(i); cfg.act(bk); });
     $$(".bp-b.learn [data-unit]", el).forEach(b => b.onclick = () => { const li = b.closest(".bp-b"), i = [...li.parentNode.children].indexOf(li); mark(i); cfg.open(bl[i].units[+b.dataset.unit]); });
     if (!cfg.quiet()) X.stagger($$(".bp-b", el), { y: 8, step: 40 });
@@ -298,6 +334,63 @@
   /* Retour au bac blanc depuis une leçon ouverte par le plan */
   function markBack(label) { try { sessionStorage.setItem("recto.back", JSON.stringify({ h: location.hash, l: label })); } catch (e) { /* stockage indisponible */ } }
   Object.assign(Recto.bacUI, { planTab, program, blocks, markBack, dKey });
+
+  /* =========================================================
+     Séance du bac blanc en cours : un chrono pour tout le site, et un retour à la iOS
+     « ‹ Bac blanc » dans la barre du haut dès qu'on quitte le bac blanc (leçons, exercices…).
+     ========================================================= */
+  const RUN_K = "recto.bacrun";
+  const runGet = () => { const r = store.get(RUN_K); return r && r.key === dKey(today0()) ? r : null; };
+  const runSet = r => { if (r) store.set(RUN_K, r); else { try { localStorage.removeItem(RUN_K); } catch (e) { /* stockage indisponible */ } } tickBar(); };
+  const mmss = ms => { const s = Math.max(0, Math.round(Math.abs(ms) / 1000)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return (ms < 0 ? "+" : "") + (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); };
+  /* Où en est la séance : bloc courant, temps restant du bloc et de la séance */
+  function runTimes(r) {
+    const now = Date.now(), cur = r.blocks[r.idx] || { min: 0 };
+    const left = r.blockStart + cur.min * 60000 - now;
+    const after = r.blocks.slice(r.idx + 1).reduce((a, b) => a + (b.done ? 0 : b.min), 0) * 60000;
+    return { left, total: Math.max(0, left) + after };
+  }
+  function runNext(r, from) {
+    r.blocks.forEach((b, i) => { if (i === from) b.done = true; });
+    const nx = r.blocks.findIndex((b, i) => i > from && !b.done);
+    const nx2 = nx < 0 ? r.blocks.findIndex(b => !b.done) : nx;
+    if (nx2 < 0) { runSet(null); toast("Séance terminée."); return null; }
+    r.idx = nx2; r.blockStart = Date.now(); runSet(r); return r;
+  }
+  let BAR = null;
+  function tickBar() {
+    if (!BAR) {
+      const bw = document.querySelector(".brand-wrap"), cr = document.getElementById("crumb");
+      if (!bw) return;
+      BAR = document.createElement("a"); BAR.id = "bacBar"; BAR.className = "bacbar"; BAR.hidden = true;
+      bw.insertBefore(BAR, cr || null);
+    }
+    const r = runGet();
+    let back = null;
+    try { back = JSON.parse(sessionStorage.getItem("recto.back") || "null"); } catch (e) { back = null; }
+    const home = r ? r.home : back && back.h;
+    const onBac = home && location.hash.split("?")[0] === home.split("?")[0];
+    document.body.classList.toggle("has-bacrun", !!r && !onBac);
+    if (!home || onBac) { BAR.hidden = true; document.body.classList.remove("has-bacbar"); return; }
+    BAR.hidden = false; document.body.classList.add("has-bacbar");
+    BAR.href = home.split("?")[0] + "?tab=plan";
+    const label = (r && r.label) || (back && back.l) || "Bac blanc";
+    if (r) {
+      const t = runTimes(r), cur = r.blocks[r.idx];
+      const lv = C.live ? C.live.of(cur, r.blockStart) : null;
+      const html = `${C.ICON.back}<span class="bb-l">${esc(label)}</span><span class="bb-b">${esc(cur ? cur.t : "")}</span>${lv ? `<span class="bb-v ${lv.st}">${esc(C.liveTxt(lv))}</span>` : ""}<span class="bb-t tabnum ${t.left < 0 ? "late" : ""}">${mmss(t.left)}</span>`;
+      if (BAR.dataset.k !== html) { BAR.innerHTML = html; BAR.dataset.k = html; }
+      BAR.title = "Retour au plan du bac blanc · reste " + mmss(t.total) + " sur la séance" + (lv ? " · " + C.liveLong(lv) : "");
+    } else {
+      const html = `${C.ICON.back}<span class="bb-l">${esc(label)}</span>`;
+      if (BAR.dataset.k !== html) { BAR.innerHTML = html; BAR.dataset.k = html; }
+      BAR.title = "Retour au bac blanc";
+    }
+  }
+  window.addEventListener("hashchange", () => setTimeout(tickBar, 0));
+  setInterval(tickBar, 1000);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tickBar); else setTimeout(tickBar, 0);
+  Object.assign(Recto.bacUI, { runGet, runSet, runNext, runTimes, mmss, tickBar });
 
   /* =========================================================
      Écran du tronc commun : fiches, méthode, corrigés, épreuve
@@ -361,6 +454,7 @@
   function draw(root, prm) {
     const sel = ST.sel.filter(id => NOT(id));
     ST.sel = sel;
+    if (prm.tab && TABS.some(t => t[0] === prm.tab) && !prm.s) { ST.tab = prm.tab; saveST(); }
     const tab = TABS.some(t => t[0] === ST.tab) ? ST.tab : "plan";
     try { sessionStorage.removeItem("recto.back"); } catch (e) { /* stockage indisponible */ }
     const F = FORMATS[ST.fmt] ? ST.fmt : "epreuve";
@@ -442,7 +536,7 @@
     const M = window.RECTO_METHODE, mt = id => ((M && M.tc.find(m => m.id === id)) || {}).title || (id === "grille" ? "Ce qui compte" : "Le jour J");
     const pool = Engine.pool(SUBJ, "diss", sel).concat(Engine.pool(SUBJ, "expl", sel)).filter(s => CORR()[s.id]);
     Recto.bacUI.planTab(el, {
-      state: ST.plan, save: saveST, refresh, quiet: () => QUIET,
+      state: ST.plan, save: saveST, refresh, quiet: () => QUIET, home: HOME, label: "Bac blanc",
       units: unitsTC(sel), methods: ["dissertation", "explication", "grille"], methodName: mt, bookName: bookShort,
       subjects: us => { const fs2 = us.flatMap(u => u.fiches); const sc = s => (s.refs || []).filter(r => fs2.includes(r[1])).length; const hit = pool.filter(s => sc(s) > 0).sort((a, b) => sc(b) - sc(a)); return (hit.length ? hit : pool).map(s => ({ id: s.id, q: s.kind === "expl" ? "Explication · " + s.src : s.q })); },
       open: u => { Recto.bacUI.markBack("Bac blanc"); location.hash = "#/" + u.book + (C.BOOKS[u.book].course ? "/cours?part=" : "/carte?part=") + u.part; },

@@ -26,7 +26,7 @@ Object.assign(window.RECTO_CORRIGES, {
   },
 
   "I-rousseau-emile": {
-    intro: "Dans la « Préface » d'Émile ou de l'éducation (1762), traité d'éducation fictive, Rousseau part d'un constat provocateur : on ignore ce qu'est l'enfance. La question est de savoir si l'on peut bien éduquer un enfant en cherchant toujours en lui l'adulte qu'il deviendra. L'enjeu est décisif, car toute éducation repose sur une idée de l'enfant : si cette idée est fausse, tout le reste s'égare. Le texte répond en trois temps : il dénonce l'erreur des éducateurs, fait de l'étude de l'enfant la condition de toute méthode, puis refuse les demi-réformes.",
+    intro: "Dans la « Préface » d'Émile ou De l'éducation (1762), traité d'éducation fictive, Rousseau part d'un constat provocateur : on ignore ce qu'est l'enfance. La question est de savoir si l'on peut bien éduquer un enfant en cherchant toujours en lui l'adulte qu'il deviendra. L'enjeu est décisif, car toute éducation repose sur une idée de l'enfant : si cette idée est fausse, tout le reste s'égare. Le texte répond en trois temps : il dénonce l'erreur des éducateurs, fait de l'étude de l'enfant la condition de toute méthode, puis refuse les demi-réformes.",
     parties: [
       { titre: "I. Chercher l'homme dans l'enfant : l'erreur qui fausse toute l'éducation",
         args: [
