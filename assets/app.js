@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "15"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "16"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -294,7 +294,7 @@
   function useBook(id) {
     if (B && B.id === id) return;
     B = BOOKS[id];
-    PARTS = B.parts; NOTIONS = B.notions; READING = B.reading; EXS = B.exercises; NIDS = B.NIDS; EX = B.EX; CH = B.CH; U = B.unit; W = KIND[B.meta.type] || KIND.livre;
+    PARTS = B.parts; NOTIONS = B.notions; READING = B.reading || {}; EXS = B.exercises; NIDS = B.NIDS; EX = B.EX; CH = B.CH; U = B.unit; W = KIND[B.meta.type] || KIND.livre;
     S = loadState(id); MC = null; P = null; PLAN_SEL = null;
     /* Une séance plus récente que celle recopiée pour tout le site la remplace */
     if (S.run) { const m = store.get(K_PRUN); if (!m || m.book === id || (m.blockStart || 0) < S.run.blockStart) mirrorRun(); }
@@ -1651,7 +1651,7 @@
     return `
       <div class="part-head"><span class="r">${p ? P0.roman : "§"}</span><div><div class="eyebrow">${esc(partLabel(p))}${P0.metaphor ? " · " + esc(P0.metaphor) : ""}</div><h1 style="margin-top:6px">${esc(P0.title)}</h1><p>${esc(P0.essence)}</p></div></div>
       <div class="n-grid">${ids.map(id => { const m = mastery(id), st = status(m); return `<button class="n-tile" data-notion="${id}"><span class="t">${esc(NOTIONS[id].title)}</span><span class="s"><span class="dot ${st}"></span>${STATUS_LABEL[st]}${m != null ? " · " + pct(m) + " %" : ""}</span></button>`; }).join("")}</div>
-      <div class="part-actions"><button class="btn primary" id="trainPart">S'entraîner dessus</button>${p ? `<button class="btn secondary" id="readPart">${B.course ? "Lire le cours" : "Guide de lecture"}</button>${RD(p).link ? `<a class="btn ghost" href="${RD(p).link}" target="_blank" rel="noopener">Texte en ligne ${ICON.ext}</a>` : ""}` : ""}</div>`;
+      <div class="part-actions"><button class="btn primary" id="trainPart">S'entraîner dessus</button>${isCorpus() && P0.href ? `<a class="btn secondary" href="${esc(P0.href)}">Les textes</a>` : ""}${p && !isCorpus() ? `<button class="btn secondary" id="readPart">${B.course ? "Lire le cours" : "Guide de lecture"}</button>${RD(p).link ? `<a class="btn ghost" href="${RD(p).link}" target="_blank" rel="noopener">Texte en ligne ${ICON.ext}</a>` : ""}` : ""}</div>`;
   }
   function ficheHTML(id, o) {
     const n = NOTIONS[id], m = mastery(id), st = status(m);

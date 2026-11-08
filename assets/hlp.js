@@ -63,7 +63,7 @@
       if (!H.texts.some(t => t.chapter === c.id && t.discipline === d)) return;
       const n = parts.length;
       parts.push({ n, roman: ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"][n] || String(n), name: H.disciplines[d].title, label: H.disciplines[d].title + " · ch. " + c.n,
-        title: H.disciplines[d].title + " · " + c.title, metaphor: c.question, essence: H.texts.filter(t => t.chapter === c.id && t.discipline === d).map(t => t.a.short).filter((x, i, a) => a.indexOf(x) === i).join(", ") });
+        title: H.disciplines[d].title + " · " + c.title, metaphor: c.question, href: "#/hlp/" + d, essence: H.texts.filter(t => t.chapter === c.id && t.discipline === d).map(t => t.a.short).filter((x, i, a) => a.indexOf(x) === i).join(", ") });
       partOf[c.id + "|" + d] = n;
     }));
     const notions = {};
