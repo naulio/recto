@@ -164,10 +164,14 @@ window.FX = (function () {
     if (!can("soft")) { fn(); return; }
     const dx = reduced() ? 0 : (o.dx == null ? 20 : o.dx), sc = o.zoom ? " scale(.985)" : "";
     const out = el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${-dx}px)${sc}` }], { duration: 170, easing: "ease-in", fill: "forwards" });
-    out.onfinish = () => {
+    /* Le changement a toujours lieu, même si l'animation ne se termine pas (onglet en arrière-plan, économie d'énergie) */
+    let done = false;
+    const go = () => {
+      if (done) return; done = true;
       fn(); out.cancel();
       el.animate([{ opacity: 0, transform: `translateX(${dx}px)${sc}` }, { opacity: 1, transform: "none" }], { duration: 260, easing: EASE });
     };
+    out.onfinish = go; setTimeout(go, 260);
   }
   /* FX-22 : vol d'une étiquette vers sa case (FLIP) */
   function fly(node, target) {
@@ -339,9 +343,127 @@ window.FX = (function () {
     return { demo() { const r = el.getBoundingClientRect(); move({ clientX: r.left + r.width * .3, clientY: r.top + r.height * .5 }); setTimeout(() => move({ clientX: r.left + r.width * .7, clientY: r.top + r.height * .4 }), 350); setTimeout(() => { s.style.opacity = 0; }, 1200); } };
   }
 
+  /* =========================================================
+     Méthodes de mémorisation (MX-…) : citations et textes
+     ========================================================= */
+  /* MX-01 : des mots qui s'effacent en laissant leur trait */
+  function erase(nodes, o) {
+    o = o || {};
+    Array.from(nodes).forEach((n, i) => {
+      const col = getComputedStyle(n).color;
+      n.classList.add("gone");
+      if (!can("soft") || reduced()) return;
+      n.animate([{ color: col, filter: "blur(0)" }, { color: "transparent", filter: "blur(4px)" }], { duration: 520, delay: i * (o.step || 70), easing: EASE, fill: "backwards" });
+    });
+  }
+  /* MX-02 : une initiale qui s'ouvre sur le mot entier */
+  function unfold(node) {
+    if (!can("soft") || reduced()) return;
+    node.animate([{ clipPath: "inset(0 100% 0 0)", opacity: .35 }, { clipPath: "inset(0 0 0 0)", opacity: 1 }], { duration: 440, easing: EASE });
+  }
+  /* MX-03 : le mot intrus est barré, le bon mot se pose à côté */
+  function correctWord(node, right) {
+    strike(node); node.classList.add("mx-bad");
+    const r = document.createElement("span"); r.className = "mx-good"; r.textContent = right;
+    node.after(r); node.after(document.createTextNode(" "));
+    if (can("soft") && !reduced()) r.animate([{ transform: "translateY(-0.6em)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 460, delay: 260, easing: BOUNCE, fill: "backwards" });
+    return r;
+  }
+  /* MX-04 : un mot retrouvé s'allume (un trait se remplit dessous) */
+  function lightWord(node, bad) {
+    node.classList.add(bad ? "lit-bad" : "lit");
+    if (!can("soft") || reduced()) return;
+    node.animate([{ backgroundSize: "0% 2px" }, { backgroundSize: "100% 2px" }], { duration: 320, easing: EASE });
+  }
+  /* MX-05 : le micro écoute (un anneau qui respire) */
+  function listen(btn) {
+    if (!can("soft") || reduced()) return { stop() {} };
+    const a = btn.animate([{ boxShadow: "0 0 0 0 rgba(255,59,48,.35)" }, { boxShadow: "0 0 0 0.75rem rgba(255,59,48,0)" }], { duration: 1200, iterations: Infinity, easing: "ease-out" });
+    return { stop: () => a.cancel() };
+  }
+  /* MX-06 : une barre de temps qui se vide (information, donc toujours affichée) */
+  function timebar(bar, ms) {
+    bar.style.transformOrigin = "left";
+    return bar.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], { duration: ms, easing: "linear", fill: "forwards" });
+  }
+  /* MX-07 : un repère qui glisse jusqu'à sa vraie place */
+  function glide(node, from, to) {
+    node.style.left = to;
+    if (!can("soft") || reduced()) return;
+    node.animate([{ left: from }, { left: to }], { duration: 760, easing: EASE });
+  }
+  /* MX-10 : une carte qui se retourne pour montrer qu'elle est fausse */
+  function flipOut(node) {
+    node.classList.add("flipped");
+    if (!can("soft") || reduced()) return;
+    node.animate([{ transform: "perspective(40rem) rotateX(0)" }, { transform: "perspective(40rem) rotateX(88deg)", offset: .45 }, { transform: "perspective(40rem) rotateX(0)" }], { duration: 560, easing: EASE });
+  }
+  /* MX-11 : un symbole qui se pose */
+  function settle(node) {
+    if (!can("soft") || reduced()) return;
+    node.animate([{ transform: "scale(1.6) rotate(-8deg)", opacity: 0 }, { transform: "scale(.94)", opacity: 1, offset: .7 }, { transform: "none" }], { duration: 540, easing: EASE });
+  }
+  /* MX-12 : une carte qui rejoint la galerie (elle rétrécit vers sa place) */
+  function toShelf(card, target) {
+    if (!target) return;
+    if (!can("soft") || reduced()) { pop(target, 1.1); return; }
+    const a = card.getBoundingClientRect(), b = target.getBoundingClientRect();
+    const g = card.cloneNode(true);
+    g.style.cssText = `position:fixed;left:${a.left}px;top:${a.top}px;width:${a.width}px;height:${a.height}px;margin:0;pointer-events:none;z-index:9999`;
+    const tone = getComputedStyle(card).getPropertyValue("--tone"); if (tone) g.style.setProperty("--tone", tone);
+    document.body.appendChild(g);
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2), sc = Math.max(.06, b.width / a.width);
+    const mid = .66, k = 1 - (1 - sc) * mid;
+    const an = g.animate([
+      { transform: "none", opacity: 1 },
+      { transform: `translate(${dx * mid}px,${dy * mid}px) scale(${k})`, opacity: 1, offset: mid },
+      { transform: `translate(${dx}px,${dy}px) scale(${sc})`, opacity: .1 }
+    ], { duration: 760, easing: "cubic-bezier(.45,0,.25,1)" });
+    cleanup(an, g);
+    an.finished.then(() => pop(target, 1.15)).catch(() => {});
+  }
+  /* MX-09 : la phrase rejoint son auteur. Un double de la carte décrit une courbe douce en rétrécissant
+     jusqu'à la place de la phrase dans la colonne ; la phrase s'y pose, la colonne s'éclaire un instant. */
+  function toColumn(chip, target, from) {
+    const a = from ? from.getBoundingClientRect() : null;
+    target.appendChild(chip);
+    const col = target.closest(".imp-col") || target;
+    if (!can("soft") || reduced() || !a || !a.width) { pop(chip, 1.02); return; }
+    const b = chip.getBoundingClientRect();
+    const g = from.cloneNode(true);
+    g.style.cssText = `position:fixed;left:${a.left}px;top:${a.top}px;width:${a.width}px;height:${a.height}px;margin:0;pointer-events:none;z-index:9999;transform-origin:center`;
+    document.body.appendChild(g);
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+    const sc = Math.max(.3, Math.min(1, b.width / a.width)), mid = .55;
+    const fl = g.animate([
+      { transform: "none", opacity: 1 },
+      { transform: `translate(${dx * mid}px,${dy * mid - 14}px) scale(${1 - (1 - sc) * mid})`, opacity: 1, offset: mid },
+      { transform: `translate(${dx}px,${dy}px) scale(${sc})`, opacity: 0 }
+    ], { duration: 580, easing: "cubic-bezier(.3,.6,.2,1)" });
+    cleanup(fl, g);
+    chip.animate([{ opacity: 0, transform: "translateY(-0.375rem)" }, { opacity: 1, transform: "none" }], { duration: 320, delay: 400, easing: EASE, fill: "backwards" });
+    const tone = (getComputedStyle(col).getPropertyValue("--tone") || "").trim();
+    const c = /^#[0-9a-f]{6}$/i.test(tone) ? tone : "#5856d6";
+    col.animate([{ boxShadow: `inset 0 0 0 0 ${c}00` }, { boxShadow: `inset 0 0 0 2px ${c}66` }, { boxShadow: `inset 0 0 0 0 ${c}00` }], { duration: 760, delay: 440, easing: "ease-out" });
+  }
+  /* MX-14 : des points qui se remplissent l'un après l'autre */
+  function fillDots(dots) {
+    Array.from(dots).forEach((d, i) => {
+      d.classList.add("on");
+      if (can("soft") && !reduced()) d.animate([{ transform: "scale(.4)", opacity: .3 }, { transform: "scale(1.15)", offset: .6 }, { transform: "none", opacity: 1 }], { duration: 440, delay: i * 130, easing: EASE, fill: "backwards" });
+    });
+  }
+  /* MX-15 : le nom d'une méthode se pose, lettres qui se resserrent */
+  function titleIn(el) {
+    if (!can("soft") || reduced()) return;
+    const ls = getComputedStyle(el).letterSpacing;
+    el.animate([{ letterSpacing: ".4em", opacity: 0 }, { letterSpacing: ls === "normal" ? "0px" : ls, opacity: 1 }], { duration: 620, easing: EASE });
+  }
+
   return {
     state, setLevel(l) { state.level = l; }, setMotion(m) { state.motion = m; }, can, reduced,
     ripple, pop, burst, floatText, sweep, shake, glow, drawCheck, countUp, ringTo, stagger, fillBars, strike, swap, fly, drawLine,
-    streak, breakStreak, confetti, fireworks, shimmer, achievement, logoFlip, wordsIn, tilt, spotlight, float, breathe, underline, nudge
+    streak, breakStreak, confetti, fireworks, shimmer, achievement, logoFlip, wordsIn, tilt, spotlight, float, breathe, underline, nudge,
+    erase, unfold, correctWord, lightWord, listen, timebar, glide, flipOut, settle, toShelf, toColumn, fillDots, titleIn
   };
 })();

@@ -202,6 +202,11 @@
     if ((b.k === "exos" || b.k === "build") && b.ids) return { ex: b.ids.length };
     return {};
   }
+  /* Les unités d'un bloc ou d'un jour, résumées : au-delà de 3 par contenu, on compte au lieu d'énumérer */
+  function unitsLabel(us, cfg) {
+    const by = {}; us.forEach(u => (by[u.book] = by[u.book] || []).push(u));
+    return Object.keys(by).map(b => by[b].length > 3 ? (cfg.bookName ? cfg.bookName(b) : b) + " (" + by[b].length + ")" : by[b].map(u => u.short).join(", ")).join(" · ");
+  }
   function blocks(day, min, cfg, seed) {
     const out = [], us = day.units, books = [...new Set(us.map(u => u.book))];
     const fichesOf = b => [...new Set(us.filter(u => u.book === b).flatMap(u => u.fiches))];
@@ -223,7 +228,7 @@
     const pause = () => out.push({ k: "pause", min: 5, t: "Pause", d: "Sans écran." });
     const mtab = cfg.methods[day.i % cfg.methods.length];
     if (day.type === "learn" || day.type === "consolid") {
-      if (day.type === "learn") learn(0.3, "Apprendre", "Les fiches et le cours de : " + us.map(u => u.short).join(", "));
+      if (day.type === "learn") learn(0.3, "Apprendre", "Les fiches et le cours de : " + unitsLabel(us, cfg));
       exos(day.type === "learn" ? 0.3 : 0.4);
       if (pauses) pause();
       const hasBuild = build(day.type === "learn" ? 0.15 : 0.2);
@@ -275,7 +280,7 @@
           <div class="bp-count">${count ? `<b class="tabnum">${esc(count)}</b>` : ""}<span>${exDate ? esc(dayLabel(exDate)) : "Aucune date : une séance qui couvre tout"}</span></div>
           ${prog.days.length > 1 ? `<ol class="bp-days">${prog.days.map(d => {
             const dd = fromKey(d.key), all = blocks(d, min, cfg, d.key).length, dn = (P.done[d.key + "|" + min] || []).length;
-            return `<li><button class="bp-day ${d === sel ? "on" : ""} ${d.key === tk ? "today" : ""} ${d.type}" data-day="${d.key}"><span class="bp-d">${esc(dd.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" }))}</span><span class="bp-t">${esc(DAY_TYPE[d.type])}</span>${d.type === "learn" && d.units.length < cfg.units.length ? `<span class="bp-u">${esc(d.units.map(u => u.short).join(", "))}</span>` : ""}${d.type !== "exam" && all ? `<span class="bp-p tabnum">${dn}/${all}</span>` : ""}</button></li>`;
+            return `<li><button class="bp-day ${d === sel ? "on" : ""} ${d.key === tk ? "today" : ""} ${d.type}" data-day="${d.key}"><span class="bp-d">${esc(dd.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" }))}</span><span class="bp-t">${esc(DAY_TYPE[d.type])}</span>${d.type === "learn" && d.units.length < cfg.units.length ? `<span class="bp-u">${esc(unitsLabel(d.units, cfg))}</span>` : ""}${d.type !== "exam" && all ? `<span class="bp-p tabnum">${dn}/${all}</span>` : ""}</button></li>`;
           }).join("")}</ol>` : ""}
         </section>
         <section class="bp-sess">

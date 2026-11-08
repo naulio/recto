@@ -29,6 +29,7 @@ Les textes à expliquer (Descartes, Bergson, Baudelaire) viennent de Wikisource,
 - **Textes et auteurs** : les 18 textes du chapitre 1 (*Éducation, transmission et émancipation*) en fiches (thèse, arguments, citations exactes, rapprochements, oppositions), une fiche par auteur, toutes les citations. Dates, œuvres et références sont vérifiées dans des sources fiables.
 - **Cours de philosophie, chapitre 1** : *Éducation, émancipation et transmission* : 32 pages, 35 fiches, 191 exercices, 10 sujets d'essai. Dates et attributions vérifiées dans des sources fiables ; ce qui ne peut pas l'être n'est pas affiché.
 - **S'entraîner sur les textes** : les fiches deviennent des exercices.
+- **S'imprégner du texte** : une visite guidée sans plan visible (auteur et époque, thèse, fil, schéma, citation), différente à chaque fois, puis des rappels espacés. **Retenir les citations** : effacement, initiales, mot intrus, dictée, à voix haute. **Les 3 du jour** : un texte et deux citations, chaque jour.
 - **Bac blanc HLP** : corrigés et épreuve en philosophie (10 essais, 9 interprétations) ; la littérature s'ouvrira avec son cours.
 
 ## Ce qu'elle contient
@@ -39,7 +40,7 @@ Les textes à expliquer (Descartes, Bergson, Baudelaire) viennent de Wikisource,
 - **Recherche** : touche `/`, filtres Leçon, Fiches, Exos, Entraînement.
 - **Plan** : de 30 min à 3 h, chronométré.
 - **Entraînement** : 160 à 190 exercices par contenu, 11 formats, mode sans citations.
-- **Appliquer** : sujets avec plan modèle, textes à expliquer, kit de citations en répétition espacée.
+- **Appliquer** : sujets avec plan modèle, textes à expliquer, kit de citations en répétition espacée (méthodes variées selon le niveau de chaque citation).
 - **Bilan** : maîtrise par notion, export PDF ou texte pour une IA.
 
 Sur ordinateur, chaque écran tient sans défiler. Progression enregistrée dans le navigateur uniquement.

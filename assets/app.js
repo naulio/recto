@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "12"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "13"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -84,6 +84,8 @@
   /* Contenu courant, livre ou leçon (le moteur lit ces variables) */
   let B = null, PARTS = [], NOTIONS = {}, READING = {}, EXS = [], NIDS = [], EX = {}, CH = [], U = { one: "chapitre", many: "chapitres" }, W = KIND.livre;
 
+  /* Reconnaissance vocale disponible (Chrome, Edge, Safari) : sinon « À voix haute » passe en auto-évaluation */
+  const SPEECH_OK = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
   const TYPES = {
     qcm: { label: "QCM", help: "Une seule bonne réponse.", keys: "A-D ou 1-4 · Entrée" },
     vf: { label: "Vrai ou faux", help: "Trancher, puis lire la justification.", keys: "V / F · Entrée" },
@@ -96,7 +98,13 @@
     grid: { label: "Tableau à compléter", help: "Un clic : ✓ ou ✗.", keys: "Entrée" },
     flash: { label: "Carte mémoire", help: "Répondre de tête, puis retourner.", keys: "Espace · 1, 2, 3" },
     build: { label: "Construire la réponse", help: "Garder seulement ce qui répond au sujet.", keys: "Entrée" },
-    words: { label: "Reconstituer la citation", help: "Les mots dans l'ordre.", keys: "Retour arrière : annuler · Entrée" }
+    words: { label: "Reconstituer la citation", help: "Les mots dans l'ordre.", keys: "Retour arrière : annuler · Entrée" },
+    fade: { label: "Effacement", help: "Effacer peu à peu, réciter, puis vérifier.", keys: "Espace · 1, 2, 3" },
+    initials: { label: "Initiales", help: "Toucher une initiale pour voir le mot.", keys: "Espace : tout afficher · 1, 2, 3" },
+    intrus: { label: "Le mot intrus", help: "Un seul mot a été changé.", keys: "Toucher le mot · ← → puis Espace" },
+    dictee: { label: "Dictée de mémoire", help: "Accents, majuscules et ponctuation facultatifs.", keys: "Entrée : valider" },
+    voix: { label: "À voix haute", help: SPEECH_OK ? "Les mots reconnus s'allument." : "Réciter, puis vérifier.", keys: SPEECH_OK ? "Entrée : valider" : "Espace · 1, 2, 3" },
+    serie: { label: "Série rapide", help: "L'auteur de chaque citation, avant la fin du temps.", keys: "A-D ou 1-4" }
   };
   /* Exercices d'explication de texte : un QCM accompagné d'un passage */
   const TEXT_TYPE = { label: "Explication de texte", help: "Repérer la thèse, puis ce qu'elle refuse.", keys: "A-D ou 1-4 · Entrée" };
@@ -353,6 +361,8 @@
       case "fill": return "Compléter : " + ex.text.replace(/\[\[(.+?)\]\]/g, "____");
       case "part": return "D'où vient : « " + ex.quote + " »";
       case "flash": return ex.f;
+      case "words": case "fade": case "initials": case "intrus": case "dictee": case "voix": return ex.q || TYPES[ex.type].label + " : « " + clip(ex.t, 160) + " »";
+      case "serie": return ex.q || TYPES.serie.label + " : " + (ex.items || []).length + " citations";
       default: return (ex.passage ? "Texte de " + (ex.src || "l'auteur") + " : " : "") + ex.q;
     }
   }
@@ -1482,15 +1492,36 @@
       return { type: "qcm", kit: q.id, label: "Utiliser dans un sujet", help: "La citation qui porte cet argument.", passage: u.t, src: "Argument, pour un sujet sur " + u.th,
         q: "Quelle citation du kit sert cet argument ?", options: opts.map(x => x.short), answer: opts.indexOf(q), explain: "« " + q.t + " » " + q.sens };
     };
+    /* Méthodes de mémorisation, de la plus guidée à la plus libre selon la boîte */
+    const method = (type, q, o) => Object.assign({ type, kit: q.id, t: q.t, a: q.a, explain: q.sens }, o);
     pick.forEach(q => {
       const b = kitState(q).box;
       if (b === 0) {
         reg({ type: "flash", kit: q.id, label: "Initiales et image", help: "Réciter à partir des initiales, puis retourner.", prompt: "Réciter la citation à partir de ses initiales.", f: q.who + " · " + initialsOf(q.t), b: "« " + q.t + " »", memo: q.memo }, "init");
+        reg(method("fade", q), "fade");
         reg(words(q, 0.45), "w1");
+      } else if (b === 1) {
+        reg(method("initials", q), "ini");
+        const odd = Math.random() < 0.5 ? makeIntrus(q.t) : null;
+        if (odd) reg(method("intrus", q, odd), "intr"); else reg(usage(q), "use");
+        reg(words(q, 0.7), "w2");
+      } else {
+        if (SPEECH_OK && Math.random() < 1 / 3) reg(method("voix", q), "voix"); else reg(method("dictee", q), "dict");
         reg(words(q, 1), "w3");
-      } else if (b === 1) { reg(words(q, 0.7), "w2"); reg(usage(q), "use"); }
-      else { reg(words(q, 1), "w3"); reg(usage(q), "use"); }
+        reg(usage(q), "use");
+      }
     });
+    /* Série rapide : chaque citation du kit avec son auteur */
+    if (N >= 3) {
+      const names = [...new Set(qs.map(q => q.who))];
+      const pad = [...new Set(B.kit.quotes.map(q => q.who).concat((B.authors || []).filter(a => !/\s/.test(a))))].filter(a => !names.includes(a));
+      const items = shuffle(qs).map(q => {
+        const others = shuffle(names.filter(n => n !== q.who)).slice(0, 3), more = shuffle(pad);
+        while (others.length < 3 && more.length) others.push(more.shift());
+        return { t: q.t, ok: q.who, opts: shuffle([q.who].concat(others)) };
+      });
+      reg({ type: "serie", kit: "*", items, sec: Math.max(15, items.length * 6) }, "serie");
+    }
     if (N >= 2) {
       const i = Math.floor(Math.random() * (N - 1));
       const opts = shuffle(qs.filter((_, k) => k !== i)).slice(0, 4);
@@ -1796,6 +1827,12 @@
       case "fill": return ex.plain ? "Compléter la phrase." : "Compléter la citation.";
       case "part": return "De quel" + (U.fem ? "le " : " ") + U.one + " vient cette phrase ?";
       case "flash": return "Répondre de tête, puis retourner la carte.";
+      case "fade": return "Relire, effacer, puis réciter.";
+      case "initials": return "Réciter à partir des initiales.";
+      case "intrus": return "Quel mot a été changé ?";
+      case "dictee": return "Écrire la citation de mémoire.";
+      case "voix": return "Réciter la citation à voix haute.";
+      case "serie": return "Retrouver l'auteur de chaque citation.";
       default: return ex.q;
     }
   }
@@ -1840,15 +1877,17 @@
       ready: v => { const b = $("#validate"); if (b) b.disabled = !v; },
       check: () => doCheck(false),
       next: () => nextEx(),
-      hint: fn => { const h = $("#hint"); h.hidden = false; h.onclick = () => { fn(); h.disabled = true; }; }
+      hint: fn => { const h = $("#hint"); h.hidden = false; h.onclick = () => { fn(); h.disabled = true; }; },
+      /* Exercice auto-évalué (carte, effacement, initiales, voix sans micro) : ni « Valider » ni « Voir la réponse » */
+      selfRated: () => { ["#validate", "#idk"].forEach(s => { const b = $(s); if (b) b.hidden = true; }); const f = $(".ex-foot"); if (f) f.classList.add("empty"); }
     };
     CTRL = R[ex.type](ex, $("#exBody"), api);
     $("#quit").onclick = leaveSession;
     $("#idk").onclick = () => doCheck(true);
     $("#validate").onclick = () => doCheck(false);
     $("#next").onclick = nextEx;
-    if (ex.type === "flash") { $("#validate").hidden = true; $("#idk").hidden = true; $(".ex-foot").classList.add("empty"); }
-    if (ex.type === "vf" || ex.type === "part") $("#validate").hidden = true;
+    if (isSelfRated(ex)) api.selfRated();
+    if (["vf", "part", "intrus", "serie"].includes(ex.type)) $("#validate").hidden = true;
   };
   function sideIntro(ex) {
     const t = typeOf(ex);
@@ -1895,7 +1934,7 @@
     const s = res.score, cls = s >= 0.99 ? "ok" : s > 0 ? "mid" : "ko";
     const title = res.gaveUp ? "Voici la réponse" : cls === "ok" ? (res.typo ? "Juste, à une faute près" : "Juste") : cls === "mid" ? "Presque" : "À revoir";
     const icon = cls === "ok" ? ICON.check : cls === "mid" ? ICON.half : ICON.cross;
-    const partial = ["fill", "order", "match", "sort", "schema", "grid", "build", "words"].includes(ex.type) || (ex.type === "qcm" && Array.isArray(ex.answer));
+    const partial = ["fill", "order", "match", "sort", "schema", "grid", "build", "words", "dictee", "voix", "serie"].includes(ex.type) || (ex.type === "qcm" && Array.isArray(ex.answer));
     const sub = res.gaveUp ? "Elle reviendra dans les erreurs." : partial ? Math.round(s * 100) + " % des points" : cls === "ok" ? "Bonne réponse" : "Mauvaise réponse";
     let body = "";
     if (res.expectedHTML) body += `<div class="side-block"><h4>${esc(res.expectedTitle || "Réponse attendue")}</h4>${res.expectedHTML}</div>`;
@@ -2682,6 +2721,477 @@
     };
   };
 
+  /* =========================================================
+     Mémoriser une citation : effacement, initiales, mot intrus,
+     dictée, voix haute, série rapide
+     ========================================================= */
+  const QUOTE_TYPES = ["fade", "initials", "words", "intrus", "dictee", "voix", "serie"];
+  const SELF_RATED = ["flash", "fade", "initials"];
+  const isSelfRated = ex => SELF_RATED.includes(ex.type) || (ex.type === "voix" && !SPEECH_OK);
+  const hasL = w => /[\p{L}\p{N}]/u.test(w);
+  /* Mots d'une citation : la ponctuation isolée (« ; », « ? ») reste attachée au mot voisin */
+  function qWords(t) {
+    const out = [];
+    String(t == null ? "" : t).split(/\s+/).filter(Boolean).forEach(w => { if (out.length && !hasL(w)) out[out.length - 1] += " " + w; else out.push(w); });
+    if (out.length > 1 && !hasL(out[0])) out.splice(0, 2, out[0] + " " + out[1]);
+    return out;
+  }
+  /* Comparaison sans accents, majuscules ni ponctuation */
+  const wKey = w => fold(w).replace(/œ/g, "oe").replace(/æ/g, "ae").replace(/[^\p{L}\p{N}]/gu, "");
+  const srcHTML = ex => ex.a ? `<p class="mx-src">${esc(ex.a)}</p>` : "";
+  const quoteFb = ex => `<p class="quote">« ${esc(ex.t)} »</p>${ex.a ? `<p class="small muted" style="margin-top:6px">${esc(ex.a)}</p>` : ""}`;
+  const hiddenLine = ws => `<p class="mx-line" aria-hidden="true">${ws.map((w, i) => `<span class="mx-w gone" data-i="${i}">${esc(w)}</span>`).join(" ")}</p>`;
+  const RATE_KEY = { 1: 0, 2: 0.5, 3: 1 };
+  const rateTxt = r => r == null ? "—" : ["Non su", "À moitié", "Su"][r * 2];
+  /* Auto-évaluation, comme la carte mémoire */
+  function rateBar(box, onRate) {
+    box.innerHTML = `<div class="flash-rate mx-rate"><button class="btn rate-0" data-r="0">Non su <kbd>1</kbd></button><button class="btn rate-1" data-r="0.5">À moitié <kbd>2</kbd></button><button class="btn rate-2" data-r="1">Su <kbd>3</kbd></button></div>`;
+    const bs = $$("[data-r]", box);
+    bs.forEach(b => b.onclick = () => onRate(+b.dataset.r));
+    X.stagger(bs, { y: 6, step: 40 });
+  }
+  const lockRate = (box, r) => { const w = $(".mx-rate", box); if (!w) return; w.classList.add("done"); $$("[data-r]", w).forEach(b => b.classList.toggle("on", +b.dataset.r === r)); };
+  /* Un appui ne compte qu'une fois (un clic et la barre d'espace peuvent arriver ensemble) */
+  const once = fn => { let t = 0; return () => { const n = Date.now(); if (n - t < 220) return; t = n; fn(); }; };
+  const light = (n, bad) => { n.classList.remove("gone", "lit", "lit-bad"); X.lightWord(n, bad); n.classList.add(bad ? "lit-bad" : "lit"); };
+
+  /* Effacement : les mots disparaissent par quarts, on récite de tête, puis on vérifie */
+  R.fade = function (ex, el, api) {
+    const ws = qWords(ex.t);
+    el.innerHTML = `<div class="mx mx-fade"><p class="mx-line">${ws.map((w, i) => `<span class="mx-w" data-i="${i}">${esc(w)}</span>`).join(" ")}</p>${srcHTML(ex)}
+      <div class="mx-act"><button class="btn primary lg mx-go">Effacer <kbd>Espace</kbd></button></div></div>`;
+    const nodes = $$(".mx-w", el), act = $(".mx-act", el);
+    let shown = false, rating = null, presses = 0;
+    const left = () => nodes.filter(n => !n.classList.contains("gone"));
+    const uncover = () => { if (shown) return; shown = true; nodes.forEach(n => n.classList.remove("gone")); X.stagger(nodes, { y: 4, step: 28 }); };
+    const rate = r => { if (CHECKED) return; rating = r; api.check(); api.next(); };
+    const step = once(() => {
+      if (CHECKED || shown) return;
+      const l = left();
+      if (!l.length) { uncover(); rateBar(act, rate); return; }
+      const out = shuffle(l).slice(0, l.length <= 2 ? l.length : Math.max(1, Math.round(l.length / 4)));
+      X.erase(out, { step: 60 });
+      out.forEach(n => n.classList.add("gone"));
+      presses++;
+      if (!left().length) $(".mx-go", el).innerHTML = "Afficher <kbd>Espace</kbd>";
+    });
+    $(".mx-go", el).onclick = step;
+    return {
+      reveal: step,
+      key(k) { if (!shown || !(k in RATE_KEY)) return false; rate(RATE_KEY[k]); return true; },
+      check(giveUp) {
+        uncover();
+        if (giveUp || rating == null) act.innerHTML = ""; else lockRate(act, rating);
+        const r = giveUp ? null : rating;
+        return { score: r == null ? 0 : r, given: rateTxt(r) + (r != null && presses ? " · " + presses + " effacement" + (presses > 1 ? "s" : "") : ""), expected: ex.t, expectedTitle: "La citation", expectedHTML: quoteFb(ex) };
+      }
+    };
+  };
+
+  /* Initiales : chaque mot réduit à sa première lettre ; en toucher une révèle le mot (aide comptée) */
+  R.initials = function (ex, el, api) {
+    const ws = qWords(ex.t);
+    const iniOf = w => {
+      if (!hasL(w)) return w;
+      const lead = w.match(/^[^\p{L}\p{N}]*/u)[0], tail = w.match(/[^\p{L}\p{N}]*$/u)[0];
+      return lead + initialsOf(w.slice(lead.length, w.length - tail.length)) + tail;
+    };
+    el.innerHTML = `<div class="mx mx-ini"><p class="mx-line">${ws.map((w, i) => `<button class="mx-w ini" data-i="${i}">${esc(iniOf(w))}</button>`).join(" ")}</p>${srcHTML(ex)}
+      <div class="mx-act"><button class="btn primary lg mx-go">Tout afficher <kbd>Espace</kbd></button></div></div>`;
+    const nodes = $$(".mx-w", el), act = $(".mx-act", el), open = new Set();
+    let helps = 0, shown = false, rating = null;
+    const unfold = (i, anim) => { if (open.has(i)) return; open.add(i); const n = nodes[i]; n.innerHTML = esc(ws[i]); n.classList.remove("ini"); n.classList.add("open"); n.tabIndex = -1; if (anim) X.unfold(n); };
+    const rate = r => { if (CHECKED) return; rating = r; api.check(); api.next(); };
+    const uncover = () => { if (shown) return; shown = true; const rest = ws.map((_, i) => i).filter(i => !open.has(i)); rest.forEach(i => unfold(i)); X.stagger(rest.map(i => nodes[i]), { y: 4, step: 30 }); };
+    const showAll = once(() => { if (CHECKED || shown) return; uncover(); rateBar(act, rate); });
+    nodes.forEach((n, i) => n.onclick = () => { if (CHECKED || shown || open.has(i)) return; helps++; unfold(i, true); if (open.size === ws.length) showAll(); });
+    $(".mx-go", el).onclick = showAll;
+    return {
+      reveal: showAll,
+      key(k) { if (!shown || !(k in RATE_KEY)) return false; rate(RATE_KEY[k]); return true; },
+      check(giveUp) {
+        uncover();
+        if (giveUp || rating == null) act.innerHTML = ""; else lockRate(act, rating);
+        const r = giveUp ? null : rating;
+        let score = r == null ? 0 : r;
+        if (helps > ws.length / 3) score = Math.min(score, 0.5);
+        return { score, given: rateTxt(r) + " · " + (helps ? helps + " mot" + (helps > 1 ? "s" : "") + " affiché" + (helps > 1 ? "s" : "") + " un à un" : "aucun mot affiché"), expected: ex.t, expectedTitle: "La citation", expectedHTML: quoteFb(ex) };
+      }
+    };
+  };
+
+  /* Le mot intrus : un mot remplacé par un voisin de sens ou un contraire (paires dans les deux sens, « a>b » : un seul sens) */
+  const INTRUS_PAIRS = [
+    "toujours/jamais tout/rien plus/moins pas>plus bien/mal souvent/rarement avant/après avec/sans beaucoup>peu",
+    "homme/humain hommes/humains enfant/élève enfants/élèves nature/culture liberté/autonomie vérité/réalité esprit/âme raison/pensée idée/pensée idées/pensées",
+    "monde/société vie/existence femme/fille femmes/filles maître/professeur maîtres/professeurs école/classe éducation/instruction art/œuvre arts/œuvres",
+    "langage/langue mot/terme mots/termes sens/signification peuple/nation loi/règle lois/règles devoir/droit science/connaissance justice/sagesse",
+    "bonheur/plaisir désir/besoin conscience/mémoire passé/avenir livre/texte livres/textes lecture/écriture discours/dialogue instrument/outil chose>réalité choses>réalités",
+    "vrai/juste beau/vrai vraie>juste bon/mauvais bonne/mauvaise grand/petit grande/petite premier/dernier première/dernière libre/autonome libres/autonomes",
+    "naturel/artificiel naturelle/artificielle universel/commun universelle/commune nouveau/ancien meilleur/pire facile/difficile possible/impossible utile/inutile",
+    "public/privé publique/privée supérieur/inférieur obscure/confuse obscur/confus même/autre seul/unique",
+    "savoir>connaître sait>connaît penser/croire pense/croit apprendre/enseigner apprend/enseigne peut/doit peuvent/doivent faut>doit voir/regarder",
+    "vivre/exister vit/existe éduquer/instruire former/instruire lire/écrire parler/penser créer/inventer comprendre/connaître transmettre/enseigner",
+    "autant>plus matin/soir jour/nuit jours/nuits deux/trois quatre/cinq sorte/forme sortes/formes faim/soif brutal/violent",
+    "pouvons/devons pourrions/devrions pourrait/devrait faites/dites modèle/exemple modèles/exemples fixer/garder enfance/adolescence"
+  ].join(" ");
+  /* À défaut : déterminants et conjonctions */
+  const INTRUS_SMALL = "le>un la>une les>des un>le une>la ce>le son>le sa>la ses>les et>ou ou>et mais>car car>mais";
+  const INTRUS_LAST = "des>les";
+  const INTRUS_GENDER = { monde: "m", société: "f", esprit: "m", âme: "f", art: "m", œuvre: "f", langage: "m", langue: "f", sens: "m", signification: "f", peuple: "m", nation: "f", jour: "m", nuit: "f" };
+  function intrusTable(s) {
+    const T = {};
+    s.split(" ").filter(Boolean).forEach(p => { const one = p.includes(">"), [a, b] = p.split(/[\/>]/); (T[a] = T[a] || []).push(b); if (!one) (T[b] = T[b] || []).push(a); });
+    return T;
+  }
+  const INTRUS_T = [intrusTable(INTRUS_PAIRS), intrusTable(INTRUS_SMALL), intrusTable(INTRUS_LAST)];
+  const IN_VOW = /^[aeiouyhàâäéèêëîïôöùûüœæ]/i;
+  const IN_SET = s => new Set(s.split(" "));
+  const IN_NOVOW = IN_SET("le la de du au que ce ne je me se te sa ma ta");   /* devant voyelle, ils s'élident ou changent */
+  const IN_CONS = IN_SET("cet bel nouvel vieil");                             /* jamais devant consonne */
+  const IN_GEND = IN_SET("le la un une ce cet cette du au son sa mon ma ton ta quel quelle tout toute aucun aucune seul seule nul nulle vrai vraie bon bonne grand grande petit petite premier première dernier dernière beau belle nouveau nouvelle");
+  const IN_DET = IN_SET("le la les un une des ces ce cet cette chaque tout tous son sa ses notre nos leur leurs du au aux");
+  const IN_PRON = IN_SET("je tu il elle on nous vous ils elles ne");
+  const noun = c => !!c.eli || IN_DET.has(c.prev);
+  const noNe = c => !c.before.some(h => h === "ne" || h === "n");
+  const notPron = c => !IN_PRON.has(c.prev) && c.prev !== "à" && c.prev !== "de";   /* « à les », « de le » : pronoms */
+  const notInf = c => !/(er|ir|re)$/.test(c.next);                                    /* « sait avoir » ne devient pas « connaît avoir » */
+  const IN_GUARD = {
+    tout: c => !!c.tail || c.last || /^(est|était|a|va)$/.test(c.next), rien: c => noNe(c) && c.next !== "de" && c.next !== "d",
+    plus: noNe, pas: c => c.next !== "plus" && c.next !== "moins",
+    bien: c => c.next !== "que" && c.next !== "qu", faut: c => c.next !== "que" && c.next !== "qu",
+    même: c => c.prev === "un" || c.prev === "une",
+    humain: noun, humains: noun, passé: noun, devoir: noun, droit: noun,
+    savoir: notInf, sait: notInf, existe: c => c.prev !== "il",
+    ce: c => !/^(qu|que|qui|dont|est|sont|fut|sera|serait|était|n|c|s)$/.test(c.next),
+    le: notPron, les: notPron, la: c => !IN_PRON.has(c.prev),
+    des: c => /^(|comme|avec|pour|par|sans|et|ou)$/.test(c.prev)
+  };
+  /* Un mot : ponctuation de tête, élision (l', qu'…), mot, ponctuation de fin */
+  function tokParts(w) {
+    const lead = w.match(/^[^\p{L}\p{N}]*/u)[0];
+    let rest = w.slice(lead.length);
+    const tail = rest.match(/[^\p{L}\p{N}]*$/u)[0];
+    rest = rest.slice(0, rest.length - tail.length);
+    const m = rest.match(/^((?:jusqu|lorsqu|puisqu|quoiqu|qu|[ldnsjmtc])['’])(.+)$/iu);
+    return m ? { lead, eli: m[1], core: m[2], tail } : { lead, eli: "", core: rest, tail };
+  }
+  /* Renvoie { bad, wrong } : l'indice du mot changé (parmi les mots séparés par des espaces) et le mot qui le remplace */
+  function makeIntrus(t) {
+    const toks = String(t == null ? "" : t).split(/\s+/).filter(Boolean), P = toks.map(tokParts);
+    const head = p => p ? (p.eli ? p.eli.slice(0, -1) : p.core).toLowerCase() : "";
+    const tiers = INTRUS_T.map(() => []);
+    P.forEach((p, i) => {
+      const core = p.core.toLowerCase();
+      if (!core) return;
+      const nx = P[i + 1] ? P[i + 1].eli + P[i + 1].core : "";
+      const c = { eli: p.eli, tail: p.tail, last: i === P.length - 1, prev: i ? P[i - 1].core.toLowerCase() : "", next: head(P[i + 1]), before: P.slice(Math.max(0, i - 3), i).map(head) };
+      INTRUS_T.forEach((T, k) => (T[core] || []).forEach(r => {
+        if (r === core || (IN_GUARD[core] && !IN_GUARD[core](c))) return;
+        if (p.eli ? !IN_VOW.test(r) : (IN_NOVOW.has(c.prev) && IN_VOW.test(r)) || (IN_CONS.has(c.prev) && !IN_VOW.test(r))) return;
+        if (/^(le|la|ce|sa|ma|ta|de|que)$/.test(r) && IN_VOW.test(nx)) return;
+        if (/^(le|les)$/.test(r) && (c.prev === "à" || c.prev === "de")) return;
+        const ga = INTRUS_GENDER[core], gb = INTRUS_GENDER[r];
+        if (ga && gb && ga !== gb && IN_GEND.has(c.prev)) return;
+        tiers[k].push({ i, r });
+      }));
+    });
+    /* Jamais le premier mot si l'on peut faire autrement ; « des » → « les » en tout dernier recours */
+    const late = x => x.i > 0, main = tiers.slice(0, 2), last = tiers[2];
+    const pool = main.map(l => l.filter(late)).concat(main, [last.filter(late), last]).find(l => l.length);
+    if (!pool) return null;
+    const { i, r } = pool[Math.floor(Math.random() * pool.length)], p = P[i];
+    const rr = /^\p{Lu}/u.test(p.core) ? r.charAt(0).toUpperCase() + r.slice(1) : r;
+    return { bad: i, wrong: p.lead + p.eli + rr + p.tail };
+  }
+  R.intrus = function (ex, el, api) {
+    const toks = String(ex.t || "").split(/\s+/).filter(Boolean);
+    let bad = ex.bad, wrong = ex.wrong;
+    if (bad == null || wrong == null || !toks[bad]) { const m = makeIntrus(ex.t); if (!m) return R.fade(ex, el, api); bad = m.bad; wrong = m.wrong; }
+    const orig = toks[bad], shown = toks.slice();
+    shown[bad] = wrong;
+    el.innerHTML = `<div class="mx mx-intrus"><p class="mx-line">${shown.map((w, i) => (i ? (hasL(w) ? " " : " ") : "") + (hasL(w) ? `<button class="mx-w" data-i="${i}">${esc(w)}</button>` : `<span class="mx-p">${esc(w)}</span>`)).join("")}</p>${srcHTML(ex)}</div>`;
+    const btns = $$("button.mx-w", el), bb = btns.find(b => +b.dataset.i === bad);
+    let tapped = null, cur = -1;
+    btns.forEach(b => b.onclick = () => { if (CHECKED) return; tapped = +b.dataset.i; api.check(); });
+    const fix = () => {
+      if (!bb || bb.classList.contains("mx-bad")) return;
+      const right = orig.replace(/'/g, "’");
+      if (!X.correctWord(bb, right)) { bb.classList.add("mx-bad"); bb.insertAdjacentHTML("afterend", ` <span class="mx-good">${esc(right)}</span>`); }
+    };
+    return {
+      key(k) {
+        if ((k !== "ArrowRight" && k !== "ArrowLeft") || !btns.length) return false;
+        const d = k === "ArrowRight" ? 1 : -1;
+        cur = cur < 0 ? (d > 0 ? 0 : btns.length - 1) : (cur + d + btns.length) % btns.length;
+        btns.forEach((b, j) => b.classList.toggle("mx-cur", j === cur));
+        return true;
+      },
+      reveal() { if (cur >= 0 && btns[cur]) btns[cur].click(); },
+      check(giveUp) {
+        btns.forEach(b => b.classList.remove("mx-cur"));
+        const ok = !giveUp && tapped === bad;
+        if (ok) { X.pop(bb); fix(); }
+        else {
+          const tb = !giveUp && btns.find(b => +b.dataset.i === tapped);
+          if (tb) { tb.classList.add("mx-miss"); X.shake(tb); setTimeout(fix, 280); } else fix();
+        }
+        return {
+          score: ok ? 1 : 0, given: giveUp || tapped == null ? "—" : "« " + shown[tapped] + " »",
+          expected: "« " + wrong + " » au lieu de « " + orig + " »", expectedTitle: "Le mot changé",
+          expectedHTML: `<p class="mx-swap"><s>${esc(wrong)}</s> → <b>${esc(orig)}</b></p>` + quoteFb(ex)
+        };
+      }
+    };
+  };
+
+  /* Mots retrouvés dans l'ordre (plus longue sous-suite commune) : indices des mots de la citation */
+  function lcsHits(a, b) {
+    const m = a.length, n = b.length, L = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) L[i][j] = a[i] && a[i] === b[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    const hit = new Set();
+    let i = 0, j = 0;
+    while (i < m && j < n) { if (a[i] && a[i] === b[j]) { hit.add(j); i++; j++; } else if (L[i + 1][j] >= L[i][j + 1]) i++; else j++; }
+    return hit;
+  }
+  const K_DICT = "recto.dictee";
+  /* Dictée de mémoire : chaque mot écrit s'allume s'il est juste, la citation reste cachée sinon */
+  R.dictee = function (ex, el, api) {
+    const ws = qWords(ex.t), keys = ws.map(wKey), T0 = Date.now();
+    el.innerHTML = `<div class="mx mx-dictee">${hiddenLine(ws)}${srcHTML(ex)}
+      <textarea class="mx-input" rows="3" placeholder="Écrire de mémoire" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Citation écrite de mémoire"></textarea></div>`;
+    const nodes = $$(".mx-w", el), ta = $(".mx-input", el), st = ws.map(() => 0);
+    let t0 = null;
+    const paint = () => {
+      const v = ta.value, typed = qWords(v), done = /\s$/.test(v) ? typed.length : typed.length - 1;
+      ws.forEach((w, i) => {
+        const s = i < done ? (wKey(typed[i]) === keys[i] ? 1 : -1) : 0;
+        if (s === st[i]) return;
+        st[i] = s;
+        const n = nodes[i];
+        if (s) { light(n, s < 0); if (s < 0) n.classList.add("gone"); }
+        else { n.classList.remove("lit", "lit-bad"); n.classList.add("gone"); }
+      });
+      api.ready(!!v.trim());
+    };
+    ta.addEventListener("input", () => { if (t0 == null) t0 = Date.now(); paint(); });
+    ta.addEventListener("keydown", e => {
+      if (e.key !== "Enter" || e.isComposing) return;
+      e.preventDefault();
+      if (CHECKED) { api.next(); return; }
+      if (ta.value.trim()) api.check();
+    });
+    setTimeout(() => { if (!CHECKED && el.isConnected) ta.focus({ preventScroll: true }); }, 60);
+    return {
+      check(giveUp) {
+        const secs = Math.max(1, Math.round((Date.now() - (t0 || T0)) / 1000));
+        const typed = giveUp ? [] : qWords(ta.value).slice(0, ws.length * 3);
+        const hit = lcsHits(typed.map(wKey), keys);
+        ta.disabled = true; ta.blur();
+        $(".mx-line", el).removeAttribute("aria-hidden");
+        nodes.forEach((n, i) => { n.classList.remove("gone", "lit", "lit-bad"); n.classList.add(hit.has(i) ? "lit" : "lit-bad"); });
+        let score = giveUp || !ws.length ? 0 : hit.size / ws.length;
+        if (score >= 0.95) score = 1;
+        let line;
+        if (score === 1) {
+          const best = store.get(K_DICT) || {}, k = wKey(ex.t).slice(0, 80), prev = best[k];
+          if (hit.size === ws.length && (!prev || secs < prev)) { best[k] = secs; store.set(K_DICT, best); }
+          line = "Juste en " + secs + " s" + (prev ? (secs < prev ? " · meilleur temps" : " · meilleur temps " + prev + " s") : "");
+        } else line = hit.size + " mot" + (hit.size > 1 ? "s" : "") + " sur " + ws.length + " · " + secs + " s";
+        return {
+          score, given: giveUp ? "—" : score === 1 ? line : (ta.value.trim() || "—") + " · " + secs + " s",
+          expected: ex.t, expectedTitle: "La citation", expectedHTML: quoteFb(ex) + (giveUp ? "" : `<p class="mx-best ${score === 1 ? "" : "mid"}">${esc(line)}</p>`)
+        };
+      }
+    };
+  };
+
+  /* À voix haute : les mots reconnus s'allument dans l'ordre ; sans micro, on récite puis on vérifie */
+  R.voix = function (ex, el, api) {
+    const ws = qWords(ex.t), keys = ws.map(wKey);
+    el.innerHTML = `<div class="mx mx-voix">${hiddenLine(ws)}${srcHTML(ex)}<div class="mx-zone"></div></div>`;
+    const nodes = $$(".mx-w", el), zone = $(".mx-zone", el), hit = new Set();
+    let mode = "", rec = null, on = false, pulse = null, base = 0, reached = 0, idle = 0, failed = false, ending = false, shown = false, rating = null, btn = null, heard = null;
+    const near = (a, b) => !!b && (a === b || (b.length >= 5 && lev(a, b) <= 1));
+    const match = (from, txt) => {
+      let r = from;
+      String(txt).split(/\s+/).forEach(w => {
+        const k = wKey(w);
+        if (!k || r >= ws.length) return;
+        if (near(k, keys[r])) { if (!hit.has(r)) { hit.add(r); light(nodes[r]); } r++; }
+        else if (r + 1 < ws.length && near(k, keys[r + 1])) { if (!hit.has(r + 1)) { hit.add(r + 1); light(nodes[r + 1]); } r += 2; }
+      });
+      return r;
+    };
+    const setBtn = live => { if (!btn) return; btn.textContent = live ? "Terminer" : "Parler"; btn.classList.toggle("on", live); };
+    const calm = () => { on = false; if (pulse) { pulse.stop(); pulse = null; } setBtn(false); };
+    function stopRec() {
+      calm();
+      if (!rec) return;
+      const r = rec; rec = null;
+      r.onresult = r.onerror = r.onend = null;
+      try { r.abort(); } catch (e) { /* déjà arrêtée */ }
+    }
+    function start() {
+      if (CHECKED || on || mode !== "mic") return;
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      try { rec = new SR(); } catch (e) { rec = null; selfMode(true); return; }
+      rec.lang = "fr-FR"; rec.interimResults = true; rec.continuous = true;
+      reached = base; failed = false;
+      rec.onresult = e => {
+        if (!el.isConnected) return stopRec();
+        let txt = "";
+        for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript + " ";
+        const n0 = hit.size;
+        reached = Math.max(reached, match(base, txt));
+        if (hit.size > n0) idle = 0;
+        if (heard) heard.textContent = txt.trim().split(/\s+/).slice(-10).join(" ");
+      };
+      rec.onerror = e => { if (e.error !== "no-speech" && e.error !== "aborted") failed = true; };
+      rec.onend = () => {
+        if (!el.isConnected) return stopRec();
+        base = Math.max(base, reached); reached = base;
+        if (ending) { rec = null; calm(); if (!CHECKED) api.check(); return; }
+        if (failed) { rec = null; selfMode(true); return; }
+        /* La reconnaissance s'arrête d'elle-même après un silence : on relance, sans fin si rien n'avance */
+        if (on && !CHECKED && ++idle < 4) { try { rec.start(); return; } catch (x) { /* relance impossible */ } }
+        rec = null; calm();
+      };
+      try { rec.start(); } catch (e) { rec = null; selfMode(true); return; }
+      on = true; idle = 0;
+      pulse = X.listen(btn) || null;
+      setBtn(true);
+      api.ready(true);
+    }
+    function finish() {
+      if (CHECKED) return;
+      if (!rec) { api.check(); return; }
+      ending = true; calm();
+      try { rec.stop(); } catch (e) { /* */ }
+      setTimeout(() => { if (!CHECKED && el.isConnected) api.check(); }, 900);
+    }
+    function micMode() {
+      mode = "mic";
+      zone.innerHTML = `<div class="mx-act"><button class="btn primary lg mx-mic">Parler</button></div><p class="mx-heard" aria-live="polite"></p>`;
+      btn = $(".mx-mic", zone); heard = $(".mx-heard", zone);
+      btn.onclick = once(() => on ? finish() : start());
+    }
+    function selfMode(fromMic) {
+      stopRec();
+      if (mode === "self") return;
+      mode = "self"; btn = heard = null;
+      if (fromMic) { api.selfRated && api.selfRated(); hit.clear(); nodes.forEach(n => { n.classList.remove("lit", "lit-bad"); n.classList.add("gone"); }); }
+      zone.innerHTML = `<p class="mx-note">${fromMic ? "Micro indisponible. " : ""}Réciter à voix haute, puis afficher.</p><div class="mx-act"><button class="btn primary lg mx-go">Afficher <kbd>Espace</kbd></button></div>`;
+      $(".mx-go", zone).onclick = show;
+    }
+    const rate = r => { if (CHECKED) return; rating = r; api.check(); api.next(); };
+    const uncover = () => { if (shown) return; shown = true; nodes.forEach(n => n.classList.remove("gone")); X.stagger(nodes, { y: 4, step: 28 }); };
+    const show = once(() => {
+      if (CHECKED || shown || mode !== "self") return;
+      uncover();
+      const nt = $(".mx-note", zone); if (nt) nt.remove();
+      rateBar($(".mx-act", zone), rate);
+    });
+    if (SPEECH_OK) micMode(); else selfMode(false);
+    CLEAN.push(() => { ending = false; stopRec(); });
+    return {
+      reveal() { if (mode === "self") show(); else if (!on) start(); },
+      key(k) { if (mode !== "self" || !shown || !(k in RATE_KEY)) return false; rate(RATE_KEY[k]); return true; },
+      check(giveUp) {
+        ending = false; stopRec();
+        $(".mx-line", el).removeAttribute("aria-hidden");
+        if (mode === "self") {
+          uncover();
+          const act = $(".mx-act", zone);
+          if (act) { if (giveUp || rating == null) act.innerHTML = ""; else lockRate(act, rating); }
+          const r = giveUp ? null : rating;
+          return { score: r == null ? 0 : r, given: rateTxt(r), expected: ex.t, expectedTitle: "La citation", expectedHTML: quoteFb(ex) };
+        }
+        if (btn) btn.disabled = true;
+        nodes.forEach((n, i) => { if (!hit.has(i)) { n.classList.remove("gone"); n.classList.add("lit-bad"); } });
+        const n = giveUp ? 0 : hit.size;
+        return {
+          /* La reconnaissance vocale se trompe parfois sur un mot : 95 % suffit, comme pour la dictée */
+          score: ws.length ? (n / ws.length >= 0.95 ? 1 : n / ws.length) : 0, given: giveUp ? "—" : n + " mot" + (n > 1 ? "s" : "") + " reconnu" + (n > 1 ? "s" : "") + " sur " + ws.length,
+          expected: ex.t, expectedTitle: "La citation", expectedHTML: quoteFb(ex)
+        };
+      }
+    };
+  };
+
+  /* Série rapide : l'auteur de chaque citation, contre la montre */
+  R.serie = function (ex, el, api) {
+    const items = (ex.items || []).filter(it => it && it.t && it.ok), sec = Math.max(5, +ex.sec || items.length * 6 || 30), T0 = Date.now();
+    el.innerHTML = `<div class="mx mx-serie"><div class="mx-stop"><div class="mx-time"><i></i></div><span class="mx-count"></span></div><p class="mx-sq"></p><div class="opts mx-opts"></div></div>`;
+    const bar = $(".mx-time i", el), cnt = $(".mx-count", el), qEl = $(".mx-sq", el), box = $(".mx-opts", el), log = [];
+    let k = 0, okN = 0, lock = false, over = false, cur = [], tNext = 0;
+    function show() {
+      const it = items[k];
+      cur = it.opts && it.opts.includes(it.ok) ? it.opts : shuffle([it.ok].concat((it.opts || []).filter(o => o !== it.ok)).slice(0, 4));
+      cnt.textContent = (k + 1) + " / " + items.length;
+      qEl.innerHTML = "« " + esc(it.t) + " »";
+      box.innerHTML = cur.map((o, j) => `<button class="opt" data-j="${j}"><span class="k">${"ABCD"[j] || j + 1}</span><span>${esc(o)}</span></button>`).join("");
+      $$(".opt", box).forEach(b => b.onclick = () => answer(+b.dataset.j));
+      X.stagger([qEl].concat($$(".opt", box)), { y: 6, step: 30, duration: 300 });
+      lock = false;
+    }
+    function end() { if (over) return; over = true; api.check(); }
+    function answer(j) {
+      if (CHECKED || lock || over || !items[k] || j >= cur.length) return;
+      lock = true;
+      const it = items[k], bs = $$(".opt", box), good = cur[j] === it.ok;
+      if (good) { okN++; bs[j].classList.add("correct"); X.pop(bs[j]); }
+      else { bs[j].classList.add("wrong"); X.shake(bs[j]); const r = cur.indexOf(it.ok); if (bs[r]) bs[r].classList.add("correct"); }
+      log.push({ t: it.t, ok: it.ok, good });
+      tNext = setTimeout(() => { if (!el.isConnected || CHECKED || over) return; k++; if (k >= items.length) end(); else show(); }, good ? 450 : 800);
+    }
+    const anim = X.timebar(bar, sec * 1000);
+    const tEnd = setTimeout(() => { if (el.isConnected && !CHECKED) end(); }, sec * 1000);
+    CLEAN.push(() => { clearTimeout(tEnd); clearTimeout(tNext); });
+    if (items.length) show(); else setTimeout(() => { if (el.isConnected && !CHECKED) end(); }, 0);
+    return {
+      key(key) {
+        const j = "abcd".indexOf(key.toLowerCase()) >= 0 ? "abcd".indexOf(key.toLowerCase()) : "1234".indexOf(key);
+        if (j < 0) return false;
+        answer(j); return true;
+      },
+      check(giveUp) {
+        over = true; clearTimeout(tEnd); clearTimeout(tNext);
+        if (anim && anim.pause) anim.pause();
+        const secs = Math.min(sec, Math.max(1, Math.round((Date.now() - T0) / 1000))), n = log.length;
+        const score = giveUp || !n ? 0 : okN / n;
+        return {
+          score, given: giveUp ? "—" : n ? okN + " juste" + (okN > 1 ? "s" : "") + " sur " + n + " en " + secs + " s" : "Aucune réponse en " + secs + " s",
+          expected: items.map(it => it.ok + " : « " + clip(it.t, 60) + " »").join(" · "), expectedTitle: "Les auteurs",
+          expectedHTML: `<ul class="mx-sum">${items.map(it => { const l = log.find(x => x.t === it.t); return `<li class="${l ? (l.good ? "ok" : "ko") : ""}"><b>${esc(it.ok)}</b> · ${esc(clip(it.t, 90))}</li>`; }).join("")}</ul>`
+        };
+      }
+    };
+  };
+
+  /* Un exercice hors du lecteur (visite d'un texte HLP) : mêmes rendus, fin signalée par hooks.done(res) */
+  const SELF_CHECK = ["vf", "part", "fade", "initials", "intrus", "serie", "flash"];
+  function exRender(ex, el, hooks) {
+    hooks = hooks || {};
+    const noop = () => {};
+    if (!ex || !R[ex.type]) return null;
+    let ctrl = null, done = false;
+    CHECKED = false;
+    const finish = g => {
+      if (done || !ctrl) return null;
+      done = true;
+      const give = g === true, res = ctrl.check(give) || { score: 0 };
+      if (give) { res.score = 0; res.gaveUp = true; }
+      CHECKED = true;
+      el.classList.add("locked");
+      if (hooks.done) hooks.done(res);
+      return res;
+    };
+    const api = { ready: hooks.ready || noop, check: () => finish(), next: noop, hint: noop, selfRated: hooks.selfRated || noop };
+    ctrl = R[ex.type](ex, el, api);
+    return { check: finish, selfCheck: SELF_CHECK.includes(ex.type) || (ex.type === "voix" && !SPEECH_OK), ctrl };
+  }
+
   R.build = function (ex, el, api) {
     const order = shuffle(ex.els.map((_, i) => i));
     const sel = new Set();
@@ -2967,7 +3477,9 @@
     startIn: (id, o) => withBook(id, () => startSession(o)),
     /* Ouvre la fiche d'une notion d'un contenu, sans quitter la page */
     ficheIn: (id, n) => withBook(id, bk => { if (bk.notions[n]) openFiche(n); }),
-    notion: (id, n) => BOOKS[id] && BOOKS[id].notions[n]
+    notion: (id, n) => BOOKS[id] && BOOKS[id].notions[n],
+    /* Méthodes de mémorisation des citations, utilisables hors du lecteur */
+    exRender, makeIntrus, initialsOf, QUOTE_TYPES, speechOK: SPEECH_OK, TYPES
   };
 
   /* Les modules se déclarent après ce fichier : on démarre une fois la page entièrement lue */

@@ -1449,3 +1449,71 @@ body { -webkit-tap-highlight-color: transparent; }
   .pr-tips { margin-left: 14pt; display: grid; gap: 3pt; }
   .pr-small { font-size: 9pt; color: #555; margin-bottom: 5pt; }
 }
+
+/* ============ Méthodes de mémorisation : primitives partagées (mots, points, cartes) ============ */
+.mx-line { font-size: clamp(1.25rem, 2.1vw, 1.75rem); line-height: 1.6; font-weight: 600; letter-spacing: -.01em; }
+.mx-w { display: inline-block; border-radius: 0.25rem; transition: color .2s; background-repeat: no-repeat; background-position: 0 100%; background-size: 100% 2px; }
+.mx-w.gone { color: transparent; box-shadow: inset 0 -2px 0 var(--line-2, rgba(0, 0, 0, .14)); }
+.mx-w.lit { background-image: linear-gradient(var(--green-mark), var(--green-mark)); }
+.mx-w.lit-bad { background-image: linear-gradient(var(--orange-mark), var(--orange-mark)); color: var(--orange); }
+.mx-w.ini { min-width: 0.9em; color: var(--accent-text, #0066cc); cursor: pointer; }
+button.mx-w { font: inherit; letter-spacing: inherit; border: 0; padding: 0 0.0625rem; background-color: transparent; color: inherit; cursor: pointer; }
+button.mx-w:hover { background-color: var(--fill); }
+.mx-bad { position: relative; color: var(--orange); opacity: .75; }
+.mx-good { color: var(--green); font-weight: 700; }
+.mx-dots { display: inline-flex; gap: 0.375rem; }
+.mx-dots i { width: 0.625rem; height: 0.625rem; border-radius: 50%; background: var(--fill-2); }
+.mx-dots i.on { background: var(--green-mark); }
+.mx-time { height: 0.25rem; border-radius: 1rem; background: var(--fill); overflow: hidden; }
+.mx-time i { display: block; height: 100%; background: var(--accent); }
+.flipped { background: var(--orange-soft) !important; color: var(--orange) !important; box-shadow: inset 0 0 0 1.5px var(--orange-mark) !important; }
+
+/* ============ Mémoriser une citation : effacement, initiales, intrus, dictée, voix, série ============ */
+.mx { display: flex; flex-direction: column; gap: 1.125rem; }
+.mx [hidden], .mx-act[hidden], .mx-rate[hidden] { display: none !important; }
+.mx .mx-line { font-family: var(--serif); font-weight: 500; letter-spacing: 0; line-height: 1.8; max-width: 42ch; overflow-wrap: break-word; }
+.mx .mx-w { padding: 0 0.0625rem; }
+.mx-w.gone.lit-bad { color: transparent; }   /* faux dans la dictée : le trait orange, sans dévoiler le mot */
+.mx-w.open { color: var(--text); }
+.mx-w.mx-cur { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.mx-w.mx-miss { color: var(--red); background-color: var(--red-soft); }
+.locked button.mx-w { cursor: default; }
+.locked button.mx-w:hover { background-color: transparent; }
+.mx-src { margin-top: -0.5rem; font-size: 0.8125rem; color: var(--text-2); }
+.mx-act { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.mx-note { font-size: 0.9375rem; color: var(--text-2); }
+.mx-rate.done { pointer-events: none; }
+.mx-rate.done .btn:not(.on) { opacity: .4; }
+.mx-swap { margin-bottom: 0.625rem; }
+.mx-swap s { color: var(--orange); }
+.mx-swap b { color: var(--green); }
+/* Dictée */
+.mx-input { display: block; width: 100%; min-height: 6.5rem; resize: vertical; border: 0; border-radius: var(--r-md); background: var(--fill); box-shadow: inset 0 0 0 1px var(--line); padding: 0.875rem 1rem; font: 400 1.125rem/1.5 var(--serif); color: var(--text); outline: none; transition: box-shadow .15s, background .15s; }
+.mx-input:focus { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.mx-input:disabled { opacity: .65; }
+.mx-input::placeholder { color: var(--text-3); }
+.mx-best { margin-top: 0.625rem; font-size: 0.8125rem; font-weight: 600; color: var(--green); }
+.mx-best.mid { color: var(--orange); }
+/* À voix haute */
+.btn.primary.mx-mic.on, .btn.primary.mx-mic.on:hover { background: var(--red-soft); color: var(--red); }
+.mx-heard { min-height: 1.4em; font-size: 0.875rem; font-style: italic; color: var(--text-3); }
+/* Série rapide */
+.mx-stop { display: flex; align-items: center; gap: 0.75rem; }
+.mx-stop .mx-time { flex: 1; }
+.mx-count { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.mx-sq { font-family: var(--serif); font-style: italic; font-size: 1.375rem; line-height: 1.45; max-width: 42ch; min-height: 2.9em; }
+.mx-opts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mx-sum { list-style: none; display: grid; gap: 0.375rem; font-size: 0.875rem; line-height: 1.4; }
+.mx-sum li { position: relative; padding-left: 0.875rem; }
+.mx-sum li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--fill-3); }
+.mx-sum li.ok::before { background: var(--green-mark); }
+.mx-sum li.ko::before { background: var(--red-mark); }
+@media (max-width: 680px) {
+  .mx { gap: 0.875rem; }
+  .mx .mx-line { font-size: 1.25rem; line-height: 1.7; }
+  .mx-act .btn { flex: 1 1 auto; }
+  .mx-act .flash-rate { flex: 1 1 100%; }
+  .mx-input { font-size: 1.0625rem; }   /* au moins 16 px : pas de zoom sur iPhone */
+  .mx-sq { font-size: 1.1875rem; min-height: 0; }
+  .mx-opts .opt { padding: 0.75rem 0.875rem; }
+}
