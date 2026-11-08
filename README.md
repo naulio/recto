@@ -1,49 +1,49 @@
-# Recto — apprends, applique
+# Recto — apprendre, appliquer
 
-Tes cours remis au propre, une idée par page, puis tout ce qu'il faut pour t'en servir : exercices, fiches, sujets de dissertation et un bilan de ce qui te manque à donner à ton IA.
+Révisions de philosophie (tronc commun) et de spécialité HLP, pour une classe : cours au propre, fiches, exercices, bac blanc avec méthode et corrigés rédigés. Textes courts, ton impersonnel.
 
-**Utiliser en ligne :** https://naulio.github.io/recto/
+**En ligne :** https://naulio.github.io/recto/
 
-Sur iPhone : ouvre le lien dans Safari, bouton Partager, puis « Sur l'écran d'accueil ». Recto s'ouvre alors comme une app, en plein écran, et fonctionne hors ligne. Sur Android : menu du navigateur, « Installer l'application ».
+Sur iPhone : Safari, Partager, « Sur l'écran d'accueil » (plein écran, hors ligne). Sur Android : menu du navigateur, « Installer l'application ».
 
-Ou en local : télécharger le dépôt et ouvrir `index.html` dans un navigateur.
+En local : ouvrir `index.html` dans un navigateur.
 
 ## Deux espaces
 
-L'accueil propose deux accès :
+- **Philosophie · Tronc commun** : les leçons, le livre, les exercices et le bac blanc.
+- **Spécialité HLP** : Accueil, Littérature, Philosophie, Textes et auteurs, Bac blanc.
 
-- **Philosophie · Tronc commun** : les leçons, le livre, les exercices et le **bac blanc** (détaillés ci-dessous).
-- **Spécialité HLP** : un espace à part, en cinq sections (Accueil, Littérature, Philosophie, Textes et auteurs, Bac blanc).
+### Bac blanc : une méthode de révision complète
 
-### Bac blanc (tronc commun)
+Tronc commun et HLP ont la même structure, en quatre onglets, sur la sélection choisie (notions ; ou discipline, chapitres et textes) :
 
-On coche une ou plusieurs notions (*Le langage*, *L'art*, et, d'après le *Discours de la méthode* : *La raison*, *La vérité*, *La conscience*, *La technique*), puis un format : épreuve complète (deux dissertations et un texte, au choix, 4 h), dissertations, explications de texte ou questions de réflexion. Le tirage ne propose que des sujets dont toutes les notions ont été cochées ; avec plusieurs notions, au moins un sujet les croise. Chaque sujet se travaille étape par étape : analyse, problématique, plan, références du cours (les fiches s'ouvrent), pièges, brouillon, chrono, bilan. Les textes à expliquer (Descartes, Bergson, Baudelaire) sont recopiés depuis Wikisource, orthographe modernisée.
+- **Fiches** : tout ce qu'il faut savoir, fiche par fiche ; chaque fiche s'ouvre en entier.
+- **Méthode** : chaque exercice (dissertation, explication de texte ; en HLP : épreuve, interprétation, essai) en étapes minutées sur 4 h, la structure de l'introduction, des parties et de la conclusion, ce que le correcteur valorise ou pénalise, les consignes du jour J.
+- **Corrigés** : les 65 sujets ont un corrigé rédigé (introduction, plan détaillé avec arguments et références, transitions, conclusion), écrit uniquement à partir du cours ; citations recopiées mot pour mot, vérifiées automatiquement.
+- **Épreuve** : épreuve blanche tirée dans la sélection (un sujet ne sort que si toutes ses notions sont cochées ; avec plusieurs notions, au moins un sujet les croise), chrono, brouillon, préparation guidée, puis corrigé et auto-évaluation.
+
+Les textes à expliquer (Descartes, Bergson, Baudelaire) viennent de Wikisource, orthographe modernisée.
 
 ### Spécialité HLP
 
-- **Textes et auteurs** : les 18 textes du chapitre 1 (*Éducation, transmission et émancipation*), lus sur les photos du dossier `images/` : une fiche par texte (thèse, idées, arguments, citations exactes et leur sens, rapprochements, oppositions, document d'origine, annotations retenues, points à vérifier), une fiche par auteur, toutes les citations, et l'inventaire des photos. Les photos ne sont pas publiées avec le site.
-- **Littérature** et **Philosophie** : les chapitres, les textes de chaque discipline et les cours de spécialité.
-- **Cours de philosophie, chapitre 1** : *Éducation, émancipation et transmission* (Axe 1, la recherche de soi), remis au propre à partir des 11 pages de notes de la classe (dossier `images/cours-hlp/`, non publié) : 32 pages, 35 fiches, 191 exercices, 10 sujets d'essai reliés aux textes étudiés. Chaque page indique la page des notes d'où elle vient ; ce qui est illisible, douteux ou sans source est signalé « À vérifier ».
-- **S'entraîner sur les textes** : les fiches deviennent des exercices (thèses, citations, auteurs, chronologie, oppositions) dans le moteur d'entraînement de Recto.
-- **Bac blanc HLP** : on choisit la discipline, les chapitres, éventuellement des textes, puis l'épreuve complète (une interprétation sur un texte, puis un essai qui le prolonge, 4 h), l'interprétation seule ou l'essai seul. Ouvert en philosophie ; la littérature s'ouvrira avec son cours.
+- **Textes et auteurs** : les 18 textes du chapitre 1 (*Éducation, transmission et émancipation*) en fiches (thèse, arguments, citations exactes, rapprochements, oppositions, points à vérifier), une fiche par auteur, toutes les citations. Les photos des documents ne sont pas publiées.
+- **Cours de philosophie, chapitre 1** : *Éducation, émancipation et transmission*, remis au propre à partir des 11 pages de notes de la classe : 32 pages, 35 fiches, 191 exercices, 10 sujets d'essai. Chaque page indique sa page de notes ; l'illisible, le douteux ou le sans-source est signalé « À vérifier ».
+- **S'entraîner sur les textes** : les fiches deviennent des exercices.
+- **Bac blanc HLP** : corrigés et épreuve en philosophie (10 essais, 9 interprétations) ; la littérature s'ouvrira avec son cours.
 
 ## Ce qu'elle contient
 
-- **Leçons** : *Le langage* et *L'art* (philosophie, Terminale), remises au propre à partir du cours de la classe, fidèlement : mêmes idées, mêmes auteurs, mêmes exemples.
-- **Livres** : *Discours de la méthode* (Descartes, 1637).
-- **Cours** : la leçon page par page, une idée par écran, avec définitions, citations, exemples et un encadré « À retenir ». Repères de lecture en couleur (idées clés surlignées, auteurs, œuvres), mode « Lecture rapide ». Flèches du clavier ou balayage sur mobile.
-- **Recherche** : dans la leçon ouverte (touche `/`), avec filtres Leçon, Fiches, Exos, Entraînement.
-- **Plan** : un emploi du temps de 30 min à 3 h (cours, exercices, sujets, pauses), avec chronomètre et temps restant en direct.
-- **Entraînement** : de 160 à 180 exercices par contenu en 11 formats (QCM avec rappel actif, vrai ou faux, textes à trous, citations à situer, ordres à rétablir, associations, classements, schémas et tableaux à compléter, cartes mémoire, construction de réponse), avec un mode sans citations.
-- **Appliquer** : des sujets de dissertation avec plan modèle, des textes à expliquer, la méthode, et un **kit de citations** : 2 à 5 citations reliées par des ponts, adaptées à chaque notion du programme, apprises par répétition espacée.
-- **Fiches** : une fiche par notion (l'essentiel, la citation, le piège), liens vers la page du cours et des vidéos.
-- **Bilan** : maîtrise par notion, et export (PDF ou texte) avec une consigne prête pour ChatGPT, Claude, Gemini, Mistral…
-- **Effets** : séries d'affilée, records, succès, jours de suite, confettis… sans aucun son. Un petit onglet **Réglages** permet de choisir l'intensité des effets et de réduire les animations.
+- **Leçons** : *Le langage* et *L'art*, fidèles au cours de la classe.
+- **Livre** : *Discours de la méthode* (Descartes, 1637).
+- **Cours** : une idée par page, définitions, citations, exemples, « À retenir » ; repères de lecture en couleur, lecture rapide.
+- **Recherche** : touche `/`, filtres Leçon, Fiches, Exos, Entraînement.
+- **Plan** : de 30 min à 3 h, chronométré.
+- **Entraînement** : 160 à 190 exercices par contenu, 11 formats, mode sans citations.
+- **Appliquer** : sujets avec plan modèle, textes à expliquer, kit de citations en répétition espacée.
+- **Bilan** : maîtrise par notion, export PDF ou texte pour une IA.
 
-Sur ordinateur, chaque écran tient sans défiler. Sur téléphone, une colonne, des onglets en bas et des fenêtres qui montent du bas.
+Sur ordinateur, chaque écran tient sans défiler. Progression enregistrée dans le navigateur uniquement.
 
-La progression est enregistrée dans le navigateur (localStorage) : rien n'est envoyé nulle part.
+Ajouter une leçon, un livre, un cours, un texte ou des sujets : [contenus/MODELE.md](contenus/MODELE.md).
 
-Pour ajouter une leçon, un livre, un cours ou un texte de spécialité, ou des sujets de bac blanc : voir [contenus/MODELE.md](contenus/MODELE.md).
-
-Vérifications automatiques (données, classement des textes, doublons, tirages du bac blanc) : `node tests/verifier.js`.
+Vérifications : `node tests/verifier.js` (données, classement, tirages, méthode, corrigés). Corrigés seuls : `node tests/corriges.js`. Tout ce que le cours dit d'un sujet : `node tests/sujet.js <id>`.

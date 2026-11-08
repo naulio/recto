@@ -102,7 +102,7 @@ window.RECTO_BAC_TC = {
         "L'âme est même « plus aisée à connaître » que le corps : je sais ce que je suis, une chose qui pense, avant de savoir si j'ai un corps.",
         "Piste de réflexion personnelle (au-delà du livre) : cette certitude porte sur le fait que je pense, pas sur tout ce que je suis ; savoir que je suis n'est pas encore savoir qui je suis."],
       refs: [["discours-de-la-methode", "cogito"], ["discours-de-la-methode", "ame"], ["discours-de-la-methode", "doute"]],
-      piege: "La troisième partie va au-delà du livre : présente-la comme ta réflexion, sans l'attribuer à Descartes." },
+      piege: "La troisième partie va au-delà du livre : la présenter comme une réflexion personnelle, sans l'attribuer à Descartes." },
     { id: "c2", ns: ["conscience"], q: "L'esprit est-il plus facile à connaître que le corps ?",
       termes: ["Esprit (âme) : ce qui pense.", "Corps : la matière étendue, la « machine » décrite par la physique."],
       prob: "Ce que je suis au plus près de moi m'est-il vraiment plus connu que ce que je vois et touche ?",

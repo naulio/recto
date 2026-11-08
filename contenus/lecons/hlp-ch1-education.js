@@ -30,7 +30,7 @@ Recto.add("hlp-ch1-education", (function () {
   /* ---------------- LE COURS, PAGE PAR PAGE ---------------- */
   const course = [
     /* ---------- Introduction ---------- */
-    { id: "eduquer", part: 0, sec: "Introduction", src: "Tes notes, p. 1", title: "Éduquer : conduire hors de",
+    { id: "eduquer", part: 0, sec: "Introduction", src: "Notes de cours, p. 1", title: "Éduquer : conduire hors de",
       lead: "D'où vient le mot « éduquer », et que dit-il de ce que l'éducation cherche à faire ?",
       body: [
         "*Éduquer* vient du latin *educere*, formé de *ducere*, « conduire, mener », et de *ex*, « hors de ». Éduquer, c'est donc ==conduire hors de==.",
@@ -39,12 +39,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "def", w: "Éduquer", t: "Du latin educere : ex (hors de) + ducere (conduire). Conduire hors de l'ignorance." },
-        { k: "check", t: "« Culture inculte » : l'expression est attribuée à Flaubert dans tes notes, sans œuvre précisée. Vérifie la source avant de la citer." }
+        { k: "check", t: "« Culture inculte » : l'expression est attribuée à Flaubert dans les notes, sans œuvre précisée. Vérifier la source avant de la citer." }
       ],
       key: "Éduquer = conduire hors de (ex + ducere) : sortir de l'ignorance, dépasser ses limites, sans oublier le corps et la morale.",
       ns: ["eduquer"] },
 
-    { id: "transmettre", part: 0, sec: "Introduction", src: "Tes notes, p. 1", title: "Transmettre sans amputer",
+    { id: "transmettre", part: 0, sec: "Introduction", src: "Notes de cours, p. 1", title: "Transmettre sans amputer",
       lead: "En proposant des questions et du savoir, on permet à quelqu'un de s'émanciper. Mais tout programme fait des choix.",
       body: [
         "Certaines choses ne seront pas vues et deviennent inaccessibles : ==l'éducation réduirait alors le potentiel de celui qu'on éduque==. Comment faire pour qu'elle *n'ampute pas la créativité* ? Un *programme* suppose toujours une décision sur le savoir.",
@@ -58,7 +58,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Tout programme choisit, donc écarte : transmettre, c'est donner un savoir et la liberté de s'en servir.",
       ns: ["transmettre"] },
 
-    { id: "normes", part: 0, sec: "Introduction", src: "Tes notes, p. 1", title: "Toute éducation impose",
+    { id: "normes", part: 0, sec: "Introduction", src: "Notes de cours, p. 1", title: "Toute éducation impose",
       lead: "Apprendre commence toujours par recevoir des règles qu'on n'a pas choisies.",
       body: [
         "Pour apprendre à lire, on est obligé d'apprendre les lettres ; pour écrire, les mots sont imposés. ==La façon d'écrire elle-même semble déjà priver de liberté.==",
@@ -67,12 +67,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "ex", w: "Apprendre à lire", t: "Les lettres, l'orthographe, la forme des mots : des normes reçues avant toute liberté d'écrire." },
-        { k: "check", t: "Un passage de tes notes est difficile à lire : « l'éducation s'impose et impose des éducateurs catégoriels (?) ». Il n'est pas repris ici." }
+        { k: "check", t: "Un passage des notes est difficile à lire : « l'éducation s'impose et impose des éducateurs catégoriels (?) ». Il n'est pas repris ici." }
       ],
       key: "L'éducation impose des normes (lire, écrire, convictions familiales), mais son but reste d'en sortir : l'émancipation.",
       ns: ["normes"] },
 
-    { id: "emancipation", part: 0, sec: "Introduction", src: "Tes notes, p. 1-2", title: "S'émanciper",
+    { id: "emancipation", part: 0, sec: "Introduction", src: "Notes de cours, p. 1-2", title: "S'émanciper",
       lead: "L'émancipation, c'est le fait de passer de l'état d'esclave à celui d'homme libre.",
       body: [
         "S'émanciper, c'est ==ne plus subir, mais être maître de ce qui se passe autour de soi et en soi==.",
@@ -81,12 +81,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "plus", w: "Complément", t: "En droit romain, l'emancipatio libère le fils de l'autorité du père (manus, la main) ; libérer un esclave se dit manumissio. Dans les deux cas : sortir de la main d'un autre." },
-        { k: "check", t: "La définition se termine dans tes notes par « (vers 6-7ème) » : on ne sait pas s'il s'agit d'un âge ou d'un siècle. À vérifier." }
+        { k: "check", t: "La définition se termine dans les notes par « (vers 6-7ème) » : on ne sait pas s'il s'agit d'un âge ou d'un siècle. À vérifier." }
       ],
       key: "S'émanciper : ne plus subir, devenir maître de soi. Cela se mérite et se construit, d'abord par la culture de soi.",
       ns: ["emancipation"] },
 
-    { id: "instruction", part: 0, sec: "Quelques définitions", src: "Tes notes, p. 2", title: "Instruire, éduquer, apprendre",
+    { id: "instruction", part: 0, sec: "Quelques définitions", src: "Notes de cours, p. 2", title: "Instruire, éduquer, apprendre",
       lead: "L'instruction et l'apprentissage ne se confondent pas avec l'éducation.",
       body: [
         "*L'instruction.* Instruire et éduquer semblent proches : instruire, c'est éduquer. Mais l'instruction semble ==strictement intellectuelle== : elle transmet un savoir plus ou moins théorique, fondamental, qui fait partie d'un *socle commun* pour se construire.",
@@ -101,7 +101,7 @@ Recto.add("hlp-ch1-education", (function () {
       ns: ["instruction"] },
 
     /* ---------- I. S'éduquer ---------- */
-    { id: "etat-nature", part: 1, sec: "A. L'injonction de l'éducation", src: "Tes notes, p. 2", title: "L'homme à l'état de nature",
+    { id: "etat-nature", part: 1, sec: "A. L'injonction de l'éducation", src: "Notes de cours, p. 2", title: "L'homme à l'état de nature",
       lead: "Pourquoi faudrait-il éduquer ? Parce qu'on fait des présupposés sur l'homme laissé à lui-même.",
       body: [
         "Il semble qu'il y ait des *présupposés sur l'homme dans l'état de nature*. L'*état de nature* est une fiction qui permet de comprendre pourquoi l'humain vit en société.",
@@ -115,7 +115,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Si l'homme est mauvais par nature (Hobbes, Machiavel), l'éducation devient une injonction : il faut un guide pour l'améliorer.",
       ns: ["etat-nature"] },
 
-    { id: "pervertir", part: 1, sec: "A. L'injonction de l'éducation", src: "Tes notes, p. 3", title: "L'éducation pervertit-elle ?",
+    { id: "pervertir", part: 1, sec: "A. L'injonction de l'éducation", src: "Notes de cours, p. 3", title: "L'éducation pervertit-elle ?",
       lead: "L'éducation transmet des cultures et des normes. Et si c'était elle qui pervertissait l'homme ?",
       body: [
         "L'éducation inclut des cultures, des normes : ==la culture pourrait-elle être cette perversion de l'homme== ? On comprend qu'il existe des *normes éducatives* et que l'éducation est absolument nécessaire. Mais est-elle bien faite ?",
@@ -124,12 +124,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "ex", w: "Les cours de couture (XIXᵉ siècle)", t: "Une éducation réelle, mais qui enferme les filles dans un rôle : perpétuer un système." },
-        { k: "check", t: "Tes notes disent que Beauvoir « apprend les sciences » aux jeunes filles. Elle a surtout été professeure de philosophie dans des lycées de jeunes filles : à vérifier avant de l'écrire." }
+        { k: "check", t: "Les notes disent que Beauvoir « apprend les sciences » aux jeunes filles. Elle a surtout été professeure de philosophie dans des lycées de jeunes filles : à vérifier avant de l'écrire." }
       ],
       key: "Éduquer, c'est transmettre des normes et perpétuer un système : nécessaire, mais parfois réducteur. Comment former sans entraver ?",
       ns: ["pervertir"] },
 
-    { id: "autonomie", part: 1, sec: "A. L'injonction de l'éducation", src: "Tes notes, p. 3", title: "L'autonomie, et ce que l'éducation manque",
+    { id: "autonomie", part: 1, sec: "A. L'injonction de l'éducation", src: "Notes de cours, p. 3", title: "L'autonomie, et ce que l'éducation manque",
       lead: "Quel que soit son bien-fondé, l'éducation a une part d'échec : rendre l'individu autonome.",
       body: [
         "*Autonomie* vient du grec *autos*, soi, et *nomos*, la loi : ==se donner sa propre norme==.",
@@ -138,12 +138,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "def", w: "Autonomie", t: "Du grec autos (soi) et nomos (la loi) : se donner à soi-même sa propre loi." },
-        { k: "check", t: "Tes notes citent un « protocole de Lisbonne, 2003 » : il suffirait de 10 % de gens éduqués, le reste étant des « acheteurs abrutis ». Date et source à vérifier : ne l'utilise pas au bac sans source fiable." }
+        { k: "check", t: "Les notes citent un « protocole de Lisbonne, 2003 » : il suffirait de 10 % de gens éduqués, le reste étant des « acheteurs abrutis ». Date et source à vérifier : ne l'utilise pas au bac sans source fiable." }
       ],
       key: "Autonomie = se donner sa propre loi. Une éducation réduite à l'utile échoue à la produire : rien ne sert à rien.",
       ns: ["autonomie"] },
 
-    { id: "platon-utilite", part: 1, sec: "A. L'injonction de l'éducation", src: "Tes notes, p. 3", title: "Platon : l'art est-il utile à l'éducation ?",
+    { id: "platon-utilite", part: 1, sec: "A. L'injonction de l'éducation", src: "Notes de cours, p. 3", title: "Platon : l'art est-il utile à l'éducation ?",
       lead: "Dans La République, Platon se demande ce que c'est qu'être juste, et à quoi sert l'art dans l'éducation.",
       body: [
         "L'art n'aide ni les soldats, ni les architectes. Platon constate que ==l'art n'a d'intérêt que pour ceux dont c'est le métier==. Il en tire une morale : l'art ne sert à rien dans l'éducation, il faudrait donc le supprimer pour former un homme juste.",
@@ -151,12 +151,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "plus", w: "Complément", t: "Dans La République, Platon surveille surtout les récits et la poésie donnés aux futurs gardiens (livres II et III) et chasse de la cité les poètes imitateurs (livre X). Il garde la musique et la gymnastique." },
-        { k: "warn", t: "Ne dis pas que Platon supprime tout art : il contrôle les arts qui imitent et peuvent corrompre." }
+        { k: "warn", t: "Ne pas dire que Platon supprime tout art : il contrôle les arts qui imitent et peuvent corrompre." }
       ],
       key: "Juger l'éducation à son utilité immédiate (Platon et l'art) réduit les capacités de l'individu.",
       ns: ["platon-utilite"] },
 
-    { id: "alienation", part: 1, sec: "A. L'injonction de l'éducation", src: "Tes notes, p. 3", title: "Déconstruire, reconstruire",
+    { id: "alienation", part: 1, sec: "A. L'injonction de l'éducation", src: "Notes de cours, p. 3", title: "Déconstruire, reconstruire",
       lead: "Un processus éducatif serait une déconstruction reconstruite.",
       body: [
         "L'*identité* se construit à travers des ==normes sociales qui existent et préexistent déjà==, et par des cultures intellectuelles.",
@@ -164,13 +164,13 @@ Recto.add("hlp-ch1-education", (function () {
         "Être en train d'être, c'est toujours apprendre, ne jamais cesser d'évoluer. Alors, ==même si l'éducation bride, on peut passer au-dessus : elle ne fait pas la personnalité==."
       ],
       side: [
-        { k: "def", w: "Aliéner", t: "Rendre étranger (latin alienus, « qui appartient à un autre ») ; ton cours : « défaire les liens »." },
-        { k: "check", t: "Avant « l'éducation s'impose », un mot de tes notes est illisible (« de Hume » ? « de Rome » ?). Aucun auteur n'est donc attribué à cette idée." }
+        { k: "def", w: "Aliéner", t: "Rendre étranger (latin alienus, « qui appartient à un autre ») ; le cours : « défaire les liens »." },
+        { k: "check", t: "Avant « l'éducation s'impose », un mot des notes est illisible (« de Hume » ? « de Rome » ?). Aucun auteur n'est donc attribué à cette idée." }
       ],
       key: "L'éducation s'impose, puis on interroge ce qu'on a reçu : c'est le début de l'autonomie. Elle bride, mais ne fait pas la personnalité.",
       ns: ["alienation"] },
 
-    { id: "entrave", part: 1, sec: "A. L'injonction de l'éducation", src: "Tes notes, p. 4", title: "L'entrave qui libère",
+    { id: "entrave", part: 1, sec: "A. L'injonction de l'éducation", src: "Notes de cours, p. 4", title: "L'entrave qui libère",
       lead: "Toute éducation correspond à une entrave qui sera finalement le moyen de trouver sa liberté.",
       body: [
         "Grâce à l'éducation, on peut ==dépasser les règles sociales==.",
@@ -185,7 +185,7 @@ Recto.add("hlp-ch1-education", (function () {
       ns: ["entrave"] },
 
     /* ---------- II. Historicité ---------- */
-    { id: "prehistoire", part: 2, sec: "a. Les enjeux de l'éducation", src: "Tes notes, p. 4", title: "Transmettre depuis la préhistoire",
+    { id: "prehistoire", part: 2, sec: "a. Les enjeux de l'éducation", src: "Notes de cours, p. 4", title: "Transmettre depuis la préhistoire",
       lead: "L'éducation a un enjeu fort, un enjeu social : avant même l'histoire, l'humanité cherche à transmettre son savoir.",
       body: [
         "On le sait grâce à la *paléoanthropologie*. Dès *Homo habilis*, ainsi nommé parce qu'il est, à notre connaissance, le premier à utiliser un outil.",
@@ -199,7 +199,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Dès la préhistoire, l'outil suppose un savoir-faire transmis et perfectionné : éduquer est un enjeu social.",
       ns: ["transmission-origines"] },
 
-    { id: "ecriture", part: 2, sec: "a. Les enjeux de l'éducation", src: "Tes notes, p. 4", title: "Lire, écrire, et l'otium",
+    { id: "ecriture", part: 2, sec: "a. Les enjeux de l'éducation", src: "Notes de cours, p. 4", title: "Lire, écrire, et l'otium",
       lead: "Avec l'invention de l'écriture, on peut comprendre et apprendre sérieusement ces traces.",
       body: [
         "Les rapports changent : ==éduquer passe désormais par lire et écrire==. Au début, c'est réservé à un cadre très restreint : les femmes n'avaient pas droit à cet enseignement.",
@@ -213,7 +213,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Éduquer devient lire et écrire, d'abord réservé à une élite oisive (otium : cultiver son esprit), puis peu à peu démocratisé.",
       ns: ["otium"] },
 
-    { id: "traites", part: 2, sec: "a. Les enjeux de l'éducation", src: "Tes notes, p. 5", title: "Les traités d'éducation et les femmes",
+    { id: "traites", part: 2, sec: "a. Les enjeux de l'éducation", src: "Notes de cours, p. 5", title: "Les traités d'éducation et les femmes",
       lead: "De la fin du XVIIIᵉ au début du XIXᵉ siècle, un très grand nombre de traités interrogent l'éducation, notamment celle des femmes.",
       body: [
         "Laclos explique que le moteur de l'éducation générale passe par ==l'émancipation des femmes, qui se fait par l'éducation==.",
@@ -221,12 +221,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "plus", w: "Complément", t: "Laclos, l'auteur des Liaisons dangereuses, a rédigé en 1783 des essais sur l'éducation des femmes, restés inachevés." },
-        { k: "check", t: "Tes notes placent l'auteur du Ménagier de Paris au XVᵉ siècle. Ce traité anonyme est en général daté de la fin du XIVᵉ siècle (vers 1393), bien avant les traités du XVIIIᵉ. À vérifier." }
+        { k: "check", t: "Les notes placent l'auteur du Ménagier de Paris au XVᵉ siècle. Ce traité anonyme est en général daté de la fin du XIVᵉ siècle (vers 1393), bien avant les traités du XVIIIᵉ. À vérifier." }
       ],
       key: "Fin XVIIIᵉ : les traités se multiplient ; l'éducation des femmes devient une condition de l'émancipation et du devoir citoyen.",
       ns: ["traites"] },
 
-    { id: "revolution", part: 2, sec: "B. Les révolutions de l'éducation (1789-1871)", src: "Tes notes, p. 5", title: "1789-1871 : nationaliser l'éducation",
+    { id: "revolution", part: 2, sec: "B. Les révolutions de l'éducation (1789-1871)", src: "Notes de cours, p. 5", title: "1789-1871 : nationaliser l'éducation",
       lead: "L'époque connaît de nombreuses révolutions, et aussi de nombreuses révolutions éducatives.",
       body: [
         "Condorcet prononce un discours en faveur de l'==instruction universelle et publique== : il faut qu'un maximum de personnes sache lire et compter, et tenter d'apprendre au plus grand nombre le plus de choses possible.",
@@ -240,7 +240,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Révolution : Condorcet veut une instruction universelle et publique, Grégoire une langue nationale ; l'éducation devient nationale.",
       ns: ["nationaliser"] },
 
-    { id: "utopies", part: 2, sec: "B. Les révolutions de l'éducation (1789-1871)", src: "Tes notes, p. 5", title: "Fourier, Saint-Simon, la Commune",
+    { id: "utopies", part: 2, sec: "B. Les révolutions de l'éducation (1789-1871)", src: "Notes de cours, p. 5", title: "Fourier, Saint-Simon, la Commune",
       lead: "De nouvelles idéologies font de l'éducation le cœur d'une société à réinventer.",
       body: [
         "Fourier (entre XVIIIᵉ et XIXᵉ siècle) propose le *phalanstère*, une ville « parfaite », lieu de vie communautaire égalitaire, comme un monastère de l'éducation. Il fait la part belle à l'éducation, y compris physique.",
@@ -254,7 +254,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Fourier, Saint-Simon, la Commune : l'éducation devient un projet de société, publique, laïque, intellectuelle et manuelle.",
       ns: ["utopies"] },
 
-    { id: "ferry", part: 2, sec: "B. Les révolutions de l'éducation (1789-1871)", src: "Tes notes, p. 6", title: "Les lois Ferry, l'inné et l'acquis",
+    { id: "ferry", part: 2, sec: "B. Les révolutions de l'éducation (1789-1871)", src: "Notes de cours, p. 6", title: "Les lois Ferry, l'inné et l'acquis",
       lead: "En 1881 et 1882, Jules Ferry fait voter des lois qui rendent l'école obligatoire, gratuite et laïque. C'est une première.",
       body: [
         "L'éducation est alors ==publique, à rebours de l'éducation religieuse== transmise aux enfants. Le développement de l'instruction va de pair avec l'idéal de l'*école républicaine*. Apparaît la *méritocratie* : ==que tout le monde puisse s'élever==.",
@@ -262,13 +262,13 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "def", w: "Méritocratie", t: "Chacun s'élève selon son mérite, et non selon sa naissance." },
-        { k: "check", t: "Tes notes ajoutent : « vers 1885, on parle pour la première fois du droit de vote des familles ». Le sens et la date sont à vérifier." }
+        { k: "check", t: "Les notes ajoutent : « vers 1885, on parle pour la première fois du droit de vote des familles ». Le sens et la date sont à vérifier." }
       ],
       key: "Ferry : école obligatoire, gratuite, laïque, idéal méritocratique. Mais Zola montre que le milieu pèse plus que la volonté.",
       ns: ["ferry", "zola"] },
 
     /* ---------- III. L'éducation moderne ---------- */
-    { id: "renaissance", part: 3, sec: "III. Le fondement de l'éducation moderne", src: "Tes notes, p. 6", title: "La Renaissance : penser l'homme par l'éducation",
+    { id: "renaissance", part: 3, sec: "III. Le fondement de l'éducation moderne", src: "Notes de cours, p. 6", title: "La Renaissance : penser l'homme par l'éducation",
       lead: "Dès le XVᵉ siècle, les penseurs de la Renaissance conçoivent l'homme en mettant l'éducation au centre.",
       body: [
         "On pense l'homme par l'éducation : ==l'éducation pourrait façonner la nature elle-même==.",
@@ -282,7 +282,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Renaissance : l'éducation façonne la nature ; Cicéron compare l'esprit sans instruction à une terre en friche ; on veut former un homme complet.",
       ns: ["renaissance"] },
 
-    { id: "erasme-montaigne", part: 3, sec: "III. Le fondement de l'éducation moderne", src: "Tes notes, p. 6", title: "Érasme et Montaigne : la tête bien faite",
+    { id: "erasme-montaigne", part: 3, sec: "III. Le fondement de l'éducation moderne", src: "Notes de cours, p. 6", title: "Érasme et Montaigne : la tête bien faite",
       lead: "Comment former cet homme complet ? Deux humanistes répondent.",
       body: [
         "Érasme définit les contenus d'une ==éducation encyclopédique==, proche de la culture antique, latine et grecque, en changeant quelques principes : les *précepteurs* ne doivent plus être rigides, mais montrer ==une certaine bienveillance==.",
@@ -296,7 +296,7 @@ Recto.add("hlp-ch1-education", (function () {
       ns: ["erasme", "montaigne"] },
 
     /* ---------- IV. Les Lumières ---------- */
-    { id: "lumieres", part: 4, sec: "IV. Au siècle des Lumières", src: "Tes notes, p. 7", title: "Diffuser le savoir, considérer l'enfant",
+    { id: "lumieres", part: 4, sec: "IV. Au siècle des Lumières", src: "Notes de cours, p. 7", title: "Diffuser le savoir, considérer l'enfant",
       lead: "Au siècle des Lumières, il y a un idéal d'émancipation par l'éducation.",
       body: [
         "Les programmes s'accroissent et deviennent de plus en plus ambitieux : fondés sur le savoir, ils cherchent à le ==diffuser au plus grand nombre==. Pour propager les savoirs, il faut d'abord diffuser l'*alphabétisation*.",
@@ -304,12 +304,12 @@ Recto.add("hlp-ch1-education", (function () {
         "En pensant l'éducation, on change la *considération de l'enfant* : il était vu comme un « sous-humain » ; à partir du XVIIIᵉ siècle, ==l'enfant est enfin considéré==. On le voit dans les romans, où enfants et adolescents passent au centre."
       ],
       side: [
-        { k: "plus", w: "Complément", t: "Kant résume les Lumières par la devise Sapere aude : ose savoir, aie le courage de te servir de ton propre entendement (Qu'est-ce que les Lumières ?, 1784)." }
+        { k: "plus", w: "Complément", t: "Kant résume les Lumières par la devise Sapere aude : « ose savoir », c'est-à-dire avoir le courage de se servir de son propre entendement (Qu'est-ce que les Lumières ?, 1784)." }
       ],
       key: "Lumières : diffuser le savoir à tous, une éducation émancipatrice (Kant, Condorcet), et l'enfant enfin considéré.",
       ns: ["lumieres", "enfant"] },
 
-    { id: "empirisme", part: 4, sec: "IV. Au siècle des Lumières", src: "Tes notes, p. 8", title: "L'empirisme : connaître par l'expérience",
+    { id: "empirisme", part: 4, sec: "IV. Au siècle des Lumières", src: "Notes de cours, p. 8", title: "L'empirisme : connaître par l'expérience",
       lead: "Les pensées empiristes prennent de l'importance au XVIIIᵉ siècle.",
       body: [
         "David Hume (XVIIIᵉ siècle) et John Locke (XVIIᵉ siècle) considèrent que ==les connaissances proviennent de l'expérience==.",
@@ -318,12 +318,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "def", w: "Empirisme", t: "Doctrine selon laquelle toute connaissance vient de l'expérience (Locke, Hume)." },
-        { k: "check", t: "Cette page porte un papillon « cours sur l'empirisme » et pas de numéro de partie : elle est placée ici d'après son contenu. La conclusion de tes notes (« les habitudes éducatives ne peuvent pas se baser sur les habitudes ») est reformulée ; son sens est à préciser." }
+        { k: "check", t: "Cette page porte un papillon « cours sur l'empirisme » et pas de numéro de partie : elle est placée ici d'après son contenu. La conclusion des notes (« les habitudes éducatives ne peuvent pas se baser sur les habitudes ») est reformulée ; son sens est à préciser." }
       ],
       key: "Empirisme (Locke, Hume) : la connaissance vient de l'expérience, mais l'expérience ne donne ni certitude absolue ni causalité.",
       ns: ["empirisme"] },
 
-    { id: "rousseau", part: 4, sec: "IV. Au siècle des Lumières", src: "Tes notes, p. 8", title: "Rousseau : l'éducateur accompagne",
+    { id: "rousseau", part: 4, sec: "IV. Au siècle des Lumières", src: "Notes de cours, p. 8", title: "Rousseau : l'éducateur accompagne",
       lead: "Émile ou De l'éducation, de Jean-Jacques Rousseau, compte beaucoup dans l'évolution de l'éducation : le livre est lui-même éducatif.",
       body: [
         "*Émile* est un enfant imaginaire, que Rousseau suit du plus jeune âge jusqu'à son mariage. Rousseau ==prône la liberté de mouvement==.",
@@ -338,7 +338,7 @@ Recto.add("hlp-ch1-education", (function () {
       ns: ["rousseau"] },
 
     /* ---------- V. La crise de l'éducation ---------- */
-    { id: "durkheim", part: 5, sec: "V. La crise de l'éducation", src: "Tes notes, p. 7", title: "Durkheim contre le gavage",
+    { id: "durkheim", part: 5, sec: "V. La crise de l'éducation", src: "Notes de cours, p. 7", title: "Durkheim contre le gavage",
       lead: "La crise de l'éducation prend son essor au début du XXᵉ siècle : il y a tant de courants éducatifs qu'on ne sait plus lequel suivre.",
       body: [
         "On peut penser à Émile Durkheim, fondateur de la sociologie. Il s'engage dans une ==critique de l'éducation classique==, c'est-à-dire de la manière d'enseigner : par exemple, la littérature serait trop abstraite.",
@@ -351,7 +351,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Début du XXᵉ siècle : la crise de l'éducation. Durkheim critique le gavage : un savoir doit pouvoir être utilisé.",
       ns: ["durkheim"] },
 
-    { id: "dewey", part: 5, sec: "V. La crise de l'éducation", src: "Tes notes, p. 7", title: "Dewey : l'élève acteur",
+    { id: "dewey", part: 5, sec: "V. La crise de l'éducation", src: "Notes de cours, p. 7", title: "Dewey : l'élève acteur",
       lead: "Durkheim fait aussi le lien avec une démarche venue des États-Unis, qui interroge la manière d'enseigner.",
       body: [
         "En cause, la *dissymétrie éducative* : la séparation entre ==le maître qui enseigne et l'élève qui absorbe le savoir==. Elle semble défavorable à l'enseignement : l'élève ne voit pas l'attrait de la matière. ==Le professeur doit montrer l'intérêt de la matière.==",
@@ -359,12 +359,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "def", w: "Dissymétrie éducative", t: "Le maître sait et parle, l'élève reçoit et se tait." },
-        { k: "check", t: "Tes notes datent Dewey de « 1840-1855 » : il a vécu de 1859 à 1952. Elles disent aussi que « l'enseignement américain est fondé sur la dissymétrie », alors que la suite montre que cette démarche la critique. Et « 60 % de la capacité de savoir se passe en cours » n'a pas de source." }
+        { k: "check", t: "Les notes datent Dewey de « 1840-1855 » : il a vécu de 1859 à 1952. Elles disent aussi que « l'enseignement américain est fondé sur la dissymétrie », alors que la suite montre que cette démarche la critique. Et « 60 % de la capacité de savoir se passe en cours » n'a pas de source." }
       ],
       key: "Contre la dissymétrie maître / élève : montrer l'intérêt de la matière, faire de l'élève l'acteur de ses apprentissages (Dewey).",
       ns: ["dewey"] },
 
-    { id: "arendt", part: 5, sec: "V. La crise de l'éducation", src: "Tes notes, p. 9", title: "Arendt : une éducation conservatrice",
+    { id: "arendt", part: 5, sec: "V. La crise de l'éducation", src: "Notes de cours, p. 9", title: "Arendt : une éducation conservatrice",
       lead: "Hannah Arendt attribue cette crise de l'éducation notamment au courant pragmatique.",
       body: [
         "Le pragmatisme veut n'apprendre aux élèves que ce qui est *utile*, le nécessaire. ==On réduirait alors la culture, ce qui est extrêmement dangereux intellectuellement==, et peut-être politiquement.",
@@ -378,7 +378,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Arendt : réduire l'éducation à l'utile appauvrit la culture ; éduquer, c'est conserver et transmettre un monde commun.",
       ns: ["arendt"] },
 
-    { id: "ici-maintenant", part: 5, sec: "V. La crise de l'éducation", src: "Tes notes, p. 9", title: "Au-delà de l'ici et du maintenant",
+    { id: "ici-maintenant", part: 5, sec: "V. La crise de l'éducation", src: "Notes de cours, p. 9", title: "Au-delà de l'ici et du maintenant",
       lead: "Pourquoi ne pas s'en tenir à ce qui est utile tout de suite ? Parce qu'une connaissance limitée au présent ne serait presque rien.",
       body: [
         "Le cours cite Martin Heidegger (*Être et temps*) : si la connaissance se réduisait à l'ici et au maintenant, nous ne connaîtrions finalement rien.",
@@ -387,12 +387,12 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "q", t: "[Si la connaissance] se réduisait à l'ici et au maintenant, nous ne connaîtrions en fin de compte rien.", a: "Heidegger, Être et temps (d'après le cours)" },
-        { k: "check", t: "Attribution à vérifier : l'analyse de « l'ici » et du « maintenant » comme savoir le plus pauvre est célèbre chez Hegel (Phénoménologie de l'esprit, « la certitude sensible »). Tes notes ne disent pas non plus pourquoi Aristote est cité." }
+        { k: "check", t: "Attribution à vérifier : l'analyse de « l'ici » et du « maintenant » comme savoir le plus pauvre est célèbre chez Hegel (Phénoménologie de l'esprit, « la certitude sensible »). Les notes ne disent pas non plus pourquoi Aristote est cité." }
       ],
       key: "Une culture limitée à l'ici (les sens) et au maintenant (le présent) ne connaîtrait rien : transmettre, c'est élargir.",
       ns: ["ici-maintenant"] },
 
-    { id: "foucault", part: 5, sec: "V. La crise de l'éducation", src: "Tes notes, p. 9", title: "Foucault : une relation de pouvoir",
+    { id: "foucault", part: 5, sec: "V. La crise de l'éducation", src: "Notes de cours, p. 9", title: "Foucault : une relation de pouvoir",
       lead: "Michel Foucault montre que la relation entre l'élève et l'enseignant est nécessairement une relation de pouvoir.",
       body: [
         "Si pouvoir il y a, ==il ne faut pas qu'il soit absolu==, au risque d'un *décrochage* : l'élève doit pouvoir comprendre l'enseignement, à travers son intérêt.",
@@ -400,26 +400,26 @@ Recto.add("hlp-ch1-education", (function () {
       ],
       side: [
         { k: "plus", w: "Complément", t: "Dans Surveiller et punir (1975), Foucault range l'école parmi les institutions disciplinaires, avec la caserne et la prison : surveiller, classer, examiner." },
-        { k: "check", t: "Fin de phrase peu lisible dans tes notes : « à travers l'intérêt » est la lecture la plus probable." }
+        { k: "check", t: "Fin de phrase peu lisible dans les notes : « à travers l'intérêt » est la lecture la plus probable." }
       ],
       key: "Enseigner suppose un pouvoir ; absolu, il fait décrocher l'élève et trahit le but de l'éducation : élever.",
       ns: ["foucault"] },
 
     /* ---------- VI. Les grandes dates ---------- */
-    { id: "dates", part: 6, sec: "VI. Les dates importantes de l'éducation", src: "Tes notes, p. 9-10", title: "Les « premières » des femmes",
+    { id: "dates", part: 6, sec: "VI. Les dates importantes de l'éducation", src: "Notes de cours, p. 9-10", title: "Les « premières » des femmes",
       lead: "Le cours retient une série de « premières » : des dates à connaître.",
       body: [
         ["*1861* : Julie-Victoire Daubié, première bachelière française.", "*1875* : Madeleine Brès, première femme docteure en médecine.", "*1880* : la Sorbonne ouvre ses portes aux femmes ; on ouvre des lycées pour les filles.", "*1903* : Marie Curie, première femme prix Nobel.", "*1944* : droit de vote des femmes, le suffrage devient universel.", "*1972* : première loi sur l'égalité des salaires.", "*1974* : la loi Veil.", "*1975* : la loi Haby rend la mixité scolaire obligatoire.", "*1991* : Édith Cresson, première femme Première ministre.", "*2000* : loi sur la parité."]
       ],
       side: [
         { k: "plus", w: "Complément", t: "1880 est l'année de la loi Camille Sée, qui crée les lycées de jeunes filles. La loi Veil est votée fin 1974 et promulguée en janvier 1975." },
-        { k: "check", t: "En marge, deux chiffres « en 2026 » sans source : 10 % des élèves de licence au niveau de compréhension d'un enfant de CM2, 90 % des masters « faits par l'intelligence artificielle ». Ne les utilise pas sans les vérifier." }
+        { k: "check", t: "En marge, deux chiffres « en 2026 » sans source : 10 % des élèves de licence au niveau de compréhension d'un enfant de CM2, 90 % des masters « faits par l'intelligence artificielle ». Ne pas les utiliser sans les vérifier." }
       ],
       key: "1861 Daubié · 1875 Brès · 1880 lycées de filles · 1903 Curie · 1944 vote · 1975 mixité · 2000 parité.",
       ns: ["dates"] },
 
     /* ---------- VII. L'ignorance des femmes ---------- */
-    { id: "ignorance", part: 7, sec: "VII. L'ignorance des femmes", src: "Tes notes, p. 10", title: "Une ignorance voulue",
+    { id: "ignorance", part: 7, sec: "VII. L'ignorance des femmes", src: "Notes de cours, p. 10", title: "Une ignorance voulue",
       lead: "Volonté politique : les femmes doivent être cantonnées à l'activité domestique.",
       body: [
         "On prétend qu'elles n'ont pas les compétences intellectuelles pour davantage. Il y a ==une volonté des hommes de maintenir les femmes dans la bêtise, car elles sont plus faciles à contrôler==.",
@@ -433,7 +433,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Jusqu'au XVIIIᵉ siècle : une éducation religieuse et domestique, pour plaire et servir ; Rousseau lui-même refuse aux filles l'éducation des garçons.",
       ns: ["ignorance"] },
 
-    { id: "defenseurs", part: 7, sec: "VII. L'ignorance des femmes", src: "Tes notes, p. 10", title: "Défendre l'éducation des femmes",
+    { id: "defenseurs", part: 7, sec: "VII. L'ignorance des femmes", src: "Notes de cours, p. 10", title: "Défendre l'éducation des femmes",
       lead: "Des auteurs vont remettre en cause l'absence d'éducation des femmes.",
       body: [
         "Molière défend l'éducation des femmes en caricaturant, notamment dans *L'École des femmes*. On peut penser aussi à Mill, qui dénonce l'*assujettissement* de la femme en montrant qu'il faut l'éduquer.",
@@ -447,7 +447,7 @@ Recto.add("hlp-ch1-education", (function () {
       key: "Molière, Mill, Suchon, Fénelon : éduquer les femmes est possible, juste, et nécessaire à toute la société, à commencer par les enfants.",
       ns: ["defenseurs"] },
 
-    { id: "autodidactes", part: 7, sec: "VII. L'ignorance des femmes", src: "Tes notes, p. 10", title: "Les autodidactes : Émilie du Châtelet",
+    { id: "autodidactes", part: 7, sec: "VII. L'ignorance des femmes", src: "Notes de cours, p. 10", title: "Les autodidactes : Émilie du Châtelet",
       lead: "Certaines femmes ont eu accès à l'éducation, mais c'était rare et privilégié.",
       body: [
         "La plupart du temps, elles sont ==autodidactes==.",
@@ -461,7 +461,7 @@ Recto.add("hlp-ch1-education", (function () {
       ns: ["autodidactes"] },
 
     /* ---------- VIII. Du XIXe à aujourd'hui ---------- */
-    { id: "egalite", part: 8, sec: "VIII. Du XIXᵉ siècle à aujourd'hui", src: "Tes notes, p. 11", title: "Vers l'égalité",
+    { id: "egalite", part: 8, sec: "VIII. Du XIXᵉ siècle à aujourd'hui", src: "Notes de cours, p. 11", title: "Vers l'égalité",
       lead: "Une volonté d'égalité prend corps sous la IIᵉ République : quelques lois permettent l'éducation des femmes.",
       body: [
         "En 1870 commence la IIIᵉ République : avec les *lois Ferry*, ==l'école est accessible à tous==, même si les programmes ne sont pas les mêmes pour les filles et pour les garçons.",
@@ -483,7 +483,7 @@ Recto.add("hlp-ch1-education", (function () {
     "eduquer": { part: 0, title: "Éduquer : conduire hors de",
       essentiel: "Éduquer vient du latin educere : ex (hors de) + ducere (conduire). Éduquer, c'est sortir l'individu de l'ignorance, lui faire dépasser ses limites, encadrer sa croissance intellectuelle sans oublier le physique et la morale.",
       retenir: ["educere = conduire hors de.", "Sortir de l'ignorance, dépasser ses limites.", "Encadrer la croissance intellectuelle, physique et morale.", "Être aidé pour prendre le bon chemin."],
-      citation: "", piege: "« Culture inculte » (Flaubert) : l'expression vient de tes notes sans source précise, vérifie-la avant de la citer.",
+      citation: "", piege: "« Culture inculte » (Flaubert) : l'expression vient des notes sans source précise : à vérifier avant de la citer.",
       video: "étymologie éduquer educere conduire hors de philosophie" },
     "transmettre": { part: 0, title: "Transmettre sans amputer",
       essentiel: "Tout programme est une décision sur le savoir : ce qui n'est pas vu devient inaccessible, et l'éducation peut réduire le potentiel de l'élève. Transmettre, c'est mettre un savoir à disposition pour qu'on en fasse usage, avec la liberté de l'utiliser.",
@@ -493,7 +493,7 @@ Recto.add("hlp-ch1-education", (function () {
     "normes": { part: 0, title: "Toute éducation impose des normes",
       essentiel: "Apprendre à lire et à écrire, c'est recevoir des normes (lettres, mots, façon d'écrire). La transmission familiale peut contredire l'école. L'éducation s'impose ; pourtant, educere, c'est sortir du carcan : l'important est l'émancipation.",
       retenir: ["Lire : obligé d'apprendre les lettres.", "La façon d'écrire prive déjà de liberté.", "Famille et école peuvent se contredire.", "Le but reste l'émancipation, l'expansion intellectuelle."],
-      citation: "", piege: "Ne conclus pas que l'éducation est une prison : les normes sont le point de départ de l'émancipation.",
+      citation: "", piege: "Ne pas conclure que l'éducation est une prison : les normes sont le point de départ de l'émancipation.",
       video: "éducation normes liberté philosophie" },
     "emancipation": { part: 0, title: "S'émanciper",
       essentiel: "L'émancipation est le passage de l'état d'esclave à celui d'homme libre : ne plus subir, être maître de ce qui se passe autour de soi et en soi. Elle se mérite, se travaille, se construit, notamment par les lois. L'éducation vise à s'élever dans la culture, d'abord la culture de soi.",
@@ -518,7 +518,7 @@ Recto.add("hlp-ch1-education", (function () {
     "autonomie": { part: 1, title: "L'autonomie",
       essentiel: "Autonomie : autos (soi) + nomos (la loi), se donner sa propre norme. L'éducation échoue en partie à la produire, par manque de curiosité, quand on juge certaines choses inutiles. Mais si tout devait être utile, on fermerait les portes de la connaissance : rien ne sert à rien.",
       retenir: ["autos + nomos : sa propre loi.", "Une part d'échec de toute éducation.", "Le manque de curiosité pour l'« inutile ».", "Rien ne sert à rien."],
-      citation: "", piege: "Le « protocole de Lisbonne » de tes notes n'a pas de source vérifiée : ne le cite pas.",
+      citation: "", piege: "Le « protocole de Lisbonne » des notes n'a pas de source vérifiée : ne pas le citer.",
       video: "autonomie définition Kant éducation" },
     "platon-utilite": { part: 1, title: "Platon : l'utilité de l'art",
       essentiel: "Dans La République, Platon se demande ce qu'est être juste et à quoi sert l'art dans l'éducation : il n'aide ni les soldats ni les architectes, il faudrait donc le supprimer. Pourtant, penser l'éducation en termes d'utilité réduit considérablement les capacités de l'individu.",
@@ -548,7 +548,7 @@ Recto.add("hlp-ch1-education", (function () {
     "traites": { part: 2, title: "Les traités et l'éducation des femmes",
       essentiel: "De la fin du XVIIIᵉ au début du XIXᵉ siècle, de nombreux traités interrogent l'éducation des femmes. Laclos : l'éducation générale passe par l'émancipation des femmes, par l'éducation. Le Ménagier de Paris : l'éducation féminine est nécessaire au devoir citoyen.",
       retenir: ["Beaucoup de traités sur l'éducation des femmes.", "Laclos : émanciper les femmes par l'éducation.", "Le Ménagier de Paris : le devoir citoyen.", "Droits et devoirs de chaque citoyen."],
-      citation: "", piege: "Le Ménagier de Paris est bien plus ancien (vers 1393) que tes notes ne le disent : vérifie.",
+      citation: "", piege: "Le Ménagier de Paris est bien plus ancien (vers 1393) que les notes ne le disent : à vérifier.",
       video: "Laclos éducation des femmes" },
     "nationaliser": { part: 2, title: "Nationaliser l'éducation (Révolution)",
       essentiel: "1789-1871 : des révolutions éducatives. Condorcet défend une instruction universelle et publique : que le plus grand nombre sache lire et compter. L'abbé Grégoire veut que tous parlent correctement la langue nationale. On cherche à nationaliser l'éducation.",
@@ -589,7 +589,7 @@ Recto.add("hlp-ch1-education", (function () {
     "lumieres": { part: 4, title: "Les Lumières",
       essentiel: "Au siècle des Lumières, un idéal d'émancipation par l'éducation : des programmes plus ambitieux, diffuser le savoir au plus grand nombre, d'abord par l'alphabétisation. Kant et Condorcet vont dans le sens de l'autonomie : l'éducation doit être émancipatrice.",
       retenir: ["Diffuser le savoir à tous.", "D'abord l'alphabétisation.", "Kant, Condorcet : l'autonomie.", "Une éducation émancipatrice."],
-      citation: "", piege: "La devise « Sapere aude » est un complément : elle n'est pas dans tes notes.",
+      citation: "", piege: "La devise « Sapere aude » est un complément : elle n'est pas dans les notes.",
       video: "Kant qu'est-ce que les Lumières sapere aude" },
     "enfant": { part: 4, title: "L'enfant enfin considéré",
       essentiel: "En pensant l'éducation, on change la considération de l'enfant : vu comme un « sous-humain », il est enfin considéré à partir du XVIIIᵉ siècle. Les romans le montrent : enfants et adolescents passent au centre.",
@@ -614,7 +614,7 @@ Recto.add("hlp-ch1-education", (function () {
     "dewey": { part: 5, title: "Dewey : l'élève acteur",
       essentiel: "La démarche venue des États-Unis interroge la dissymétrie éducative (le maître enseigne, l'élève absorbe) : le professeur doit montrer l'intérêt de la matière. Dewey veut un élève acteur de ses apprentissages.",
       retenir: ["La dissymétrie maître / élève.", "Montrer l'intérêt de la matière.", "Dewey : l'élève acteur.", "Les sciences de l'éducation (selon le cours)."],
-      citation: "", piege: "Dewey a vécu de 1859 à 1952, pas « 1840-1855 » comme dans tes notes.",
+      citation: "", piege: "Dewey a vécu de 1859 à 1952, pas « 1840-1855 » comme dans les notes.",
       video: "John Dewey learning by doing pédagogie" },
     "arendt": { part: 5, title: "Arendt : la crise de l'éducation",
       essentiel: "Arendt attribue la crise au pragmatisme : n'apprendre que l'utile réduit la culture, ce qui est dangereux. Dans La Crise de la culture, l'éducation est conservatrice : transmettre ce qu'ont fait nos ancêtres est un devoir moral. N'apprendre que le strict nécessaire priverait les enfants de choix : une éducation de propagande.",
@@ -635,7 +635,7 @@ Recto.add("hlp-ch1-education", (function () {
     "dates": { part: 6, title: "Les grandes dates",
       essentiel: "1861 Daubié, première bachelière ; 1875 Brès, première docteure en médecine ; 1880 la Sorbonne et des lycées pour les filles ; 1903 Marie Curie ; 1944 droit de vote ; 1972 égalité des salaires ; 1974 loi Veil ; 1975 loi Haby (mixité) ; 1991 Édith Cresson ; 2000 parité.",
       retenir: ["1861 : première bachelière.", "1880 : lycées de jeunes filles.", "1944 : droit de vote des femmes.", "1975 : mixité obligatoire ; 2000 : parité."],
-      citation: "", piege: "Les chiffres « 2026 » notés en marge n'ont pas de source : ne les cite pas.",
+      citation: "", piege: "Les chiffres « 2026 » notés en marge n'ont pas de source : ne pas les citer.",
       video: "histoire éducation des filles France dates" },
     "ignorance": { part: 7, title: "Une ignorance voulue",
       essentiel: "Une volonté politique cantonne les femmes à l'activité domestique et les maintient dans la bêtise, plus faciles à contrôler. Jusqu'à la fin du XVIIIᵉ siècle : une éducation religieuse, des arts pour les plus riches, lire et écrire au couvent, aucune science. Le but : de bonnes épouses. Rousseau refuse aux femmes l'éducation des hommes.",
@@ -943,28 +943,28 @@ Recto.add("hlp-ch1-education", (function () {
   ]);
 
   add("order", [
-    { part: 0, notion: "eduquer", q: "Remets dans l'ordre les parties du cours.",
+    { part: 0, notion: "eduquer", q: "Remettre dans l'ordre les parties du cours.",
       items: ["S'éduquer : l'injonction de l'éducation", "L'historicité de l'éducation", "Le fondement de l'éducation moderne", "Au siècle des Lumières", "La crise de l'éducation", "Les dates importantes", "L'ignorance des femmes", "Du XIXᵉ siècle à aujourd'hui"],
       explain: "Parties I à VIII." },
-    { part: 2, notion: "transmission-origines", q: "Range ces étapes du plus ancien au plus récent.",
+    { part: 2, notion: "transmission-origines", q: "Ranger ces étapes du plus ancien au plus récent.",
       items: ["L'outil d'Homo habilis", "L'invention de l'écriture", "Cicéron et la terre en friche", "Érasme et Montaigne", "Rousseau, Émile", "Condorcet et l'instruction publique", "La Commune de Paris", "Les lois Ferry"],
       explain: "Préhistoire · Antiquité · Iᵉʳ s. av. J.-C. · XVIᵉ · 1762 · 1792 · 1871 · 1881-1882." },
-    { part: 6, notion: "dates", q: "Range ces « premières » dans l'ordre chronologique.",
+    { part: 6, notion: "dates", q: "Ranger ces « premières » dans l'ordre chronologique.",
       items: ["Première bachelière : Julie-Victoire Daubié", "Première docteure en médecine : Madeleine Brès", "Lycées pour les filles", "Marie Curie, prix Nobel", "Droit de vote des femmes", "Loi Haby : mixité obligatoire", "Édith Cresson, Première ministre", "Loi sur la parité"],
       explain: "1861 · 1875 · 1880 · 1903 · 1944 · 1975 · 1991 · 2000." },
-    { part: 1, notion: "alienation", q: "Rétablis le raisonnement de la partie I.",
+    { part: 1, notion: "alienation", q: "Rétablir le raisonnement de la partie I.",
       items: ["L'homme à l'état de nature aurait besoin d'un guide", "Mais être éduqué, c'est perpétuer un système", "L'éducation échoue en partie à rendre autonome", "Juger l'éducation à son utilité réduit l'individu (Platon)", "Interroger le savoir intériorisé : l'autonomie commence", "L'entrave devient le moyen de la liberté (Léonard)"],
       explain: "De l'injonction d'éduquer à l'entrave qui libère, puis l'histoire de l'éducation." },
-    { part: 5, notion: "arendt", q: "Rétablis le fil de la partie V.",
+    { part: 5, notion: "arendt", q: "Rétablir le fil de la partie V.",
       items: ["Début du XXᵉ siècle : trop de courants, la crise", "Durkheim critique le gavage", "Dewey : l'élève acteur", "Arendt : le pragmatisme réduit la culture", "L'ici et le maintenant ne suffisent pas", "Foucault : un pouvoir qui ne doit pas être absolu"],
       explain: "L'ordre des notes : Durkheim et Dewey (p. 7), puis Arendt, Heidegger, Foucault (p. 9)." },
-    { part: 4, notion: "empirisme", q: "Remets dans l'ordre l'argument de l'empirisme.",
+    { part: 4, notion: "empirisme", q: "Remettre dans l'ordre l'argument de l'empirisme.",
       items: ["La connaissance vient de l'expérience (Locke, Hume)", "Mais l'expérience ne donne pas de certitude absolue", "Elle ne prouve pas les liens de causalité", "L'éducation ne peut donc reposer sur la seule habitude", "Rousseau : comprendre par l'expérience, avec un accompagnateur"],
       explain: "De l'empirisme à l'Émile." }
   ]);
 
   add("match", [
-    { part: 0, q: "Associe chaque mot à son sens.",
+    { part: 0, q: "Associer chaque mot à son sens.",
       pairs: [
         { l: "Éduquer", r: "Conduire hors de", n: "eduquer" },
         { l: "Autonomie", r: "Se donner sa propre loi", n: "autonomie" },
@@ -973,7 +973,7 @@ Recto.add("hlp-ch1-education", (function () {
         { l: "Émanciper", r: "Passer de l'esclavage à la liberté", n: "emancipation" },
         { l: "Otium", r: "Cultiver son esprit", n: "otium" }
       ], explain: "Les mots du chapitre, et leur étymologie." },
-    { part: 1, q: "Associe chaque nom à son idée (partie I).",
+    { part: 1, q: "Associer chaque nom à son idée (partie I).",
       pairs: [
         { l: "Machiavel", r: "Vouloir le mal en sachant que c'est mal", n: "etat-nature" },
         { l: "Hobbes ou Locke", r: "L'homme a besoin d'un guide", n: "etat-nature" },
@@ -981,7 +981,7 @@ Recto.add("hlp-ch1-education", (function () {
         { l: "Léonard de Vinci", r: "La bride et le gouvernail", n: "entrave" },
         { l: "Beauvoir", r: "Des jeunes filles réduites à leurs habiletés manuelles", n: "pervertir" }
       ], explain: "Les références de la partie I." },
-    { part: 2, q: "Associe chaque nom à son projet (partie II).",
+    { part: 2, q: "Associer chaque nom à son projet (partie II).",
       pairs: [
         { l: "Condorcet", r: "Instruction universelle et publique", n: "nationaliser" },
         { l: "L'abbé Grégoire", r: "Une langue nationale pour tous", n: "nationaliser" },
@@ -990,7 +990,7 @@ Recto.add("hlp-ch1-education", (function () {
         { l: "Jules Ferry", r: "École obligatoire, gratuite, laïque", n: "ferry" },
         { l: "Zola", r: "Le poids du milieu social", n: "zola" }
       ], explain: "De la Révolution à la IIIᵉ République." },
-    { part: 3, q: "Associe chaque auteur à son idée (parties III et IV).",
+    { part: 3, q: "Associer chaque auteur à son idée (parties III et IV).",
       pairs: [
         { l: "Cicéron", r: "La terre en friche", n: "renaissance" },
         { l: "Érasme", r: "Des précepteurs bienveillants", n: "erasme" },
@@ -999,7 +999,7 @@ Recto.add("hlp-ch1-education", (function () {
         { l: "Rousseau", r: "L'éducateur accompagnateur", n: "rousseau" },
         { l: "Kant et Condorcet", r: "Une éducation émancipatrice", n: "lumieres" }
       ], explain: "De la Renaissance aux Lumières." },
-    { part: 5, q: "Associe chaque auteur à son idée (partie V).",
+    { part: 5, q: "Associer chaque auteur à son idée (partie V).",
       pairs: [
         { l: "Durkheim", r: "Contre le gavage", n: "durkheim" },
         { l: "Dewey", r: "L'élève acteur", n: "dewey" },
@@ -1008,7 +1008,7 @@ Recto.add("hlp-ch1-education", (function () {
         { l: "Aristote", r: "La chute des corps", n: "ici-maintenant" },
         { l: "Foucault", r: "Une relation de pouvoir", n: "foucault" }
       ], explain: "La crise de l'éducation." },
-    { part: 7, q: "Associe chaque nom à sa position (partie VII).",
+    { part: 7, q: "Associer chaque nom à sa position (partie VII).",
       pairs: [
         { l: "Rousseau", r: "Un rôle subalterne pour les femmes", n: "ignorance" },
         { l: "Molière", r: "L'École des femmes", n: "defenseurs" },
@@ -1017,7 +1017,7 @@ Recto.add("hlp-ch1-education", (function () {
         { l: "Fénelon", r: "Le rôle des mères dans l'éducation", n: "defenseurs" },
         { l: "Émilie du Châtelet", r: "Traductrice de Newton", n: "autodidactes" }
       ], explain: "L'éducation des femmes, refusée puis défendue." },
-    { part: 6, q: "Associe chaque date à sa « première ».",
+    { part: 6, q: "Associer chaque date à sa « première ».",
       pairs: [
         { l: "1861", r: "Première bachelière", n: "dates" },
         { l: "1875", r: "Première docteure en médecine", n: "dates" },
@@ -1029,7 +1029,7 @@ Recto.add("hlp-ch1-education", (function () {
   ]);
 
   add("sort", [
-    { part: 0, q: "Instruire ou éduquer ? Classe chaque idée.",
+    { part: 0, q: "Instruire ou éduquer ? Classer chaque idée.",
       buckets: ["Instruire", "Éduquer"],
       items: [
         { t: "Transmettre un savoir plus ou moins théorique", b: 0, n: "instruction" },
@@ -1039,7 +1039,7 @@ Recto.add("hlp-ch1-education", (function () {
         { t: "Conduire hors de l'ignorance, vers l'émancipation", b: 1, n: "eduquer" },
         { t: "Épanouir un individu", b: 1, n: "instruction" }
       ], explain: "L'instruction est intellectuelle ; l'éducation forme toute la personne." },
-    { part: 7, q: "Classe ces positions sur l'éducation des femmes.",
+    { part: 7, q: "Classer ces positions sur l'éducation des femmes.",
       buckets: ["Contre une même éducation", "Pour l'éducation des femmes"],
       items: [
         { t: "Rousseau : un rôle subalterne", b: 0, n: "ignorance" },
@@ -1051,7 +1051,7 @@ Recto.add("hlp-ch1-education", (function () {
         { t: "Mill", b: 1, n: "defenseurs" },
         { t: "Molière, L'École des femmes", b: 1, n: "defenseurs" }
       ], explain: "D'une ignorance voulue à la défense d'une éducation nécessaire." },
-    { part: 3, q: "Classe ces auteurs par époque.",
+    { part: 3, q: "Classer ces auteurs par époque.",
       buckets: ["Antiquité", "XVᵉ-XVIᵉ siècles", "XVIIᵉ-XVIIIᵉ siècles", "XIXᵉ-XXᵉ siècles"],
       items: [
         { t: "Platon", b: 0, n: "platon-utilite" },
@@ -1080,7 +1080,7 @@ Recto.add("hlp-ch1-education", (function () {
   ]);
 
   add("schema", [
-    { part: 1, layout: "flow", q: "Complète le raisonnement de la partie I.",
+    { part: 1, layout: "flow", q: "Compléter le raisonnement de la partie I.",
       nodes: [
         { cap: "A", t: "L'homme à l'état de nature aurait besoin d'un guide" },
         { cap: "A", slot: "Mais être éduqué, c'est perpétuer un système", n: "pervertir" },
@@ -1114,7 +1114,7 @@ Recto.add("hlp-ch1-education", (function () {
   ]);
 
   add("grid", [
-    { part: 5, q: "Coche ce que soutient chaque auteur, d'après le cours.",
+    { part: 5, q: "Cocher ce que soutient chaque auteur, d'après le cours.",
       cols: ["Durkheim", "Dewey", "Arendt"],
       rows: [
         { t: "Le gavage empêche d'utiliser le savoir", a: [1, 0, 0], n: "durkheim" },
@@ -1123,7 +1123,7 @@ Recto.add("hlp-ch1-education", (function () {
         { t: "L'éducation est de nature conservatrice", a: [0, 0, 1], n: "arendt" },
         { t: "Le pragmatisme réduit dangereusement la culture", a: [0, 0, 1], n: "arendt" }
       ], explain: "Trois diagnostics de la crise de l'éducation." },
-    { part: 7, q: "Coche ce que soutient chaque auteur, d'après le cours.",
+    { part: 7, q: "Cocher ce que soutient chaque auteur, d'après le cours.",
       cols: ["Rousseau", "Fénelon", "Mill"],
       rows: [
         { t: "Les femmes n'ont pas à être élevées comme les hommes", a: [1, 0, 0], n: "ignorance" },
@@ -1351,16 +1351,16 @@ Recto.add("hlp-ch1-education", (function () {
     intro: "Pourquoi éduquer, et comment le faire sans enfermer ? Le cours part de l'étymologie et de la tension entre normes et émancipation, puis suit l'histoire de l'éducation de la préhistoire à aujourd'hui, jusqu'à l'éducation des femmes.",
     boxes: [
       { t: "Le fil rouge", b: "Toute éducation impose des normes ; elle n'est jamais neutre. Mais cette entrave peut devenir le moyen de la liberté, si l'on transmet une culture large et si l'élève finit par interroger ce qu'il a reçu : c'est l'autonomie." },
-      { t: "Le piège numéro un", b: "Confondre instruire et éduquer, conservation et réaction (Arendt), contrainte et domination. Et citer comme sûres des informations que tes notes signalent « à vérifier »." },
-      { t: "Ce qui est à vérifier", b: "Les encadrés « À vérifier » signalent ce que tes notes ne permettent pas d'affirmer : un mot illisible, une date douteuse, un chiffre sans source. Rien n'y a été complété au hasard." }
+      { t: "Le piège numéro un", b: "Confondre instruire et éduquer, conservation et réaction (Arendt), contrainte et domination. Et citer comme sûres des informations que les notes signalent « à vérifier »." },
+      { t: "Ce qui est à vérifier", b: "Les encadrés « À vérifier » signalent ce que les notes ne permettent pas d'affirmer : un mot illisible, une date douteuse, un chiffre sans source. Rien n'y a été complété au hasard." }
     ]
   };
   const tips = [
-    "Pour chaque argument, donne une référence précise : un auteur et une idée du cours, puis un texte étudié (Ferry, Arendt, Rousseau, Mill…).",
-    "Distingue toujours instruire et éduquer, conserver et refuser le changement, contraindre et dominer.",
-    "Pour un sujet sur la liberté : l'entrave qui libère (Léonard), puis l'autonomie qui commence quand on interroge ce qu'on a reçu.",
-    "L'histoire de l'éducation fournit des exemples précis : choisis-en deux ou trois par essai plutôt qu'une liste de dates.",
-    "Ne cite pas les informations marquées « À vérifier » (le protocole de Lisbonne, les chiffres de 2026) sans les avoir confirmées."
+    "Une référence précise par argument : un auteur du cours, puis un texte étudié (Ferry, Arendt, Rousseau, Mill…).",
+    "Distinguer instruire et éduquer, conserver et refuser le changement, contraindre et dominer.",
+    "Sujet sur la liberté : l'entrave qui libère (Léonard), puis l'autonomie qui commence quand on interroge ce qu'on a reçu.",
+    "Deux ou trois exemples historiques précis par essai, pas une liste de dates.",
+    "Ne pas citer les informations marquées « À vérifier » (protocole de Lisbonne, chiffres de 2026)."
   ];
 
   /* ---------------- REPÈRES DE LECTURE ---------------- */

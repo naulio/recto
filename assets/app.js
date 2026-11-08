@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "8"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "9"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -56,9 +56,9 @@
         reading[p] = {
           full, ess: Math.max(3, Math.round(full * 0.6)), express: Math.max(2, Math.round(full * 0.3)),
           text: {
-            full: "Toutes les pages de la partie, exemples et encadrés compris. Ouvre la fiche liée quand une notion t'échappe.",
-            ess: "Chaque page : la phrase d'ouverture, le texte et l'encadré « À retenir ». Survole les exemples.",
-            express: "Seulement la phrase d'ouverture et l'encadré « À retenir » de chaque page."
+            full: "Toutes les pages, encadrés compris.",
+            ess: "Texte et « À retenir ».",
+            express: "Ouverture et « À retenir »."
           },
           look: pages.map(x => x.title)
         };
@@ -85,23 +85,23 @@
   let B = null, PARTS = [], NOTIONS = {}, READING = {}, EXS = [], NIDS = [], EX = {}, CH = [], U = { one: "chapitre", many: "chapitres" }, W = KIND.livre;
 
   const TYPES = {
-    qcm: { label: "QCM", help: "Choisis la bonne réponse. Avec le rappel actif, formule-la d'abord dans ta tête : c'est cet effort de rappel qui fixe la mémoire.", keys: "A à D (ou 1 à 4) pour choisir · Entrée pour valider" },
-    vf: { label: "Vrai ou faux", help: "Tranche vite, puis lis la justification : c'est elle qui compte.", keys: "V ou F pour répondre · Entrée pour continuer" },
-    fill: { label: "Texte à trous", help: "Tape les mots manquants. Accents et majuscules facultatifs ; une petite faute de frappe est tolérée.", keys: "Entrée : champ suivant, puis valider" },
-    part: { label: "Quelle partie ?", help: "Situe la phrase dans le texte. Savoir d'où vient une citation, c'est pouvoir s'en servir à l'épreuve.", keys: "Chiffre du chapitre pour répondre" },
-    order: { label: "Remettre dans l'ordre", help: "Fais glisser les étiquettes, ou utilise les flèches, pour rétablir l'ordre.", keys: "Entrée pour valider" },
-    match: { label: "Associer", help: "Clique un élément à gauche, puis son correspondant à droite. Clique un élément déjà relié pour défaire le lien.", keys: "Entrée pour valider" },
-    sort: { label: "Classer", help: "Clique une étiquette, puis la colonne où elle va. Tu peux aussi la faire glisser.", keys: "Entrée pour valider" },
-    schema: { label: "Schéma à compléter", help: "Place les étiquettes dans les cases vides. Attention : certaines étiquettes sont des pièges.", keys: "Clique une étiquette, puis une case · Entrée pour valider" },
-    grid: { label: "Tableau à compléter", help: "Clique chaque case pour alterner entre ✓ et ✗.", keys: "Entrée pour valider" },
-    flash: { label: "Carte mémoire", help: "Réponds à voix haute avant de retourner la carte, puis note-toi honnêtement.", keys: "Espace pour retourner · 1, 2 ou 3 pour noter" },
-    build: { label: "Construire la réponse", help: "À l'épreuve, chaque question attend des arguments précis. Sélectionne ceux qui ont leur place dans ta réponse, ni plus ni moins.", keys: "Entrée pour valider" },
-    words: { label: "Reconstituer la citation", help: "Touche les mots dans l'ordre pour reconstituer la citation. Dis-la à voix haute en même temps : on retient mieux ce qu'on entend et ce qu'on fait.", keys: "Retour arrière pour enlever le dernier mot · Entrée pour valider" }
+    qcm: { label: "QCM", help: "Une seule bonne réponse.", keys: "A-D ou 1-4 · Entrée" },
+    vf: { label: "Vrai ou faux", help: "Trancher, puis lire la justification.", keys: "V / F · Entrée" },
+    fill: { label: "Texte à trous", help: "Accents et majuscules facultatifs.", keys: "Entrée : champ suivant" },
+    part: { label: "Quelle partie ?", help: "Situer la phrase.", keys: "Chiffre de la partie" },
+    order: { label: "Remettre dans l'ordre", help: "Glisser ou utiliser les flèches.", keys: "Entrée" },
+    match: { label: "Associer", help: "Un élément à gauche, puis à droite.", keys: "Entrée" },
+    sort: { label: "Classer", help: "Une étiquette, puis sa colonne.", keys: "Entrée" },
+    schema: { label: "Schéma à compléter", help: "Certaines étiquettes sont des pièges.", keys: "Étiquette, puis case · Entrée" },
+    grid: { label: "Tableau à compléter", help: "Un clic : ✓ ou ✗.", keys: "Entrée" },
+    flash: { label: "Carte mémoire", help: "Répondre de tête, puis retourner.", keys: "Espace · 1, 2, 3" },
+    build: { label: "Construire la réponse", help: "Garder seulement ce qui répond au sujet.", keys: "Entrée" },
+    words: { label: "Reconstituer la citation", help: "Les mots dans l'ordre.", keys: "Retour arrière : annuler · Entrée" }
   };
   /* Exercices d'explication de texte : un QCM accompagné d'un passage */
-  const TEXT_TYPE = { label: "Explication de texte", help: "Lis le passage deux fois. Repère d'abord la thèse (ce que l'auteur affirme), puis ce qu'il refuse, et les mots qui portent l'argument.", keys: "A à D (ou 1 à 4) pour choisir · Entrée pour valider" };
+  const TEXT_TYPE = { label: "Explication de texte", help: "Repérer la thèse, puis ce qu'elle refuse.", keys: "A-D ou 1-4 · Entrée" };
   const typeOf = ex => { const t = ex.passage && !ex.kit ? TEXT_TYPE : TYPES[ex.type]; return ex.label ? Object.assign({}, t, { label: ex.label, help: ex.help || t.help }) : t; };
-  const PART_HELP = { livre: TYPES.part.help, lecon: "Retrouve dans quelle partie du cours cette idée ou cette citation est étudiée. Savoir situer une référence aide à construire un plan." };
+  const PART_HELP = { livre: TYPES.part.help, lecon: "Situer l'idée dans le cours." };
   const QUICK = ["qcm", "vf", "part", "fill"];
   const VISUAL = ["order", "match", "sort", "schema", "grid"];
   const STATUS_LABEL = { new: "Non testé", weak: "À revoir", mid: "Fragile", good: "Acquis" };
@@ -513,8 +513,8 @@
      Accueil & bibliothèque
      ========================================================= */
   const SOON = {
-    livre: { t: "D'autres livres arrivent", s: "Chaque œuvre au programme aura son plan, ses exercices et son bilan." },
-    lecon: { t: "D'autres leçons arrivent", s: "Chaque nouveau chapitre du cours, remis au propre avec les mêmes outils." }
+    livre: { t: "D'autres livres arrivent", s: "" },
+    lecon: { t: "D'autres leçons arrivent", s: "" }
   };
   function coverHTML(meta, cls) {
     const sm = store.get(kSum(meta.id));
@@ -541,7 +541,7 @@
     const cells = shown.length + (list.length < 6 ? 1 : 0);
     const pagesSeen = B && B.course ? B.course.filter(p => S.course.seen.includes(p.id)).length : 0;
     const prog = B && started ? `<div class="hero-prog"><div class="hp-top"><span>Préparation · ${esc(B.meta.title)}</span><b>${sm.pct} %</b></div><div class="bar ${sm.pct >= 80 ? "good" : sm.pct >= 50 ? "mid" : "weak"}"><i style="width:${sm.pct}%"></i></div>${S.run ? `<p class="resume-run" id="homeRun">Session en cours · reste ${fmtLeft(runTimes().left)}</p>` : `<p class="muted">${sm.tested} notions testées sur ${sm.total} · ${sm.answered} exercices faits</p>`}</div>`
-      : B && pagesSeen ? `<div class="hero-prog"><div class="hp-top"><span>Cours lu · ${esc(B.meta.title)}</span><b>${Math.round(pagesSeen / B.course.length * 100)} %</b></div><div class="bar"><i style="width:${Math.round(pagesSeen / B.course.length * 100)}%"></i></div><p class="muted">${pagesSeen} pages sur ${B.course.length} · passe aux exercices quand tu veux</p></div>` : "";
+      : B && pagesSeen ? `<div class="hero-prog"><div class="hp-top"><span>Cours lu · ${esc(B.meta.title)}</span><b>${Math.round(pagesSeen / B.course.length * 100)} %</b></div><div class="bar"><i style="width:${Math.round(pagesSeen / B.course.length * 100)}%"></i></div><p class="muted">${pagesSeen} pages sur ${B.course.length}</p></div>` : "";
     const cta = !B ? "" : S.run ? "Revenir à la session" : started ? "Reprendre" : pagesSeen ? "Continuer le cours" : B.course ? "Apprendre" : "Commencer";
     const facts = !B ? "" : B.course
       ? `<div><b class="cnt" data-v="${B.course.length}">${B.course.length}</b><span>pages de cours</span></div><div><b class="cnt" data-v="${NIDS.length}">${NIDS.length}</b><span>fiches</span></div><div><b class="cnt" data-v="${EXS.length}">${EXS.length}</b><span>exercices</span></div>`
@@ -550,8 +550,7 @@
     <section class="view home">
       <div class="card hero">
         <div class="eyebrow accent">Philosophie · Tronc commun</div>
-        <h1 class="hero-t">Apprends.<br><span class="hl">Applique.</span></h1>
-        <p class="hero-p">Recto remet tes leçons au propre, une idée par page, puis t'entraîne à t'en servir : exercices, fiches, sujets de dissertation et bilan de ce qui te manque.</p>
+        <h1 class="hero-t">Apprendre.<br><span class="hl">Appliquer.</span></h1>
         <div class="hero-cta">${B ? `<button class="btn primary xl" id="start">${cta} · ${esc(B.meta.title)}</button>` : ""}<a class="btn secondary xl" href="#/tronc-commun/bac-blanc" id="toBac">Bac blanc</a></div>
         ${prog}
         ${B ? `<div class="hero-facts">${daysHTML()}${facts}</div>` : ""}
@@ -559,7 +558,6 @@
       <div class="card shelf">
         <div class="row-head"><div class="segmented big" id="shelfTab"><button data-t="lecon" class="${HOME_TAB === "lecon" ? "on" : ""}">Leçons <span class="n">${ofType("lecon").length}</span></button><button data-t="livre" class="${HOME_TAB === "livre" ? "on" : ""}">Livres <span class="n">${ofType("livre").length}</span></button></div><a class="link" href="#/bibliotheque?type=${HOME_TAB}">Tout voir</a></div>
         <div class="covers ${cells <= 2 ? "two" : ""}">${shown.map(m => coverHTML(m)).join("")}${list.length < 6 ? soonHTML(HOME_TAB) : ""}</div>
-        <ol class="how"><li><b>Apprends</b><span>Le cours au propre, une idée par page.</span></li><li><b>Entraîne-toi</b><span>Des exercices variés, un plan minuté.</span></li><li><b>Applique</b><span>Sujets de dissertation et bilan pour ton IA.</span></li></ol>
       </div>
     </section>`;
     const s = $("#start"); if (s) s.onclick = () => openBook(B.id, S.run || started || !B.course ? "plan" : "cours");
@@ -585,19 +583,19 @@
     root.innerHTML = `
     <section class="view spaces">
       <header class="sp-head">
-        <div><div class="eyebrow accent">Recto · tes révisions</div><h1 class="sp-t">Que révises-tu <span class="hl">aujourd'hui ?</span></h1></div>
+        <div><div class="eyebrow accent">Recto</div><h1 class="sp-t">Que réviser <span class="hl">aujourd'hui ?</span></h1></div>
         <div class="sp-days">${daysHTML()}</div>
       </header>
       <article class="card space sp-tc" data-go="#/tronc-commun" aria-label="Philosophie, tronc commun">
         <div class="sp-top"><span class="sp-badge">${SPACE_ICON.tc}</span><div><div class="eyebrow">Philosophie</div><h2>Tronc commun</h2></div>${tcPct != null ? `<span class="sp-pct"><b class="cnt" data-v="${tcPct}">${tcPct}</b><small>% de préparation</small></span>` : ""}</div>
-        <p class="sp-p">Tes leçons remises au propre, le livre au programme, les exercices, et un bac blanc sur les notions de ton choix.</p>
+        <p class="sp-p">Leçons, livre au programme, exercices, bac blanc.</p>
         <div class="sp-list">${sums.map(x => row(x.m, x.s)).join("")}</div>
         <div class="sp-acts"><button class="btn primary lg" data-go="#/tronc-commun">Ouvrir le tronc commun</button><button class="btn secondary lg" data-go="#/tronc-commun/bac-blanc">Bac blanc</button></div>
-        ${lastMeta ? `<p class="sp-resume">Dernier contenu ouvert : <a href="#/${lastMeta.id}">${esc(lastMeta.title)}</a></p>` : ""}
+        ${lastMeta ? `<p class="sp-resume">Reprendre : <a href="#/${lastMeta.id}">${esc(lastMeta.title)}</a></p>` : ""}
       </article>
       <article class="card space sp-hlp" data-go="#/hlp" aria-label="Spécialité HLP">
         <div class="sp-top"><span class="sp-badge">${SPACE_ICON.hlp}</span><div><div class="eyebrow">Spécialité</div><h2>HLP</h2></div></div>
-        <p class="sp-p">Humanités, littérature et philosophie : tes textes étudiés en fiches (thèse, arguments, citations exactes), tes auteurs, et la place pour tes cours.</p>
+        <p class="sp-p">Humanités, littérature et philosophie : cours, textes en fiches, bac blanc.</p>
         <div class="sp-list" id="spHlp"><div class="sp-row ghost"></div><div class="sp-row ghost"></div><div class="sp-row ghost"></div></div>
         <div class="sp-acts"><button class="btn primary lg" data-go="#/hlp">Ouvrir la spécialité</button><button class="btn secondary lg" data-go="#/hlp/textes">Textes et auteurs</button></div>
       </article>
@@ -626,7 +624,7 @@
     root.innerHTML = `
     <section class="view library">
       <div class="lib-head">
-        <div><div class="eyebrow">Bibliothèque</div><h1 style="margin-top:6px">${type === "lecon" ? "Leçons" : type === "livre" ? "Livres" : "Leçons et livres"}</h1><p class="muted">Choisis ce que tu apprends. Chaque leçon a son cours page par page, ses fiches, ses exercices, ses sujets et son bilan, enregistrés séparément.</p></div>
+        <div><div class="eyebrow">Bibliothèque</div><h1 style="margin-top:6px">${type === "lecon" ? "Leçons" : type === "livre" ? "Livres" : "Leçons et livres"}</h1></div>
         <div class="lib-filters">
           <div class="segmented big" id="ltype">${[["tout", "Tout"], ["lecon", "Leçons"], ["livre", "Livres"]].map(([k, l]) => `<button data-t="${k}" class="${k === type ? "on" : ""}">${l}</button>`).join("")}</div>
           ${subjects.length > 2 ? `<div class="chips">${subjects.map(s => `<button class="chip ${s === LIB_SUBJ ? "on" : ""}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}
@@ -750,24 +748,24 @@
   function describe(b) {
     const ex = B.exam || {};
     switch (b.type) {
-      case "diag": return { title: "Diagnostic éclair", desc: `10 questions rapides sur ${W.all}, sans réviser avant. Ne cherche pas à bien faire : le but est de repérer tes angles morts.`, why: "Se tester d'abord vaut mieux que relire : chaque erreur devient une priorité pour la suite du plan.", act: "Lancer le diagnostic" };
+      case "diag": return { title: "Diagnostic éclair", desc: "10 questions, sans réviser avant.", act: "Lancer le diagnostic" };
       case "read": return B.course
         ? { title: "Cours · " + U.one + " " + PARTS[b.part].roman, desc: RD(b.part).text[b.mode], why: (B.plan.why || {})[b.part], list: RD(b.part).look, act: "Ouvrir le cours", eyebrow: "Cours · lecture " + MODE_LABEL[b.mode].toLowerCase() }
         : { title: "Lecture · " + U.one + " " + PARTS[b.part].roman, desc: RD(b.part).text[b.mode], why: (B.plan.why || {})[b.part], list: RD(b.part).look, act: "Ouvrir le guide de lecture", eyebrow: "Lecture " + MODE_LABEL[b.mode].toLowerCase() };
-      case "reread": return { title: "Relecture ciblée · " + romanList(b.parts), desc: "Ne relis pas tout : ouvre la Carte, puis la fiche de chaque notion en rouge ou en orange, et relis seulement les passages cités.", why: "Tu as déjà lu ces " + U.many + ". Relire en entier donne une illusion de maîtrise ; viser tes erreurs est bien plus rentable.", act: "Ouvrir la carte" };
+      case "reread": return { title: "Relecture ciblée · " + romanList(b.parts), desc: "Les fiches en rouge ou en orange, pas tout le cours.", act: "Ouvrir la carte" };
       case "drill": {
         const n = nItems(b.min);
         const fresh = b.parts.length === 1 && !S.plan.read.includes(b.parts[0]);
-        return { title: "Exercices · " + romanList(b.parts), desc: fresh ? "Juste après la lecture, teste-toi : c'est à ce moment que l'effort de rappel fixe le mieux ce que tu viens de lire." : "Rappel actif sur ce que tu as déjà lu : QCM, textes à trous, cartes mémoire. Ce que tu rates part dans tes points faibles.", why: n + " exercices, environ 50 secondes chacun.", act: "Lancer " + n + " exercices", n };
+        return { title: "Exercices · " + romanList(b.parts), desc: (fresh ? "Juste après la lecture. " : "") + n + " exercices, environ 50 s chacun.", act: "Lancer " + n + " exercices", n };
       }
-      case "mixed": { const n = Math.max(3, Math.round(b.min * 60 / 80)); return { title: "Schémas et liens", desc: "Exercices visuels : schémas à compléter, ordres à rétablir, associations, classements, tableaux. Ils obligent à relier les " + U.many + " entre eux, comme le demande une question de réflexion.", why: n + " exercices, environ 1 min 20 chacun.", act: "Lancer " + n + " exercices", n }; }
+      case "mixed": { const n = Math.max(3, Math.round(b.min * 60 / 80)); return { title: "Schémas et liens", desc: "Schémas, ordres, associations, tableaux : " + n + " exercices.", act: "Lancer " + n + " exercices", n }; }
       case "reflect": { const k = nBuild(b.min); return B.course
-        ? { title: "Sujets de dissertation", desc: k + " sujets du type de ton épreuve. Pour chacun : réfléchis 30 secondes, choisis les arguments et les références qui y répondent, puis compare au plan modèle.", why: (ex.format ? "Ton épreuve : " + ex.format + ". " : "") + "Ici, tu t'entraînes à mobiliser le cours vite et juste, sans perdre de temps à rédiger.", act: "Lancer " + k + " sujets", n: k }
-        : { title: "Questions de réflexion", desc: k + " questions du type de ton épreuve. Pour chacune : réfléchis 30 secondes, choisis les arguments pertinents, puis compare au plan modèle.", why: (ex.format ? "Ton épreuve : " + ex.format + ". " : "") + "Ici, tu t'entraînes à trouver vite les bons arguments sans perdre de temps à rédiger.", act: "Lancer " + k + " questions", n: k }; }
-      case "weak": return { title: "Points faibles", desc: "Refais tes exercices ratés jusqu'à ce qu'ils passent au vert, puis ouvre la fiche des notions qui restent en rouge dans le Bilan.", why: "Les erreurs corrigées juste après coup sont celles qu'on retient le mieux le lendemain.", act: "Refaire mes erreurs" };
-      case "video": return { title: "Vidéo ciblée", desc: "Sur ta notion la plus fragile, regarde une explication en vidéo, en vitesse ×1,5. Le Bilan propose une recherche pour chaque notion.", why: "Une vidéo est utile pour débloquer une idée précise, pas pour remplacer la lecture.", act: "Ouvrir le bilan" };
-      case "pause": return { title: "Pause", desc: "Lève-toi, bois un verre d'eau, et pas d'écran. Cinq minutes suffisent.", why: "Une courte pause entre deux blocs aide à consolider ce que tu viens de travailler." };
-      case "bilan": return { title: "Bilan et export", desc: "Regarde ta préparation globale, puis exporte ton bilan (PDF ou texte) et donne-le à ton IA pour recevoir des explications et des conseils sur ce qui reste fragile.", why: "Après ça : dodo. Le sommeil fait une bonne partie du travail de mémorisation.", act: "Voir le bilan" };
+        ? { title: "Sujets de dissertation", desc: k + " sujets : choisir les arguments, comparer au plan modèle.", why: ex.format ? "Épreuve : " + ex.format + "." : "", act: "Lancer " + k + " sujets", n: k }
+        : { title: "Questions de réflexion", desc: k + " questions : choisir les arguments, comparer au plan modèle.", why: ex.format ? "Épreuve : " + ex.format + "." : "", act: "Lancer " + k + " questions", n: k }; }
+      case "weak": return { title: "Points faibles", desc: "Refaire les exercices ratés.", act: "Refaire les erreurs" };
+      case "video": return { title: "Vidéo ciblée", desc: "Une vidéo sur la notion la plus fragile.", act: "Ouvrir le bilan" };
+      case "pause": return { title: "Pause", desc: "Cinq minutes, sans écran." };
+      case "bilan": return { title: "Bilan et export", desc: "Préparation globale, export PDF ou texte.", act: "Voir le bilan" };
     }
     return { title: "" };
   }
@@ -796,7 +794,7 @@
         <div class="sub" id="durSub">de révision avant l'épreuve.</div>
         ${running ? `<div class="run-bar"><i id="runProg"></i></div>` : `<div class="range"><input type="range" id="dur" min="30" max="180" step="5" value="${S.plan.duration}" aria-label="Durée de révision"></div>
         <div class="range-scale"><span style="left:0">30 min</span><span style="left:20%">1 h</span><span style="left:40%">1 h 30</span><span style="left:60%">2 h</span><span style="left:100%">3 h</span></div>`}
-        <div class="ctrl-label">${esc(U.many.charAt(0).toUpperCase() + U.many.slice(1))} déjà ${B.course ? (U.fem ? "apprises" : "appris") : (U.fem ? "lues" : "lus")} <span>touche pour modifier</span></div>
+        <div class="ctrl-label">${esc(U.many.charAt(0).toUpperCase() + U.many.slice(1))} déjà ${B.course ? (U.fem ? "apprises" : "appris") : (U.fem ? "lues" : "lus")} </div>
         <div class="part-toggles" style="grid-template-columns:repeat(${Math.min(CH.length, 6)},1fr)">${CH.map(p => `<button class="ptog ${S.plan.read.includes(p) ? "on" : ""}" data-p="${p}" ${running ? "disabled" : ""} title="${esc(PARTS[p].title)}">${PARTS[p].roman}</button>`).join("")}</div>
         <div class="mix" id="mix"></div>
         <div class="set-line"><span>Sans citations</span>${switchHTML("nq", G.noQuotes)}</div>
@@ -820,7 +818,7 @@
       b.classList.toggle("on");
       save(); refreshPlan();
     }));
-    bindSwitch("nq", v => { G.noQuotes = v; save(); toast(v ? "Mode sans citations : les exercices de citation sont retirés." : "Exercices de citation réactivés."); });
+    bindSwitch("nq", v => { G.noQuotes = v; save(); toast(v ? "Sans citations" : "Citations réactivées"); });
     refreshPlan();
   };
   function switchHTML(id, on) { return `<span class="switch ${on ? "on" : ""}" id="${id}" role="switch" aria-checked="${on}" tabindex="0"><i></i></span>`; }
@@ -864,8 +862,8 @@
     $("#mix").innerHTML = `<div class="mix-bar">${order.map(c => `<i style="flex-grow:${cats[c]};background:${CAT_COLOR[c]}"></i>`).join("")}</div>
       <div class="mix-legend">${order.map(c => `<div><span class="sw" style="background:${CAT_COLOR[c]}"></span>${CAT_LABEL[c]}<b>${cats[c]} min</b></div>`).join("")}</div>`;
     let note = "";
-    if (plan.compressed) note = `<p class="note warn">Avec ${fmtDur(plan.duration)}, impossible de tout couvrir : le plan garde le strict essentiel. Vise au moins 1 h.</p>`;
-    else if (plan.expressParts.length) note = `<p class="note">Lecture express pour : ${plan.expressParts.map(p => PARTS[p].roman).join(", ")}. Allonge la durée pour lire davantage.</p>`;
+    if (plan.compressed) note = `<p class="note warn">Trop court pour tout couvrir : l'essentiel seulement.</p>`;
+    else if (plan.expressParts.length) note = `<p class="note">Lecture express : ${plan.expressParts.map(p => PARTS[p].roman).join(", ")}.</p>`;
     $("#ctrlFoot").innerHTML = note + (S.run
       ? `<button class="btn secondary" id="stopRun">Arrêter la session</button>`
       : `<button class="btn primary lg" id="startRun">Commencer maintenant</button>`);
@@ -918,8 +916,8 @@
       ${isNow ? `<div class="pd-run"><div><div class="small">En cours · temps restant sur ce bloc</div><div class="countdown tabnum" id="countdown">${fmtClock(runTimes().rem)}</div></div><button class="btn primary" id="nextBlock">Bloc suivant</button></div>` : ""}
       <p class="pd-desc">${esc(d.desc)}</p>
       ${d.list && d.list.length ? `<ul class="pd-list">${d.list.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
-      ${d.why ? `<div class="pd-why"><b>Pourquoi ? </b>${esc(d.why)}</div>` : ""}
-      <div class="pd-foot">${d.act ? `<button class="btn primary" id="act">${esc(d.act)}</button>` : ""}${!S.run ? `<span class="note">Clique « Commencer maintenant » pour lancer le chronomètre.</span>` : ""}</div>`;
+      ${d.why ? `<div class="pd-why">${esc(d.why)}</div>` : ""}
+      <div class="pd-foot">${d.act ? `<button class="btn primary" id="act">${esc(d.act)}</button>` : ""}</div>`;
     const a = $("#act"); if (a) a.onclick = () => runAction(b);
     const nb = $("#nextBlock"); if (nb) nb.onclick = advanceRun;
   }
@@ -959,7 +957,7 @@
       case "reflect": return startSession(Object.assign({ title: B.course ? "Sujets de dissertation" : "Questions de réflexion", ids: pickBuild(d.n), from: "reflexion" }, o));
       case "weak": {
         const ids = errorIds().slice(0, 12);
-        if (ids.length) return startSession(Object.assign({ title: "Mes erreurs", ids: shuffle(ids) }, o));
+        if (ids.length) return startSession(Object.assign({ title: "Erreurs à refaire", ids: shuffle(ids) }, o));
         toast("Aucune erreur enregistrée : mix intelligent à la place.");
         return startSession(Object.assign({ title: "Mix intelligent", ids: pickSmart(10) }, o));
       }
@@ -1069,7 +1067,7 @@
           <div class="co-nav">
             <button class="btn secondary" id="coPrev" ${prev ? "" : "disabled"} aria-label="Page précédente">${ICON.back}<span class="hide-sm">Précédente</span></button>
             <div class="co-fiches">${fiches}</div>
-            ${endOfPart ? `<button class="btn ${next ? "secondary" : "primary"}" id="coTest">${planRead ? "J'ai fini · exercices" : "S'entraîner · " + esc(pl)}</button>` : ""}
+            ${endOfPart ? `<button class="btn ${next ? "secondary" : "primary"}" id="coTest">${planRead ? "Exercices" : "S'entraîner · " + esc(pl)}</button>` : ""}
             ${next ? `<button class="btn primary" id="coNext" aria-label="Page suivante"><span>${endOfPart ? "Partie suivante" : "Suivante"}</span>${ICON.chev}</button>` : ""}
           </div>
         </footer>
@@ -1134,7 +1132,7 @@
     [
       ["Mix intelligent", "Entraînement", "mix intelligent série exercices recommandés notions fragiles", { mode: "smart" }],
       ["Diagnostic éclair", "Entraînement", "diagnostic test rapide angles morts début", { mode: "diag" }],
-      ["Mes erreurs", "Entraînement", "erreurs refaire corriger rater", { mode: "errs" }],
+      ["Erreurs à refaire", "Entraînement", "erreurs refaire corriger rater", { mode: "errs" }],
       ["Simulation d'épreuve", L ? "Appliquer" : "Réflexion", "simulation épreuve examen bac dissertation sujets", { mode: "sim" }],
       ["Plan de révision", "Plan", "plan révision emploi du temps durée minuté soirée", { view: "plan" }],
       ["Bilan et export", "Bilan", "bilan export pdf ia chatgpt claude maîtrise progression", { view: "bilan" }]
@@ -1231,7 +1229,7 @@
   function showHint() {
     const res = $("#sres"); if (!res) return;
     const sug = B && B.kit ? B.kit.quotes.slice(0, 3).map(q => q.who) : B ? NIDS.slice(1, 4).map(id => clip(NOTIONS[id].title, 28)) : [];
-    res.innerHTML = `<div class="s-hint"><p>Cherche une notion, un auteur, un exemple ou une citation. Tape « exo: » devant pour ne chercher que les exercices.</p>${sug.length ? `<div class="s-sug">${sug.map(s => `<button class="chip" data-sug="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}</div>`;
+    res.innerHTML = `<div class="s-hint"><p>Notion, auteur, exemple, citation. « exo: » pour les exercices.</p>${sug.length ? `<div class="s-sug">${sug.map(s => `<button class="chip" data-sug="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}</div>`;
     $$("[data-sug]", res).forEach(b => b.onclick = () => { const i = $("#sq"); i.value = b.textContent; SEARCH.q = i.value; i.focus(); queueSearch(true); });
   }
   function queueSearch(now) {
@@ -1259,7 +1257,7 @@
   function showResults(anim) {
     const res = $("#sres"); if (!res) return;
     const { list, toks } = SEARCH.res;
-    if (!list.length) { res.innerHTML = `<div class="s-empty"><b>Rien trouvé.</b><span>Essaie un auteur, une notion ou un exemple${SEARCH.f !== "all" ? ", ou enlève le filtre" : ""}.</span></div>`; return; }
+    if (!list.length) { res.innerHTML = `<div class="s-empty"><b>Rien trouvé.</b><span>${SEARCH.f !== "all" ? "Essayer sans filtre." : "Essayer un auteur ou une notion."}</span></div>`; return; }
     const shown = list.slice(0, SEARCH.shown), multi = new Set(list.map(d => d.book)).size > 1;
     res.innerHTML = `<div class="s-count">${list.length} résultat${list.length > 1 ? "s" : ""}</div>` + shown.map((d, i) => `<button class="s-item" data-i="${i}"><span class="s-pill ${d.k}">${SK[d.k]}</span><span class="s-main"><b>${markAll(d.title, toks)}</b><span class="s-sub">${esc(d.sub)}${multi ? " · " + esc(BOOKS[d.book].meta.title) : ""}</span>${d.mode ? "" : `<span class="s-snip">${snippet(d.text, toks)}</span>`}</span></button>`).join("")
       + (list.length > shown.length ? `<button class="s-more" id="sMore">Afficher plus <span>${list.length - shown.length}</span></button>` : "");
@@ -1290,7 +1288,7 @@
   function runMode(m) {
     if (m === "smart") startSession({ title: "Mix intelligent", ids: pickSmart(G.len) });
     else if (m === "diag") startSession({ title: "Diagnostic éclair", ids: pickDiag() });
-    else if (m === "errs") { const ids = errorIds(); if (!ids.length) return toast("Aucune erreur à refaire."); startSession({ title: "Mes erreurs", ids: shuffle(ids.slice(0, Math.max(G.len, 12))) }); }
+    else if (m === "errs") { const ids = errorIds(); if (!ids.length) return toast("Aucune erreur à refaire."); startSession({ title: "Erreurs à refaire", ids: shuffle(ids.slice(0, Math.max(G.len, 12))) }); }
     else if (m === "sim") startSession({ title: "Simulation d'épreuve", ids: pickBuild(B.course ? 3 : 4), from: "reflexion" });
     else if (m === "method") openMethod();
   }
@@ -1372,14 +1370,14 @@
     root.innerHTML = `
     <section class="view citations">
       <div class="ci-head">
-        <div><div class="eyebrow accent">Appliquer · Citations clés</div><h1 style="margin-top:6px">Ton kit de citations</h1>
-        <p>Peu de citations, bien choisies et bien reliées, suffisent pour presque tous les sujets. Choisis combien tu veux en retenir : Recto les relie entre elles, les adapte à chaque thème et t'aide à les apprendre.</p></div>
+        <div><div class="eyebrow accent">Appliquer · Citations clés</div><h1 style="margin-top:6px">Kit de citations</h1>
+        <p>Quelques citations reliées, utilisables dans presque tous les sujets.</p></div>
         <div class="ci-acts"><div class="ci-n"><span>Citations</span><div class="segmented" id="kitN">${[2, 3, 4, 5].filter(n => n <= B.kit.quotes.length).map(n => `<button data-n="${n}" class="${n === N ? "on" : ""}">${n}</button>`).join("")}</div></div>
           <button class="btn primary" id="kitGo">${due.length ? "Apprendre · " + due.length + " à revoir" : "Réviser quand même"}</button></div>
       </div>
       <div class="card ci-kit">
         <ol class="ci-list ${N >= 4 ? "compact" : ""}">${qs.map(qCard).join("")}</ol>
-        <p class="note ci-how">On apprend en quatre temps : les initiales et une image mentale, la citation reconstituée mot à mot, son usage dans un sujet, puis l'enchaînement du fil. Une citation réussie revient dans 10 min, puis 1, 3, 7 et 21 jours.</p>
+        <p class="note ci-how">Initiales, mot à mot, usage, enchaînement. Révision à 10 min, 1, 3, 7 et 21 jours.</p>
       </div>
       <div class="card ci-side" id="ciSide"></div>
     </section>`;
@@ -1397,17 +1395,17 @@
       ex.part = NOTIONS[q0.n] ? NOTIONS[q0.n].part : 0; ex.cite = false;
       EX[ex.id] = ex; ids.push(ex.id);
     };
-    const words = (q, hide) => ({ type: "words", kit: q.id, label: hide >= 1 ? "Citation complète" : "Reconstituer", q: "Reconstitue la citation de " + q.who + ".", t: q.t, a: q.a, hide, explain: q.sens });
+    const words = (q, hide) => ({ type: "words", kit: q.id, label: hide >= 1 ? "Citation complète" : "Reconstituer", q: "Reconstituer la citation de " + q.who + ".", t: q.t, a: q.a, hide, explain: q.sens });
     const usage = q => {
       const u = q.usages[Math.floor(Math.random() * q.usages.length)];
       const opts = shuffle([q].concat(shuffle(qs.filter(x => x !== q)).slice(0, 3)));
-      return { type: "qcm", kit: q.id, label: "Utiliser dans un sujet", help: "Lis l'argument, puis choisis la citation de ton kit qui le porte le mieux.", passage: u.t, src: "Ton argument, pour un sujet sur " + u.th,
-        q: "Quelle citation de ton kit sert cet argument ?", options: opts.map(x => x.short), answer: opts.indexOf(q), explain: "« " + q.t + " » " + q.sens };
+      return { type: "qcm", kit: q.id, label: "Utiliser dans un sujet", help: "La citation qui porte cet argument.", passage: u.t, src: "Argument, pour un sujet sur " + u.th,
+        q: "Quelle citation du kit sert cet argument ?", options: opts.map(x => x.short), answer: opts.indexOf(q), explain: "« " + q.t + " » " + q.sens };
     };
     pick.forEach(q => {
       const b = kitState(q).box;
       if (b === 0) {
-        reg({ type: "flash", kit: q.id, label: "Initiales et image", help: "Lis les initiales, récite la citation en entier à voix haute, puis retourne la carte. L'image mentale t'aidera à la retrouver.", prompt: "Récite la citation à partir de ses initiales.", f: q.who + " · " + initialsOf(q.t), b: "« " + q.t + " »", memo: q.memo }, "init");
+        reg({ type: "flash", kit: q.id, label: "Initiales et image", help: "Réciter à partir des initiales, puis retourner.", prompt: "Réciter la citation à partir de ses initiales.", f: q.who + " · " + initialsOf(q.t), b: "« " + q.t + " »", memo: q.memo }, "init");
         reg(words(q, 0.45), "w1");
         reg(words(q, 1), "w3");
       } else if (b === 1) { reg(words(q, 0.7), "w2"); reg(usage(q), "use"); }
@@ -1418,10 +1416,10 @@
       const opts = shuffle(qs.filter((_, k) => k !== i)).slice(0, 4);
       if (!opts.includes(qs[i + 1])) opts[0] = qs[i + 1];
       const o2 = shuffle(opts);
-      reg({ type: "qcm", kit: "*", label: "Trouver le pont", help: "Un pont mène d'une citation à la suivante : c'est ta transition dans la dissertation.", passage: bridgeOf(i, true), src: "Le pont qui part de " + qs[i].who,
+      reg({ type: "qcm", kit: "*", label: "Trouver le pont", help: "Le pont, c'est la transition.", passage: bridgeOf(i, true), src: "Le pont qui part de " + qs[i].who,
         q: "Vers quelle citation mène ce pont ?", options: o2.map(x => x.short), answer: o2.indexOf(qs[i + 1]), explain: bridgeOf(i) }, "pont");
     }
-    if (N >= 3) reg({ type: "order", kit: "*", label: "Enchaîner le fil", q: "Remets ton fil dans l'ordre.", items: qs.map(q => q.who + " · " + q.role), explain: "Ton fil : " + qs.map(q => q.role).join(" → ") + "." }, "fil");
+    if (N >= 3) reg({ type: "order", kit: "*", label: "Enchaîner le fil", q: "Remettre le fil dans l'ordre.", items: qs.map(q => q.who + " · " + q.role), explain: "Le fil : " + qs.map(q => q.role).join(" → ") + "." }, "fil");
     startSession({ title: "Kit de citations", ids, from: "citations" });
   }
   /* Fin de série : chaque citation monte ou descend d'une boîte */
@@ -1460,7 +1458,7 @@
         <p class="l-what">${esc(r.text[mode])}</p>
         <div class="l-actions">
           ${r.link ? `<a class="btn secondary" href="${r.link}" target="_blank" rel="noopener">Texte en ligne ${ICON.ext}</a>` : ""}
-          <button class="btn primary" id="done">J'ai lu · exercices</button>
+          <button class="btn primary" id="done">Exercices</button>
           <button class="btn ghost" id="toCarte">Fiches</button>
         </div>
       </div>
@@ -1468,7 +1466,7 @@
         <div class="eyebrow">Lecture active</div>
         <h2 style="margin-top:6px">En lisant, repère</h2>
         <ul class="checks">${r.look.map((t, i) => `<li><label><input type="checkbox" data-i="${i}" ${checks.includes(i) ? "checked" : ""}><span class="box">${ICON.check}</span><span>${esc(t)}</span></label></li>`).join("")}</ul>
-        <p class="note" style="margin-top:auto;padding-top:14px">Coche au fur et à mesure. Si un point t'échappe à la fin, c'est là que tu relis.</p>
+        
       </div>
     </section>`;
     $$("#modes button").forEach(b => b.onclick = () => go("lecture", Object.assign({}, prm, { mode: b.dataset.m })));
@@ -1600,20 +1598,19 @@
       <div class="card t-smart">
         <div class="eyebrow accent">Recommandé</div>
         <h1>Mix intelligent</h1>
-        <p>Les exercices sont choisis pour toi : d'abord les notions jamais vues et celles que tu rates, dans des formats variés pour ancrer chaque idée sous plusieurs angles.</p>
+        <p>Notions jamais vues et notions ratées d'abord.</p>
         <div class="t-stats"><div><b class="cnt" data-v="${untested}">${untested}</b><span>notions jamais testées</span></div><div><b class="cnt" data-v="${weak}">${weak}</b><span>notions fragiles</span></div><div><b class="cnt" data-v="${pool.length}">${pool.length}</b><span>exercices disponibles</span></div></div>
         <div class="t-set">
           <div class="t-set-row"><span class="lbl">Longueur des séries</span><span class="segmented" id="len">${[8, 12, 20].map(n => `<button data-n="${n}" class="${n === G.len ? "on" : ""}">${n}</button>`).join("")}</span></div>
           <div class="t-set-row"><span class="lbl">Rappel actif</span>${switchHTML("recall", G.recall)}</div>
           <div class="t-set-row"><span class="lbl">Sans citations</span>${switchHTML("nq", G.noQuotes)}</div>
-          <p class="note">Le rappel actif masque les propositions tant que tu n'as pas répondu de tête. Le mode sans citations retire les textes à trous de citations et les « Quelle partie ? ».</p>
         </div>
         <button class="btn primary lg" id="smart">Commencer · ${G.len} exercices</button>
       </div>
-      <div class="card t-mini"><div class="eyebrow">Point de départ</div><h3 style="margin-top:6px">Diagnostic éclair</h3><p>10 questions sur ${W.all} pour repérer tes angles morts.</p><div class="gap"></div><button class="btn secondary" id="diag">Lancer</button></div>
-      <div class="card t-mini"><div class="eyebrow orange">À corriger</div><div class="head"><h3 style="margin-top:6px">Mes erreurs</h3><span class="big">${errs}</span></div><p>exercice${errs > 1 ? "s" : ""} raté${errs > 1 ? "s" : ""} à refaire jusqu'au vert.</p><div class="gap"></div><button class="btn secondary" id="errs" ${errs ? "" : "disabled"}>Refaire</button></div>
+      <div class="card t-mini"><div class="eyebrow">Point de départ</div><h3 style="margin-top:6px">Diagnostic éclair</h3><p>10 questions sur ${W.all}.</p><div class="gap"></div><button class="btn secondary" id="diag">Lancer</button></div>
+      <div class="card t-mini"><div class="eyebrow orange">À corriger</div><div class="head"><h3 style="margin-top:6px">Erreurs</h3><span class="big">${errs}</span></div><p>exercice${errs > 1 ? "s" : ""} à refaire.</p><div class="gap"></div><button class="btn secondary" id="errs" ${errs ? "" : "disabled"}>Refaire</button></div>
       <div class="card t-pick">
-        <div class="row"><div><div class="eyebrow">À la carte</div><h3 style="margin-top:6px">Choisis ce que tu travailles</h3></div><div class="segmented" id="pickMode"><button data-m="part" class="${TRAIN_PICK === "part" ? "on" : ""}">Par ${esc(U.one)}</button><button data-m="format" class="${TRAIN_PICK === "format" ? "on" : ""}">Par format</button></div></div>
+        <div class="row"><div><div class="eyebrow">À la carte</div><h3 style="margin-top:6px">Sélection</h3></div><div class="segmented" id="pickMode"><button data-m="part" class="${TRAIN_PICK === "part" ? "on" : ""}">Par ${esc(U.one)}</button><button data-m="format" class="${TRAIN_PICK === "format" ? "on" : ""}">Par format</button></div></div>
         ${TRAIN_PICK === "part"
           ? `<div class="chips" id="partChips">${(hasCtx ? [0] : []).concat(CH).map(p => `<button class="chip ${pickState.parts.has(p) ? "on" : ""}" data-p="${p}">${p ? PARTS[p].roman + " · " + esc(PARTS[p].label) : B.course ? esc(ctxLabel()) : "Contexte et transversal"} <span class="n">${pc[p] || 0}</span></button>`).join("")}</div>`
           : `<div class="chips" id="fmtChips">${Object.keys(TYPES).filter(t => EXS.some(e => e.type === t)).map(t => `<button class="chip ${pickState.types.has(t) ? "on" : ""}" data-t="${t}" ${counts[t] ? "" : "disabled"}>${esc(TYPES[t].label)} <span class="n">${counts[t] || 0}</span></button>`).join("")}</div>`}
@@ -1622,17 +1619,17 @@
     </section>`;
     $("#smart").onclick = () => startSession({ title: "Mix intelligent", ids: pickSmart(G.len) });
     $("#diag").onclick = () => startSession({ title: "Diagnostic éclair", ids: pickDiag() });
-    $("#errs").onclick = () => startSession({ title: "Mes erreurs", ids: shuffle(errorIds().slice(0, Math.max(G.len, 12))) });
+    $("#errs").onclick = () => startSession({ title: "Erreurs à refaire", ids: shuffle(errorIds().slice(0, Math.max(G.len, 12))) });
     $$("#partChips .chip").forEach(b => b.onclick = () => { const p = +b.dataset.p; pickState.parts.has(p) ? pickState.parts.delete(p) : pickState.parts.add(p); b.classList.toggle("on"); });
     $$("#fmtChips .chip").forEach(b => b.onclick = () => { const t = b.dataset.t; pickState.types.has(t) ? pickState.types.delete(t) : pickState.types.add(t); b.classList.toggle("on"); });
     $$("#pickMode button").forEach(b => b.onclick = () => { TRAIN_PICK = b.dataset.m; render(); });
     const gp = $("#goPart"); if (gp) gp.onclick = () => {
-      if (!pickState.parts.size) return toast("Choisis au moins un " + U.one + ".");
+      if (!pickState.parts.size) return toast("Au moins un " + U.one + ".");
       const ps = [...pickState.parts].sort((a, b) => a - b);
       startSession({ title: (ps.length > 1 ? U.many : U.one).replace(/^./, c => c.toUpperCase()) + " " + ps.map(p => p ? PARTS[p].roman : "contexte").join(", "), ids: pickSmart(G.len, e => pickState.parts.has(e.part)) });
     };
     const gf = $("#goFmt"); if (gf) gf.onclick = () => {
-      if (!pickState.types.size) return toast("Choisis au moins un format.");
+      if (!pickState.types.size) return toast("Au moins un format.");
       const ts = [...pickState.types];
       startSession({ title: ts.map(t => TYPES[t].label).join(", "), ids: pickSmart(G.len, e => pickState.types.has(e.type), true), from: ts.length === 1 && ts[0] === "build" ? "reflexion" : "train" });
     };
@@ -1656,13 +1653,13 @@
       <div class="refl-head">
         ${L
           ? `<div><div class="eyebrow accent">Appliquer le cours</div><h1 style="margin-top:6px">Sujets de dissertation</h1>
-        <p>${ex.format ? "À l'épreuve : " + esc(ex.format) + ". " : ""}Ici, pas de rédaction : pour chaque sujet, choisis les arguments et les références du cours qui y répondent, puis compare-toi au plan modèle.</p></div>
+        ${ex.format ? "<p>Épreuve : " + esc(ex.format) + ".</p>" : ""}</div>
         <div class="refl-acts"><button class="btn secondary" id="method">La méthode</button>${texts.length ? `<button class="btn secondary" id="texts">Textes à expliquer · ${texts.length}</button>` : ""}<button class="btn primary" id="sim">Simulation · 3 sujets</button></div>`
           : `<div><div class="eyebrow accent">Format de l'épreuve</div><h1 style="margin-top:6px">Questions de réflexion</h1>
-        <p>${ex.format ? "À l'épreuve : " + esc(ex.format) + (ex.perQuestion ? ", soit " + esc(ex.perQuestion) : "") + ". " : ""}Ici, pas de rédaction : pour chaque question, trouve les arguments pertinents, puis compare-toi au plan modèle et à la citation clé.</p></div>
+        ${ex.format ? "<p>Épreuve : " + esc(ex.format) + (ex.perQuestion ? ", soit " + esc(ex.perQuestion) : "") + ".</p>" : ""}</div>
         <div class="refl-acts"><button class="btn secondary" id="undone">Questions jamais faites</button><button class="btn primary" id="sim">Simulation · 4 questions</button></div>`}
       </div>
-      <div class="refl-grid">${B.kit ? (() => { const qs = kitQuotes(), nd = qs.filter(q => kitState(q).due <= Date.now()).length; return `<button class="q-card kit" id="kitCard"><div class="top"><span class="r">Kit</span><span class="score-badge ${nd ? "" : "good"}">${nd ? nd + " à revoir" : "À jour"}</span></div><span class="t">Citations clés : ${qs.length} citations reliées pour presque tous les sujets</span></button>`; })() : ""}${builds.map(e => {
+      <div class="refl-grid">${B.kit ? (() => { const qs = kitQuotes(), nd = qs.filter(q => kitState(q).due <= Date.now()).length; return `<button class="q-card kit" id="kitCard"><div class="top"><span class="r">Kit</span><span class="score-badge ${nd ? "" : "good"}">${nd ? nd + " à revoir" : "À jour"}</span></div><span class="t">Citations clés · ${qs.length}</span></button>`; })() : ""}${builds.map(e => {
         const l = last[e.id], st = l ? status(l.r) : "new";
         return `<button class="q-card" data-id="${e.id}"><div class="top"><span class="r">${e.part ? PARTS[e.part].roman : esc(ctxLabel())}</span><span class="score-badge ${l ? st : ""}">${l ? Math.round(l.r * 100) + " %" : "À faire"}</span></div><span class="t">${esc(e.q)}</span></button>`;
       }).join("")}</div>
@@ -1671,7 +1668,7 @@
     $("#sim").onclick = () => startSession({ title: "Simulation d'épreuve", ids: pickBuild(L ? 3 : 4), from: "reflexion" });
     const un = $("#undone"); if (un) un.onclick = () => {
       const ids = builds.filter(e => !last[e.id]).map(e => e.id);
-      if (!ids.length) return toast("Tu as déjà fait toutes les questions.");
+      if (!ids.length) return toast("Toutes les questions sont faites.");
       startSession({ title: "Questions jamais faites", ids: shuffle(ids), from: "reflexion" });
     };
     const tx = $("#texts"); if (tx) tx.onclick = () => startSession({ title: "Explications de texte", ids: shuffle(texts.map(e => e.id)), from: "reflexion" });
@@ -1684,20 +1681,19 @@
       <div class="modal-head"><h3>La méthode</h3><button class="icon-btn" data-close aria-label="Fermer">${ICON.close}</button></div>
       <div class="method">
         <div><div class="eyebrow accent">La dissertation</div><ol class="m-steps">
-          <li><b>Analyser le sujet</b><span>Définis chaque mot, repère ce que la question suppose, reformule-la.</span></li>
-          <li><b>Poser une problématique</b><span>Une tension, en une question : pourquoi la réponse n'est pas évidente.</span></li>
-          <li><b>Construire un plan</b><span>Deux ou trois parties qui répondent chacune à la question, de la réponse la plus évidente à la plus juste.</span></li>
-          <li><b>Argumenter</b><span>Pour chaque argument : l'idée, son explication, une référence du cours (auteur, œuvre), un exemple précis.</span></li>
-          <li><b>Conclure</b><span>Réponds clairement à la question et rappelle le chemin parcouru.</span></li>
+          <li><b>Analyser le sujet</b><span>Définir chaque mot, repérer ce que la question suppose.</span></li>
+          <li><b>Problématiser</b><span>Une tension, en une question.</span></li>
+          <li><b>Construire un plan</b><span>Deux ou trois parties, de la réponse évidente à la plus juste.</span></li>
+          <li><b>Argumenter</b><span>Idée, explication, référence, exemple.</span></li>
+          <li><b>Conclure</b><span>Répondre nettement, rappeler le chemin.</span></li>
         </ol></div>
         <div><div class="eyebrow accent">L'explication de texte</div><ol class="m-steps">
           <li><b>Trouver la thèse</b><span>Ce que l'auteur affirme, en une phrase.</span></li>
           <li><b>Repérer le problème</b><span>À quelle question le texte répond-il, et contre quelle idée ?</span></li>
-          <li><b>Suivre le mouvement</b><span>Découpe le texte en étapes et nomme chacune.</span></li>
-          <li><b>Expliquer</b><span>Décortique les mots importants et les exemples, un par un, puis montre l'enjeu.</span></li>
+          <li><b>Suivre le mouvement</b><span>Découper le texte en étapes, les nommer.</span></li>
+          <li><b>Expliquer</b><span>Les mots clés et les exemples, un par un, puis l'enjeu.</span></li>
         </ol></div>
-      </div>
-      <p class="note">Les sujets et les textes de Recto t'entraînent à l'étape la plus difficile : trouver vite les bons arguments et les bonnes références.</p>`, "method");
+      </div>`, "method");
   }
 
   /* =========================================================
@@ -1715,9 +1711,9 @@
     if (ex.prompt) return ex.prompt;
     switch (ex.type) {
       case "vf": return "Vrai ou faux ?";
-      case "fill": return ex.plain ? "Complète la phrase." : "Complète la citation.";
+      case "fill": return ex.plain ? "Compléter la phrase." : "Compléter la citation.";
       case "part": return "De quel" + (U.fem ? "le " : " ") + U.one + " vient cette phrase ?";
-      case "flash": return "Réponds de tête, puis retourne la carte.";
+      case "flash": return "Répondre de tête, puis retourner la carte.";
       default: return ex.q;
     }
   }
@@ -1747,7 +1743,7 @@
         <h2 class="ex-q">${esc(promptOf(ex))}</h2>
         <div class="ex-body" id="exBody"></div>
         <div class="ex-foot">
-          <button class="btn ghost gray" id="idk">Je ne sais pas</button>
+          <button class="btn ghost gray" id="idk">Voir la réponse</button>
           <button class="btn ghost" id="hint" hidden>Indice</button>
           <button class="foot-verdict" id="footVerdict" hidden></button>
           <span class="grow"></span>
@@ -1774,14 +1770,14 @@
   function sideIntro(ex) {
     const t = typeOf(ex);
     return `<div class="side-intro"><h4>Consigne</h4><p>${esc(t.help)}</p><div class="side-keys">${esc(t.keys)}</div></div>
-      ${ex.type === "build" ? `<div class="side-sep"></div><div class="side-intro"><h4>À l'épreuve</h4><p>${B.course ? "Une bonne dissertation : une problématique, un plan en deux ou trois parties, et pour chaque argument une référence précise du cours et un exemple." : "Une bonne réponse tient en trois éléments : une problématique, deux ou trois arguments tirés du texte, une citation précise."}</p></div>` : ""}
+      ${ex.type === "build" ? `<div class="side-sep"></div><div class="side-intro"><h4>À l'épreuve</h4><p>${B.course ? "Problématique, plan, une référence et un exemple par argument." : "Problématique, arguments du texte, une citation."}</p></div>` : ""}
       ${ex.type === "part" ? `<div class="side-sep"></div><div class="side-intro"><h4>Repères</h4><p>${CH.map(p => PARTS[p].roman + " " + esc(PARTS[p].label.toLowerCase())).join(" · ")}</p></div>` : ""}`;
   }
   function doCheck(giveUp) {
     if (CHECKED || !CTRL) return;
     const ex = EX[P.ids[P.idx]];
     const res = CTRL.check(giveUp);
-    if (giveUp) { res.score = 0; (res.items || []).forEach(i => { i.r = 0; if (i.g != null) i.g = "Je ne sais pas"; }); res.given = "Je ne sais pas"; res.gaveUp = true; }
+    if (giveUp) { res.score = 0; (res.items || []).forEach(i => { i.r = 0; if (i.g != null) i.g = "Sans réponse"; }); res.given = "Sans réponse"; res.gaveUp = true; }
     CHECKED = true;
     $("#exBody").classList.add("locked");
     const before = {}; ex.nlist.forEach(n => { before[n] = mastery(n); });
@@ -1816,7 +1812,7 @@
     const title = res.gaveUp ? "Voici la réponse" : cls === "ok" ? (res.typo ? "Juste, à une faute près" : "Juste") : cls === "mid" ? "Presque" : "À revoir";
     const icon = cls === "ok" ? ICON.check : cls === "mid" ? ICON.half : ICON.cross;
     const partial = ["fill", "order", "match", "sort", "schema", "grid", "build", "words"].includes(ex.type) || (ex.type === "qcm" && Array.isArray(ex.answer));
-    const sub = res.gaveUp ? "Pas de souci : elle repassera dans tes erreurs." : partial ? Math.round(s * 100) + " % des points" : cls === "ok" ? "Bonne réponse" : "Mauvaise réponse";
+    const sub = res.gaveUp ? "Elle reviendra dans les erreurs." : partial ? Math.round(s * 100) + " % des points" : cls === "ok" ? "Bonne réponse" : "Mauvaise réponse";
     let body = "";
     if (res.expectedHTML) body += `<div class="side-block"><h4>${esc(res.expectedTitle || "Réponse attendue")}</h4>${res.expectedHTML}</div>`;
     if (ex.explain) body += `<div class="side-block"><h4>Explication</h4><p>${esc(ex.explain)}</p></div>`;
@@ -1853,7 +1849,7 @@
         </div>
       </div>
       <aside class="card player-side">
-        <div class="side-intro"><h4>À revoir maintenant</h4>${weakest.length ? `<p>Ouvre ces fiches avant de passer à la suite : deux minutes de lecture juste après une erreur valent plus qu'une relecture complète.</p>` : `<p>Aucune erreur sur cette série. Passe à la suite du plan.</p>`}</div>
+        <div class="side-intro"><h4>À revoir maintenant</h4>${weakest.length ? `<p>Fiches à relire avant la suite.</p>` : `<p>Aucune erreur.</p>`}</div>
         ${weakest.length ? `<div class="side-links" style="margin-top:14px">${weakest.map(x => `<button class="fiche-link" data-fiche="${x.id}"><span class="dot ${status(mastery(x.id))}"></span><span class="t">${esc(NOTIONS[x.id].title)}</span>${ICON.chev}</button>`).join("")}</div>` : ""}
       </aside>
     </section>`;
@@ -2064,7 +2060,7 @@
   }
   function installRowHTML() {
     if (STANDALONE) return "";
-    const how = IS_IOS ? "Dans Safari : bouton Partager, puis « Sur l'écran d'accueil »." : INSTALL ? "Recto s'ouvrira comme une app, en plein écran, même hors ligne." : "Dans le menu du navigateur : « Installer l'application » ou « Ajouter à l'écran d'accueil ».";
+    const how = IS_IOS ? "Safari : Partager, « Sur l'écran d'accueil »." : INSTALL ? "Plein écran, hors ligne." : "Menu du navigateur : « Installer l'application ».";
     return `<div class="set-row"><div><b>Installer l'app</b><span>${how}</span></div>${INSTALL ? `<button class="btn secondary sm" id="sInstall">Installer</button>` : ""}</div>`;
   }
 
@@ -2075,14 +2071,14 @@
     const seg = (id, opts, cur) => `<div class="segmented" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(v) === String(cur) ? "on" : ""}">${l}</button>`).join("")}</div>`;
     const card = openModal(`
       <div class="modal-head"><h3>Réglages</h3><button class="icon-btn" data-close aria-label="Fermer">${ICON.close}</button></div>
-      <div class="set-row"><div><b>Effets visuels</b><span>Réussites, séries, confettis, transitions. Jamais de son.</span></div>${seg("sFx", [[0, "Aucun"], [1, "Doux"], [2, "Complet"]], G.fx)}</div>
-      <div class="set-row"><div><b>Animations</b><span>« Auto » suit le réglage de ton appareil${rmSys ? " (il demande des animations réduites)" : ""}.</span></div>${seg("sMo", [["auto", "Auto"], ["reduce", "Réduites"], ["full", "Complètes"]], G.motion)}</div>
-      <div class="set-row"><div><b>Rappel actif</b><span>Masque les propositions tant que tu n'as pas répondu de tête.</span></div>${switchHTML("sRecall", G.recall)}</div>
-      <div class="set-row"><div><b>Sans citations</b><span>Retire les exercices de citation.</span></div>${switchHTML("sNq", G.noQuotes)}</div>
-      <div class="set-row"><div><b>Repères de lecture</b><span>Dans le cours : idées clés surlignées, auteurs et œuvres en couleur.</span></div>${switchHTML("sHl", G.hl !== false)}</div>
-      <div class="set-row"><div><b>Longueur des séries</b><span>Nombre d'exercices par série.</span></div>${seg("sLen", [[8, "8"], [12, "12"], [20, "20"]], G.len)}</div>
+      <div class="set-row"><div><b>Effets visuels</b><span>Jamais de son.</span></div>${seg("sFx", [[0, "Aucun"], [1, "Doux"], [2, "Complet"]], G.fx)}</div>
+      <div class="set-row"><div><b>Animations</b><span>« Auto » : réglage de l'appareil${rmSys ? " (réduites)" : ""}.</span></div>${seg("sMo", [["auto", "Auto"], ["reduce", "Réduites"], ["full", "Complètes"]], G.motion)}</div>
+      <div class="set-row"><div><b>Rappel actif</b><span>Propositions masquées avant de répondre.</span></div>${switchHTML("sRecall", G.recall)}</div>
+      <div class="set-row"><div><b>Sans citations</b></div>${switchHTML("sNq", G.noQuotes)}</div>
+      <div class="set-row"><div><b>Repères de lecture</b><span>Idées clés, auteurs, œuvres.</span></div>${switchHTML("sHl", G.hl !== false)}</div>
+      <div class="set-row"><div><b>Longueur des séries</b></div>${seg("sLen", [[8, "8"], [12, "12"], [20, "20"]], G.len)}</div>
       ${installRowHTML()}
-      <div class="set-foot"><span class="note">Les réglages valent pour tous les livres et leçons.</span><button class="btn secondary sm" id="sTry">Essayer les effets</button></div>`, "settings", () => { if (dirty) render(); });
+      <div class="set-foot"><span></span><button class="btn secondary sm" id="sTry">Essayer les effets</button></div>`, "settings", () => { if (dirty) render(); });
     const segBind = (id, fn) => $$("#" + id + " button", card).forEach(b => b.onclick = () => { $$("#" + id + " button", card).forEach(x => x.classList.toggle("on", x === b)); fn(b.dataset.v); save(); });
     segBind("sFx", v => { G.fx = +v; applyFx(); });
     segBind("sMo", v => { G.motion = v; applyFx(); });
@@ -2105,7 +2101,7 @@
         <div><span>Avant</span><span class="bar"><i style="width:${from}%;background:var(--fill-3)"></i></span><b>${from} %</b></div>
         <div><span>Après</span><span class="bar good"><i class="after" style="width:${to}%"></i></span><b>${to} %</b></div>
       </div>
-      <p class="muted">Bravo. Le sommeil va maintenant faire une bonne partie du travail.</p>
+      <p class="muted">Session terminée.</p>
       <button class="btn primary lg" data-close>Voir le bilan</button>`, "gain");
     X.fillBars([$(".after", card)]);
     const n = $(".gain-n", card);
@@ -2116,7 +2112,7 @@
   const R = {};
   function recallWrap(inner, t, p, btn) {
     return `<div class="recall-wrap ${G.recall ? "hidden" : ""}" data-rw><div class="recall-target">${inner}</div>
-      <div class="recall-cover"><div class="recall-box"><b>${esc(t)}</b><p>${esc(p)}</p><button class="btn primary" data-reveal>${esc(btn || "Afficher les propositions")} <kbd>Espace</kbd></button></div></div></div>`;
+      <div class="recall-cover"><div class="recall-box"><b>${esc(t)}</b>${p ? `<p>${esc(p)}</p>` : ""}<button class="btn primary" data-reveal>${esc(btn || "Afficher les propositions")} <kbd>Espace</kbd></button></div></div></div>`;
   }
   function bindReveal(el) {
     const w = $("[data-rw]", el);
@@ -2132,7 +2128,7 @@
     const sel = new Set();
     const inner = (multi ? `<p class="multi-hint">Plusieurs réponses possibles.</p>` : "") +
       recallWrap(`<div class="opts">${order.map((oi, k) => `<button class="opt" data-i="${oi}"><span class="k">${"ABCD"[k]}</span><span>${esc(ex.options[oi])}</span></button>`).join("")}</div>`,
-        "Réponds d'abord de tête", "Formule ta réponse avant de voir les propositions : c'est cet effort qui fait retenir.");
+        "Répondre d'abord de tête", "");
     /* Explication de texte : le passage à gauche, les propositions à droite */
     el.innerHTML = ex.passage
       ? `<div class="pass-wrap"><figure class="passage"><blockquote>${esc(ex.passage)}</blockquote>${ex.src ? `<figcaption>${esc(ex.src)}</figcaption>` : ""}</figure><div class="pass-q">${inner}</div></div>`
@@ -2520,7 +2516,7 @@
           score: ok / tot, items,
           given: ex.rows.map((r, i) => r.t + " : " + val[i].map(mark).join("")).join(" | "),
           expected: ex.rows.map(r => r.t + " : " + r.a.map(mark).join("")).join(" | "),
-          expectedHTML: `<p>Les cases corrigées apparaissent en rouge dans le tableau, avec la bonne valeur.</p>`
+          expectedHTML: `<p>Corrections en rouge dans le tableau.</p>`
         };
       }
     };
@@ -2533,7 +2529,7 @@
       if (flipped) return;
       flipped = true;
       $(".b", el).hidden = false;
-      $("#flashAct", el).innerHTML = `<div class="flash-rate"><button class="btn rate-0" data-r="0">Je ne savais pas <kbd>1</kbd></button><button class="btn rate-1" data-r="0.5">À moitié <kbd>2</kbd></button><button class="btn rate-2" data-r="1">Je savais <kbd>3</kbd></button></div>`;
+      $("#flashAct", el).innerHTML = `<div class="flash-rate"><button class="btn rate-0" data-r="0">Non su <kbd>1</kbd></button><button class="btn rate-1" data-r="0.5">À moitié <kbd>2</kbd></button><button class="btn rate-2" data-r="1">Su <kbd>3</kbd></button></div>`;
       $$("[data-r]", el).forEach(b => b.onclick = () => rate(+b.dataset.r));
     }
     function rate(r) { if (CHECKED) return; rating = r; api.check(); api.next(); }
@@ -2541,7 +2537,7 @@
     return {
       reveal: flip,
       key(k) { if (!flipped) return false; const m = { 1: 0, 2: 0.5, 3: 1 }; if (k in m) { rate(m[k]); return true; } return false; },
-      check() { return { score: rating == null ? 0 : rating, given: rating == null ? "—" : ["Je ne savais pas", "À moitié", "Je savais"][rating * 2], expected: ex.b }; }
+      check() { return { score: rating == null ? 0 : rating, given: rating == null ? "—" : ["Non su", "À moitié", "Su"][rating * 2], expected: ex.b }; }
     };
   };
 
@@ -2603,9 +2599,9 @@
     const order = shuffle(ex.els.map((_, i) => i));
     const sel = new Set();
     const nOk = ex.els.filter(x => x.ok).length;
-    el.innerHTML = `<p class="build-hint">Sélectionne les ${nOk} éléments qui ont leur place dans ta réponse.</p>` +
+    el.innerHTML = `<p class="build-hint">${nOk} éléments à garder.</p>` +
       recallWrap(`<div class="build-grid">${order.map(i => `<button class="el" data-i="${i}"><span class="ck">${ICON.check}</span><span class="tx">${esc(ex.els[i].t)}</span></button>`).join("")}</div>`,
-        "Réfléchis d'abord", "Avant de voir les propositions, cherche de tête trois ou quatre arguments et une citation. Note-les au brouillon si tu veux.", "Afficher les éléments");
+        "Chercher d'abord de tête", "Trois ou quatre arguments, une citation.", "Afficher les éléments");
     const rv = bindReveal(el);
     const btns = $$(".el", el);
     btns.forEach(b => b.onclick = () => {
@@ -2648,7 +2644,7 @@
     const st = g >= 80 ? "good" : g >= 50 ? "mid" : "weak";
     const tested = NIDS.filter(id => mm[id] != null).length;
     const { answered, acc } = stats();
-    const caption = !answered ? (isCorpus() ? "Rien encore : lance un mix intelligent dans Entraînement." : "Rien encore : lance le diagnostic, puis suis le plan.") : g < 35 ? (isCorpus() ? "Tu débutes. Relis les fiches des textes, puis entraîne-toi." : "Tu débutes. Suis le plan : diagnostic, lecture, exercices.") : g < 60 ? "Les bases sont là. Concentre-toi sur les notions en rouge." : g < 80 ? "Bonne préparation. Consolide les dernières notions fragiles." : "Tu es prêt. Une simulation d'épreuve, puis au lit.";
+    const caption = !answered ? (isCorpus() ? "Aucun exercice fait." : "Aucun exercice fait : commencer par le diagnostic.") : g < 35 ? "Début de préparation." : g < 60 ? "Bases acquises. Priorité : les notions en rouge." : g < 80 ? "Bonne préparation. Restent quelques notions fragiles." : "Prêt pour l'épreuve.";
     const errsBy = {};
     errorIds().forEach(id => EX[id].nlist.forEach(n => { errsBy[n] = (errsBy[n] || 0) + 1; }));
     const weak = rankWeak();
@@ -2661,30 +2657,29 @@
         <p class="caption">${esc(caption)}</p>
         <div class="b-stats"><div><b><span class="cnt" data-v="${tested}">${tested}</span>/${NIDS.length}</b><span>notions testées</span></div><div><b class="cnt" data-v="${answered}">${answered}</b><span>exercices faits</span></div><div><b><span class="cnt" data-v="${acc}">${acc}</span> %</b><span>de réussite</span></div></div>
         <div class="b-actions">
-          <button class="btn primary" id="copy">Copier le bilan pour ton IA</button>
+          <button class="btn primary" id="copy">Copier le bilan pour une IA</button>
           <button class="btn secondary" id="pdf">Exporter le PDF</button>
           <div style="display:flex;gap:4px;justify-content:center"><button class="btn ghost sm" id="txt">Télécharger en .txt</button><button class="btn ghost gray sm" id="reset">Réinitialiser</button></div>
-          <p class="note" style="text-align:center">Colle-le dans ChatGPT, Claude, Gemini, Mistral… : il contient une consigne prête à l'emploi.</p>
         </div>
       </div>
-      <div class="card b-parts"><h3>Par ${esc(U.one)}</h3><p class="small muted" style="margin-top:4px">Moyenne de maîtrise des notions ; une notion non testée compte zéro.</p>
+      <div class="card b-parts"><h3>Par ${esc(U.one)}</h3>
         <div class="bp-list">${parts.map(p => { const sc = partScore(p); const has = partTested(p); const s = status(has ? sc : null); const nb = NIDS.filter(id => NOTIONS[id].part === p).length;
           return `<button class="bp-row" data-part="${p}"><span class="r">${p ? PARTS[p].roman : "§"}</span><div><div class="t">${esc(p ? PARTS[p].label : ctxLabel())}<span>${nb} notion${nb > 1 ? "s" : ""}</span></div><div class="bar ${s}"><i style="width:${pct(sc)}%"></i></div></div><span class="p">${has ? pct(sc) + " %" : "—"}</span></button>`; }).join("")}</div>
         ${achHTML()}
       </div>
       <div class="card b-weak">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><h3>À retravailler en priorité</h3><span class="small muted">rouge, puis orange, puis non testé</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><h3>À retravailler en priorité</h3></div>
         ${weak.length ? `<ul class="bw-list">${weak.map(x => { const s = status(x.m), e = errsBy[x.id] || 0;
           return `<li class="bw-row"><span class="dot ${s}"></span><div style="min-width:0"><div class="t">${esc(NOTIONS[x.id].title)}</div><div class="s">${esc(partLabel(NOTIONS[x.id].part))} · ${x.m == null ? "non testé" : pct(x.m) + " %"}${e ? " · " + e + " erreur" + (e > 1 ? "s" : "") : ""}</div></div>
             <div class="acts"><button class="btn ghost sm" data-fiche="${x.id}">Fiche</button>${NOTIONS[x.id].video ? `<a class="btn ghost sm" href="${yt(NOTIONS[x.id].video)}" target="_blank" rel="noopener">Vidéos</a>` : ""}<button class="btn ghost sm" data-train-notion="${x.id}">S'entraîner</button></div></li>`; }).join("")}</ul>`
-          : `<div class="empty"><div><b style="color:var(--text);font-size:17px">Tout est acquis.</b><span>Toutes les notions sont au vert. Fais une simulation d'épreuve pour vérifier.</span><button class="btn primary" id="toSim">Simulation</button></div></div>`}
+          : `<div class="empty"><div><b style="color:var(--text);font-size:17px">Tout est acquis.</b><span>Toutes les notions sont au vert.</span><button class="btn primary" id="toSim">Simulation</button></div></div>`}
       </div>
     </section>`;
     $$(".bp-row").forEach(b => b.onclick = () => go("carte", { part: +b.dataset.part }));
     $("#pdf").onclick = exportPDF;
     $("#copy").onclick = () => copyText(buildReport().text);
     $("#txt").onclick = () => downloadText(buildReport().text);
-    $("#reset").onclick = () => { if (confirm("Effacer ta progression sur " + W.this + " (réponses, plan, session) ?")) { S = bookDefaults(); MC = null; save(); P = null; toast("Progression effacée."); render(); } };
+    $("#reset").onclick = () => { if (confirm("Effacer la progression sur " + W.this + " ?")) { S = bookDefaults(); MC = null; save(); P = null; toast("Progression effacée."); render(); } };
     const ts = $("#toSim"); if (ts) ts.onclick = () => startSession({ title: "Simulation d'épreuve", ids: pickBuild(4), from: "reflexion" });
     animateRing($(".b-over .ring", root), g);
     countAll(root);
@@ -2696,20 +2691,20 @@
   function computedTips(weak, errs) {
     const out = [];
     const { answered } = stats();
-    if (!answered) { out.push("Commence par le diagnostic éclair : il repère en 5 minutes ce que tu sais déjà."); return out; }
+    if (!answered) { out.push("Commencer par le diagnostic éclair (5 min)."); return out; }
     const worst = CH.filter(partTested).map(p => ({ p, s: partScore(p), n: NIDS.filter(id => NOTIONS[id].part === p && (mastery(id) == null || mastery(id) < 0.8)).length })).sort((a, b) => a.s - b.s)[0];
-    if (worst && worst.s < 0.6 && worst.n) out.push(`Relis en priorité ${U.one === "partie" ? "la" : "le"} ${U.one} ${PARTS[worst.p].roman} (${PARTS[worst.p].label.toLowerCase()}) : ${worst.n} notion${worst.n > 1 ? "s y restent fragiles" : " y reste fragile"}.`);
+    if (worst && worst.s < 0.6 && worst.n) out.push(`À relire en priorité : ${U.one} ${PARTS[worst.p].roman} (${PARTS[worst.p].label.toLowerCase()}), ${worst.n} notion${worst.n > 1 ? "s fragiles" : " fragile"}.`);
     const untested = NIDS.filter(id => mastery(id) == null).length;
-    if (untested) out.push(`${untested} notion${untested > 1 ? "s n'ont" : " n'a"} jamais été testée${untested > 1 ? "s" : ""} : un « Mix intelligent » les vise en premier.`);
+    if (untested) out.push(`${untested} notion${untested > 1 ? "s" : ""} jamais testée${untested > 1 ? "s" : ""} : « Mix intelligent ».`);
     const byType = {};
     const last = lastByEx();
     Object.keys(last).forEach(id => { const t = EX[id] && EX[id].type; if (t) (byType[t] = byType[t] || []).push(last[id].r); });
     const tAvg = t => byType[t] && byType[t].length >= 2 ? avg(byType[t]) : null;
-    if (tAvg("build") != null && tAvg("build") < 0.6) out.push("Questions de réflexion : tu retiens encore des arguments hors sujet. Avant de répondre, reformule la question en une phrase et vérifie que chaque argument y répond.");
-    if (!G.noQuotes && tAvg("part") != null && tAvg("part") < 0.6) out.push("Tu situes mal les citations " + W.in + " : refais les exercices « Quelle partie ? » avec la Carte ouverte à côté.");
-    if (!G.noQuotes && tAvg("fill") != null && tAvg("fill") < 0.6) out.push("Les formules exactes ne sont pas encore fixées : refais les textes à trous à voix haute.");
-    if (tAvg("vf") != null && tAvg("vf") < 0.6) out.push("Tu tombes dans les pièges des vrai/faux : lis la justification de chaque erreur, c'est là que se cachent les confusions.");
-    if (errs.length > 8) out.push(`Tu as ${errs.length} erreurs non corrigées : refais-les jusqu'au vert avant d'attaquer de nouvelles notions.`);
+    if (tAvg("build") != null && tAvg("build") < 0.6) out.push("Arguments hors sujet : reformuler la question avant de choisir.");
+    if (!G.noQuotes && tAvg("part") != null && tAvg("part") < 0.6) out.push("Citations mal situées : refaire « Quelle partie ? » avec la Carte.");
+    if (!G.noQuotes && tAvg("fill") != null && tAvg("fill") < 0.6) out.push("Formules exactes à fixer : refaire les textes à trous.");
+    if (tAvg("vf") != null && tAvg("vf") < 0.6) out.push("Pièges des vrai/faux : relire chaque justification.");
+    if (errs.length > 8) out.push(`${errs.length} erreurs non corrigées : les refaire avant d'avancer.`);
     return out;
   }
   function buildReport() {
@@ -2788,7 +2783,7 @@
     const h = [];
     h.push(`<div class="pr-head"><div class="pr-brand">recto</div><h1>Bilan de connaissances</h1><p>${esc(work)} · ${esc(date)}</p></div>`);
     h.push(`<div class="pr-stats"><div><b>${g} %</b><span>préparation globale</span></div><div><b>${tested}/${NIDS.length}</b><span>notions testées</span></div><div><b>${answered}</b><span>exercices faits</span></div><div><b>${acc} %</b><span>de réussite</span></div></div>`);
-    h.push(`<h2>1. Ce qui te manque</h2>`);
+    h.push(`<h2>1. Ce qui manque</h2>`);
     if (!weak.length) h.push(`<p>Aucune notion fragile parmi celles testées.</p>`);
     weak.forEach((x, i) => {
       const n = NOTIONS[x.id];
@@ -2797,23 +2792,23 @@
     if (untested.length) h.push(`<p><b>Jamais testées :</b> ${untested.map(x => esc(NOTIONS[x.id].title)).join(", ")}.</p>`);
     h.push(`<h2>2. Tips</h2><ul class="pr-tips">${tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>`);
     h.push(`<h2>3. Maîtrise par notion</h2><table><thead><tr><th>Notion</th><th>${esc(U.one)}</th><th>Statut</th><th>Maîtrise</th></tr></thead><tbody>${ranked.map(x => `<tr><td>${esc(NOTIONS[x.id].title)}</td><td>${esc(partLabel(NOTIONS[x.id].part))}</td><td>${STATUS_LABEL[status(x.m)]}</td><td>${x.m == null ? "—" : pct(x.m) + " %"}</td></tr>`).join("")}</tbody></table>`);
-    h.push(`<h2>4. À donner à ton IA</h2><p class="pr-small">Joins ce PDF ou colle le texte dans ChatGPT, Claude, Gemini, Mistral… avec cette consigne :</p><div class="pr-prompt">${esc(prompt)}</div>`);
+    h.push(`<h2>4. À donner à une IA</h2><p class="pr-small">Avec cette consigne :</p><div class="pr-prompt">${esc(prompt)}</div>`);
     return { text, html: h.join("") };
   }
   function exportPDF() {
-    if (!S.attempts.length) { toast("Fais d'abord quelques exercices."); return; }
+    if (!S.attempts.length) { toast("Aucun exercice fait."); return; }
     $("#print").innerHTML = buildReport().html;
-    toast("Choisis « Enregistrer au format PDF » comme imprimante.");
+    toast("Imprimante : « Enregistrer au format PDF ».");
     setTimeout(() => window.print(), 350);
   }
   function copyText(text) {
-    const done = () => toast("Bilan copié : colle-le dans ton IA.");
+    const done = () => toast("Bilan copié.");
     if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done, () => fallback()); } else fallback();
     function fallback() {
       const ta = document.createElement("textarea");
       ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
       document.body.appendChild(ta); ta.select();
-      try { document.execCommand("copy"); done(); } catch (e) { toast("Copie impossible : utilise le téléchargement .txt."); }
+      try { document.execCommand("copy"); done(); } catch (e) { toast("Copie impossible : télécharger le .txt."); }
       ta.remove();
     }
   }

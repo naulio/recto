@@ -487,7 +487,7 @@ Recto.add("le-langage", (function () {
     "faber": { part: 1, title: "Bergson : Homo faber",
       essentiel: "Dans L'Évolution créatrice, Bergson distingue trois directions de l'élan vital : torpeur (végétal), instinct (animal), intelligence (homme). L'homme invente et perfectionne des techniques : il est avant tout Homo faber, « homme fabricant ».",
       retenir: ["Élan vital : principe qui permet de penser le développement de la vie.", "Paléoanthropologie : science de l'origine et de l'évolution de l'humain.", "Âges de la pierre, du bronze, du fer ; révolution industrielle.", "Les progrès techniques accompagnent l'évolution de l'humanité."],
-      citation: "", piege: "Torpeur = végétal, instinct = animal, intelligence = homme : ne les mélange pas.",
+      citation: "", piege: "Torpeur = végétal, instinct = animal, intelligence = homme : ne pas les mélanger.",
       video: "Bergson Homo faber évolution créatrice" },
     "loquens": { part: 1, title: "Hagège : Homo loquens",
       essentiel: "Pour le linguiste Claude Hagège, l'homme est aussi, et peut-être avant tout, Homo loquens, « homme parlant ». Pas d'évolution technique sans transmission des savoir-faire, et cette transmission passe par le langage (oral, puis écrit).",
@@ -925,25 +925,25 @@ Recto.add("le-langage", (function () {
   ]);
 
   add("order", [
-    { part: 1, notion: "faber", q: "Remets dans l'ordre les trois directions de l'élan vital selon Bergson.",
+    { part: 1, notion: "faber", q: "Remettre dans l'ordre les trois directions de l'élan vital selon Bergson.",
       items: ["La torpeur : le règne végétal", "L'instinct : le règne animal", "L'intelligence : l'être humain"],
       explain: "L'Évolution créatrice." },
-    { part: 3, notion: "anteriorite", q: "Rétablis le raisonnement de la partie III, A.",
+    { part: 3, notion: "anteriorite", q: "Rétablir le raisonnement de la partie III, A.",
       items: ["Hypothèse : la pensée existe avant le langage", "Argument : une même pensée s'exprime en plusieurs langues", "Argument : quand je cherche mes mots, l'idée semble déjà là", "Objection : je cherche mes mots avec d'autres mots", "Conclusion : le langage structure la pensée"],
       explain: "L'expérience de la recherche des mots sert d'abord l'hypothèse, puis la réfute." },
-    { part: 0, notion: "definition", q: "Remets dans l'ordre les grandes étapes du cours.",
+    { part: 0, notion: "definition", q: "Remettre dans l'ordre les grandes étapes du cours.",
       items: ["Le problème du langage animalier", "Les fonctions du langage", "Pensée et langage", "Le langage comme instrument de domination", "La science du langage", "Les mots et les choses"],
       explain: "Trois parties, puis trois annexes." },
-    { part: 4, notion: "orwell", q: "Remets dans l'ordre la chaîne de domination décrite à propos de 1984.",
+    { part: 4, notion: "orwell", q: "Remettre dans l'ordre la chaîne de domination décrite à propos de 1984.",
       items: ["Contrôler le langage", "Contrôler les catégories de pensée", "Contrôler la pensée", "Contrôler le récit du passé et l'histoire"],
       explain: "Contrôle du langage → contrôle de la pensée → contrôle de l'histoire." },
-    { part: 0, notion: "definition", q: "Remets dans l'ordre l'évolution des moyens de communication évoquée en introduction.",
+    { part: 0, notion: "definition", q: "Remettre dans l'ordre l'évolution des moyens de communication évoquée en introduction.",
       items: ["La lettre", "Le télégraphe", "Le téléphone", "Le téléphone portable", "Les smartphones et les réseaux sociaux"],
       explain: "Un idéal d'efficacité de la transmission." }
   ]);
 
   add("match", [
-    { part: 1, q: "Associe chaque auteur à son idée (partie I).",
+    { part: 1, q: "Associer chaque auteur à son idée (partie I).",
       pairs: [
         { l: "Bergson", r: "L'homme, Homo faber", n: "faber" },
         { l: "Hagège", r: "L'homme, Homo loquens", n: "loquens" },
@@ -951,7 +951,7 @@ Recto.add("le-langage", (function () {
         { l: "Descartes", r: "Un instrument universel", n: "instrument-universel" },
         { l: "Merleau-Ponty", r: "Un monde parlé et parlant", n: "monde-parle" }
       ], explain: "Les références de l'introduction et de la partie I." },
-    { part: 2, q: "Associe chaque idée à son auteur ou à son exemple (partie II).",
+    { part: 2, q: "Associer chaque idée à son auteur ou à son exemple (partie II).",
       pairs: [
         { l: "Les fonctions magiques du langage", r: "Freud", n: "magiques" },
         { l: "Le pouvoir d'évocation du mot « fleur »", r: "Mallarmé", n: "absence" },
@@ -959,7 +959,7 @@ Recto.add("le-langage", (function () {
         { l: "Le caractère directif d'un ordre", r: "« Range ta chambre »", n: "ordre-pouvoir" },
         { l: "Le lien social", r: "« Salut, comment tu vas ? »", n: "lien-social" }
       ], explain: "Les fonctions du langage, exemple par exemple." },
-    { part: 3, q: "Associe chaque auteur à son idée (partie III).",
+    { part: 3, q: "Associer chaque auteur à son idée (partie III).",
       pairs: [
         { l: "Platon", r: "Un discours de l'âme avec elle-même", n: "dialogue-ame" },
         { l: "Leibniz", r: "Un alphabet des pensées humaines", n: "leibniz" },
@@ -967,7 +967,7 @@ Recto.add("le-langage", (function () {
         { l: "Bergson", r: "Les mots comme étiquettes", n: "etiquettes" },
         { l: "Nietzsche", r: "Le concept et le risque d'aliénation", n: "nietzsche" }
       ], explain: "Pensée et langage." },
-    { part: 4, q: "Associe chaque auteur à son idée (annexes).",
+    { part: 4, q: "Associer chaque auteur à son idée (annexes).",
       pairs: [
         { l: "Orwell", r: "La novlangue", n: "orwell" },
         { l: "Platon, Cratyle", r: "Une communauté des signes", n: "cratyle" },
@@ -976,7 +976,7 @@ Recto.add("le-langage", (function () {
         { l: "Foucault", r: "Les Mots et les Choses", n: "mots-choses" },
         { l: "Aristote", r: "Le syllogisme et l'Organon", n: "wittgenstein" }
       ], explain: "Domination, science du langage, mots et choses." },
-    { part: 0, q: "Associe chaque mot à sa définition.",
+    { part: 0, q: "Associer chaque mot à sa définition.",
       pairs: [
         { l: "Productivité", r: "Produire une infinité d'énoncés nouveaux", n: "productivite" },
         { l: "Univoque", r: "Sans interprétations contradictoires", n: "leibniz" },
@@ -985,7 +985,7 @@ Recto.add("le-langage", (function () {
         { l: "Philologie", r: "L'histoire des langues", n: "cratyle" },
         { l: "Performatif", r: "Une parole qui accomplit une action", n: "austin" }
       ], explain: "Le vocabulaire précis du cours." },
-    { part: 2, q: "Associe chaque exemple à ce qu'il illustre.",
+    { part: 2, q: "Associer chaque exemple à ce qu'il illustre.",
       pairs: [
         { l: "Acheter des chaussures en ligne", r: "La communication est partout", n: "communication" },
         { l: "Le fordisme", r: "Transmettre un savoir-faire suppose le langage", n: "loquens" },
@@ -997,7 +997,7 @@ Recto.add("le-langage", (function () {
   ]);
 
   add("sort", [
-    { part: 1, q: "Communication animale ou langage humain ? Classe chaque caractéristique.",
+    { part: 1, q: "Communication animale ou langage humain ? Classer chaque caractéristique.",
       buckets: ["Communication animale", "Langage humain"],
       items: [
         { t: "En grande partie biologiquement déterminée", b: 0, n: "productivite" },
@@ -1009,7 +1009,7 @@ Recto.add("le-langage", (function () {
         { t: "Parler de choses imaginaires ou à venir", b: 1, n: "productivite" },
         { t: "Un instrument universel", b: 1, n: "instrument-universel" }
       ], explain: "Communiquer n'est pas nécessairement parler." },
-    { part: 2, q: "Range chaque énoncé selon la fonction du langage qu'il illustre.",
+    { part: 2, q: "Ranger chaque énoncé selon la fonction du langage qu'il illustre.",
       buckets: ["Communiquer", "Agir sur autrui", "Rendre présent l'absent"],
       items: [
         { t: "Donner la taille et le prix d'un produit", b: 0, n: "communication" },
@@ -1021,7 +1021,7 @@ Recto.add("le-langage", (function () {
         { t: "Parler des dinosaures", b: 2, n: "absence" },
         { t: "Dire « fleur » sans fleur présente", b: 2, n: "absence" }
       ], explain: "Le langage ne sert pas seulement à communiquer." },
-    { part: 3, q: "Le langage, aide ou limite pour la pensée ? Classe chaque idée.",
+    { part: 3, q: "Le langage, aide ou limite pour la pensée ? Classer chaque idée.",
       buckets: ["Aide la pensée", "Limite la pensée"],
       items: [
         { t: "La pensée devient claire en trouvant ses mots (Hegel)", b: 0, n: "hegel-ineffable" },
@@ -1057,7 +1057,7 @@ Recto.add("le-langage", (function () {
       ],
       distract: ["La parole", "La conscience"],
       explain: "Torpeur, instinct, intelligence." },
-    { part: 2, layout: "flow", q: "Complète le parcours de la partie II.",
+    { part: 2, layout: "flow", q: "Compléter le parcours de la partie II.",
       nodes: [
         { cap: "A", t: "Le langage est un instrument de communication" },
         { cap: "A", slot: "Il crée aussi du lien social", n: "lien-social" },
@@ -1068,7 +1068,7 @@ Recto.add("le-langage", (function () {
       ],
       distract: ["Le langage n'est qu'une étiquette", "Les animaux ont un langage universel"],
       explain: "Communiquer, agir, faire exister, faire." },
-    { part: 3, layout: "flow", q: "Complète le raisonnement de la partie III.",
+    { part: 3, layout: "flow", q: "Compléter le raisonnement de la partie III.",
       nodes: [
         { cap: "A", t: "Hypothèse : la pensée précède le langage" },
         { cap: "A", slot: "Mais on cherche ses mots avec des mots", n: "anteriorite" },
@@ -1082,7 +1082,7 @@ Recto.add("le-langage", (function () {
   ]);
 
   add("grid", [
-    { part: 3, q: "Coche ce que soutient chaque auteur, d'après le cours.",
+    { part: 3, q: "Cocher ce que soutient chaque auteur, d'après le cours.",
       cols: ["Bergson", "Nietzsche", "Hegel"],
       rows: [
         { t: "Les mots sont des étiquettes collées sur les choses", a: [1, 0, 0], n: "etiquettes" },
@@ -1267,11 +1267,11 @@ Recto.add("le-langage", (function () {
     ]
   };
   const tips = [
-    "Pour chaque argument, cite un auteur et un exemple du cours : les abeilles, le mariage, « Range ta chambre », la fleur de Mallarmé, la novlangue…",
-    "Distingue toujours communication et langage, signifiant et signifié, le mot et la chose.",
-    "Pour un sujet sur la pensée : l'hypothèse de l'antériorité, puis sa réfutation (chercher ses mots avec des mots), puis Hegel et les limites (Bergson, Nietzsche).",
-    "Annonce une problématique en une phrase, puis deux ou trois parties qui y répondent.",
-    "Termine par une nuance : le langage est à la fois condition et limite de la pensée."
+    "Un auteur et un exemple du cours par argument : les abeilles, le mariage, « Range ta chambre », la fleur de Mallarmé, la novlangue…",
+    "Distinguer communication et langage, signifiant et signifié, le mot et la chose.",
+    "Sujet sur la pensée : l'antériorité de la pensée, sa réfutation (chercher ses mots avec des mots), puis Hegel et les limites (Bergson, Nietzsche).",
+    "Une problématique en une phrase, deux ou trois parties qui y répondent.",
+    "Finir sur une nuance : le langage est condition et limite de la pensée."
   ];
 
   /* ---------------- REPÈRES DE LECTURE ---------------- */
@@ -1287,7 +1287,7 @@ Recto.add("le-langage", (function () {
       { id: "platon", t: "La pensée est un discours que l'âme se tient à elle-même.", who: "Platon", a: "Platon", n: "dialogue-ame",
         short: "Platon : « un discours de l'âme avec elle-même »", role: "penser, c'est parler",
         sens: "Penser, c'est dialoguer avec soi : la pensée a déjà la forme du langage.",
-        memo: "Deux voix dans ta tête qui se répondent.",
+        memo: "Deux voix intérieures qui se répondent.",
         pivot: "Dès qu'un sujet touche à la pensée, au jugement ou au doute, elle montre que réfléchir, c'est se parler.",
         usages: [
           { th: "le langage", t: "La pensée est inséparable du langage : même seul, on se parle." },

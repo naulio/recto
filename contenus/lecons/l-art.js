@@ -315,7 +315,7 @@ Recto.add("l-art", (function () {
       ns: ["education-gout"] },
 
     { id: "kant-gout", part: 2, sec: "C. L'énigme du goût", title: "Kant et l'énigme du goût", extra: true,
-      lead: "Complément. Ton cours annonce Kant à cet endroit. Voici l'idée qu'on lui associe le plus souvent, à vérifier avec ton professeur.",
+      lead: "Complément. Le cours annonce Kant à cet endroit. Voici l'idée qu'on lui associe le plus souvent, à vérifier avec le professeur.",
       body: [
         "Kant distingue *l'agréable* et *le beau*. Pour l'agréable (une saveur, une couleur préférée), « chacun son goût ». Mais dire « c'est beau », ce n'est pas seulement parler de soi : on attend que les autres soient d'accord.",
         "Le jugement de goût est *désintéressé* (on ne cherche pas à posséder l'objet) et prétend à l'*universalité*, sans pouvoir se démontrer par un concept : ==on ne prouve pas qu'une œuvre est belle, mais on en discute==.",
@@ -456,7 +456,7 @@ Recto.add("l-art", (function () {
     "art-realite": { part: 0, title: "L'art et la réalité",
       essentiel: "L'art pose la question de son rapport à la réalité : une œuvre représente un paysage, une personne, un événement, une émotion, sans se contenter de les reproduire. L'art doit-il imiter, embellir, transformer ou dénoncer ?",
       retenir: ["L'art comme imitation, mais une imitation qui peut modifier ou embellir.", "L'art n'a pas pour seule fonction de rendre les choses plus belles : il peut dénoncer.", "Plan du cours : le critère artistique, le goût, art et réalité."],
-      citation: "", piege: "Ne réduis pas l'art à « faire du beau » : une œuvre peut chercher à dénoncer une réalité.",
+      citation: "", piege: "Ne pas réduire l'art à « faire du beau » : une œuvre peut chercher à dénoncer une réalité.",
       video: "philosophie l'art et la réalité cours terminale" },
     "technique": { part: 1, title: "La technique, nécessaire mais pas suffisante",
       essentiel: "Tout art repose sur une technique (latin ars, grec technè : savoir-faire). Mais la maîtrise technique ne suffit pas à faire un artiste : l'œuvre transcende les conditions techniques de sa réalisation.",
@@ -532,7 +532,7 @@ Recto.add("l-art", (function () {
     "libre-adherente": { part: 2, title: "Kant : beauté libre et beauté adhérente",
       essentiel: "La beauté libre ne dépend pas d'un concept de ce que l'objet doit être : grande liberté d'appréciation et de création. La beauté adhérente dépend d'un concept et de normes (la statuaire grecque) ; on peut la rapprocher d'une beauté conventionnelle.",
       retenir: ["Deux artistes, une même chose observée, deux œuvres différentes.", "Liberté n'est pas absence de règles : il faut une technique.", "Statuaire grecque : règles de proportion du corps humain.", "Musiques commerciales : des codes pour plaire ; des artistes rompent avec eux."],
-      citation: "", piege: "Ne confonds pas : c'est la beauté adhérente qui dépend d'un modèle.",
+      citation: "", piege: "Ne pas confondre : c'est la beauté adhérente qui dépend d'un modèle.",
       video: "Kant beauté libre beauté adhérente" },
     "bizarre": { part: 2, title: "Le beau est toujours bizarre",
       essentiel: "Pour Baudelaire, le beau est « multiforme et versicolore » et « toujours bizarre ». L'artiste ne maîtrise pas toujours son œuvre (Flaubert, la Joconde) : c'est un processus. Les surréalistes parlent de « beauté convulsive ».",
@@ -542,7 +542,7 @@ Recto.add("l-art", (function () {
     "plaisir-negatif": { part: 2, title: "Plaisir négatif et goût qui se forme",
       essentiel: "Kant : une œuvre peut procurer un plaisir esthétique alors que son contenu est triste ou terrible (plaisir négatif). Il faut distinguer la beauté de l'œuvre et ce qu'elle représente. Le goût se forme : impressionnistes, débuts du cinéma.",
       retenir: ["Tragédie, mort, souffrance, guerre : bouleversant et beau.", "Une œuvre nouvelle déplaît parfois parce qu'on ne connaît pas son langage.", "Les impressionnistes, d'abord mal accueillis.", "Abel Gance : « Nos yeux ne sont pas encore faits pour elles. »"],
-      citation: "Nos yeux ne sont pas encore faits pour elles.", piege: "Ne confonds pas la beauté de l'œuvre et l'agrément de ce qu'elle montre.",
+      citation: "Nos yeux ne sont pas encore faits pour elles.", piege: "Ne pas confondre la beauté de l'œuvre et l'agrément de ce qu'elle montre.",
       video: "pourquoi aime-t-on les tragédies plaisir esthétique" },
     "hume": { part: 2, title: "Hume : le goût, affaire de sensibilité",
       essentiel: "Le goût est le sentiment du bon. Pour Hume (Traité de la nature humaine), il repose sur l'objet qui plaît et sur une « subtile sympathie » entre l'œuvre et nous : une affaire de sensibilité individuelle. Risque : le relativisme.",
@@ -559,7 +559,7 @@ Recto.add("l-art", (function () {
     "kant-gout": { part: 2, title: "Kant et l'énigme du goût (complément)",
       essentiel: "Complément annoncé par le cours. Kant distingue l'agréable (chacun son goût) et le beau, qui plaît de façon désintéressée et prétend à l'accord de tous, sans pouvoir se démontrer par un concept.",
       retenir: ["Agréable : relatif à chacun.", "Beau : on attend l'accord des autres.", "On ne démontre pas qu'une œuvre est belle, on en discute."],
-      citation: "Est beau ce qui plaît universellement sans concept.", piege: "À vérifier avec la suite de ton cours : c'est un complément.",
+      citation: "Est beau ce qui plaît universellement sans concept.", piege: "À vérifier avec la suite du cours : c'est un complément.",
       video: "Kant le beau plaît universellement sans concept" },
 
     "imiter": { part: 3, title: "Imiter n'est pas copier",
@@ -863,22 +863,22 @@ Recto.add("l-art", (function () {
   ]);
 
   add("order", [
-    { part: 0, notion: "art-realite", q: "Remets dans l'ordre les sous-parties du cours.",
+    { part: 0, notion: "art-realite", q: "Remettre dans l'ordre les sous-parties du cours.",
       items: ["Créer et produire", "Les conditions de l'artiste", "L'infinité de l'œuvre", "La laideur", "Les différentes formes du beau", "L'énigme du goût", "Imiter", "Représentation"],
       explain: "I (A, B, C) · II (a, b, C) · III (A, B)." },
-    { part: 1, notion: "bride", q: "Rétablis le raisonnement de la partie I, B.",
+    { part: 1, notion: "bride", q: "Rétablir le raisonnement de la partie I, B.",
       items: ["L'artiste peut avoir une idée préalable de son œuvre", "Il peut se donner une théorie ou des règles", "Mais il existe un écart entre l'intention et le résultat", "Hölderlin ne parvient pas au poème parfait", "La maîtrise technique est pourtant une condition de la liberté", "La condition de l'artiste ne suffit donc pas à définir l'œuvre"],
       explain: "Intention → règles → écart → Hölderlin → Léonard → bilan, puis l'infinité de l'œuvre." },
-    { part: 2, notion: "hume", q: "Remets dans l'ordre l'argument sur le goût.",
+    { part: 2, notion: "hume", q: "Remettre dans l'ordre l'argument sur le goût.",
       items: ["Le goût est le sentiment du bon", "Pour Hume, il repose sur une subtile sympathie", "S'il n'est que sentiment, il mène au relativisme", "Or le goût évolue au cours des années", "Il se transmet d'une personne à l'autre", "Donc l'inculture dessert le goût"],
       explain: "Le goût ne se réduit pas à une sensibilité spontanée." },
-    { part: 1, notion: "interpretation", q: "Remets dans l'ordre les étapes de « l'infinité de l'œuvre ».",
+    { part: 1, notion: "interpretation", q: "Remettre dans l'ordre les étapes de « l'infinité de l'œuvre ».",
       items: ["L'œuvre vit par son interprétation", "Chaque interprétation peut produire de nouveaux sens (Rimbaud)", "L'œuvre peut dépasser l'intention de son auteur (Chopin, Bref)", "Le sens se construit dans le présent (Mozart, Salieri)", "Il n'y a pas de vrai sens d'un texte (Valéry)", "L'œuvre dépasse son auteur (Rilke)"],
       explain: "C'est l'ordre du cours, du public jusqu'à l'œuvre qui dépasse l'humain." }
   ]);
 
   add("match", [
-    { part: 1, q: "Associe chaque auteur à son idée (partie I).",
+    { part: 1, q: "Associer chaque auteur à son idée (partie I).",
       pairs: [
         { l: "Kant", r: "L'art est libéral, le métier mercenaire", n: "liberal" },
         { l: "Danto", r: "Une certaine théorie de l'art fait l'œuvre", n: "danto" },
@@ -887,7 +887,7 @@ Recto.add("l-art", (function () {
         { l: "Rimbaud", r: "Tous les sens possibles", n: "sens-possibles" },
         { l: "Valéry", r: "Pas de vrai sens d'un texte", n: "valery" }
       ], explain: "Les grandes références de la partie I." },
-    { part: 2, q: "Associe chaque auteur à son idée (partie II).",
+    { part: 2, q: "Associer chaque auteur à son idée (partie II).",
       pairs: [
         { l: "Baudelaire", r: "Le beau est toujours bizarre", n: "bizarre" },
         { l: "Hegel", r: "Le beau artistique est supérieur au beau naturel", n: "hegel-beau" },
@@ -896,7 +896,7 @@ Recto.add("l-art", (function () {
         { l: "Abel Gance", r: "Nos yeux ne sont pas encore faits pour elles", n: "plaisir-negatif" },
         { l: "Malraux", r: "La part obscure", n: "horreur" }
       ], explain: "Les grandes références de la partie II." },
-    { part: 3, q: "Associe chaque auteur à son idée (partie III).",
+    { part: 3, q: "Associer chaque auteur à son idée (partie III).",
       pairs: [
         { l: "Platon", r: "L'œuvre n'est qu'un fantôme", n: "platon" },
         { l: "Cicéron", r: "La nature a plus d'art que nos arts", n: "imiter" },
@@ -905,7 +905,7 @@ Recto.add("l-art", (function () {
         { l: "Goodman", r: "L'œuvre fonctionne comme symbole", n: "goodman" },
         { l: "Reverdy", r: "Du réel extérieur au réel intérieur", n: "reverdy" }
       ], explain: "Les grandes références de la partie III." },
-    { part: 0, q: "Associe chaque œuvre à ce qu'elle illustre dans le cours.",
+    { part: 0, q: "Associer chaque œuvre à ce qu'elle illustre dans le cours.",
       pairs: [
         { l: "La boîte de Brillo de Warhol", r: "Un objet ordinaire devenu œuvre", n: "danto" },
         { l: "Le Bain turc d'Ingres", r: "La nature corrigée pour l'harmonie", n: "laideur" },
@@ -914,7 +914,7 @@ Recto.add("l-art", (function () {
         { l: "La Liberté guidant le peuple", r: "Un symbole de la lutte collective", n: "goodman" },
         { l: "L'Avare de Molière", r: "Un personnage fictif pour comprendre l'avarice", n: "representer" }
       ], explain: "Chaque exemple d'œuvre est un argument." },
-    { part: 1, q: "Associe chaque exemple à l'idée qu'il montre (I, C).",
+    { part: 1, q: "Associer chaque exemple à l'idée qu'il montre (I, C).",
       pairs: [
         { l: "Chopin", r: "Devenu l'archétype de ce qu'il rejetait", n: "echappe" },
         { l: "Les sketchs Bref", r: "Une lecture sociologique imprévue par l'auteur", n: "echappe" },
@@ -923,7 +923,7 @@ Recto.add("l-art", (function () {
         { l: "Molière joué aujourd'hui", r: "Interpréter autrement sans trahir", n: "interpretation" },
         { l: "Rilke sur Supervielle", r: "Une poésie qui dépasse l'humain", n: "echappe" }
       ], explain: "L'infinité de l'œuvre, exemple par exemple." },
-    { part: 0, q: "Associe chaque mot à sa définition.",
+    { part: 0, q: "Associer chaque mot à sa définition.",
       pairs: [
         { l: "Technè", r: "Savoir-faire, à la fois art et technique", n: "technique" },
         { l: "Archétype", r: "Ce qui représente fondamentalement une chose", n: "echappe" },
@@ -935,7 +935,7 @@ Recto.add("l-art", (function () {
   ]);
 
   add("sort", [
-    { part: 2, q: "Classe chaque exemple : l'art embellit-il le réel, ou le montre-t-il sans l'embellir ?",
+    { part: 2, q: "Classer chaque exemple : l'art embellit-il le réel, ou le montre-t-il sans l'embellir ?",
       buckets: ["Embellit le réel", "Montre sans embellir"],
       items: [
         { t: "Le Bain turc d'Ingres", b: 0, n: "laideur" },
@@ -957,7 +957,7 @@ Recto.add("l-art", (function () {
         { t: "La statuaire grecque et ses proportions", b: 1, n: "libre-adherente" },
         { t: "Rapprochée d'une beauté conventionnelle", b: 1, n: "libre-adherente" }
       ], explain: "Kant, Critique de la faculté de juger." },
-    { part: 0, q: "Range chaque référence dans la bonne partie du cours.",
+    { part: 0, q: "Ranger chaque référence dans la bonne partie du cours.",
       buckets: ["I. Critère artistique", "II. Le goût", "III. Art et réalité"],
       items: [
         { t: "Danto et la boîte de Brillo", b: 0, n: "danto" },
@@ -970,7 +970,7 @@ Recto.add("l-art", (function () {
         { t: "Aristote et la catharsis", b: 2, n: "aristote" },
         { t: "Goodman et le symbole", b: 2, n: "goodman" }
       ], explain: "Situer une référence, c'est savoir dans quel argument l'utiliser." },
-    { part: 3, q: "Imiter ou représenter ? Classe chaque idée.",
+    { part: 3, q: "Imiter ou représenter ? Classer chaque idée.",
       buckets: ["Imiter (III, A)", "Représenter (III, B)"],
       items: [
         { t: "L'imitateur accentue certains traits", b: 0, n: "imiter" },
@@ -985,7 +985,7 @@ Recto.add("l-art", (function () {
   ]);
 
   add("schema", [
-    { part: 1, layout: "flow", q: "Complète le raisonnement de la partie I.",
+    { part: 1, layout: "flow", q: "Compléter le raisonnement de la partie I.",
       nodes: [
         { cap: "A", t: "La technique est nécessaire à l'art" },
         { cap: "A", slot: "Mais elle n'est pas suffisante", n: "technique" },
@@ -1005,7 +1005,7 @@ Recto.add("l-art", (function () {
       ],
       distract: ["Platon", "Les goûts ne changent jamais"],
       explain: "Le goût part d'un sentiment, mais il ne se réduit pas à une sensibilité spontanée." },
-    { part: 3, layout: "flow", q: "Complète le parcours de la partie III.",
+    { part: 3, layout: "flow", q: "Compléter le parcours de la partie III.",
       nodes: [
         { cap: "A", t: "Imiter n'est pas copier (Cicéron)" },
         { cap: "A", slot: "Platon : l'imitation est trompeuse", n: "platon" },
@@ -1019,7 +1019,7 @@ Recto.add("l-art", (function () {
   ]);
 
   add("grid", [
-    { part: 3, q: "Coche ce que soutient chaque auteur, d'après le cours.",
+    { part: 3, q: "Cocher ce que soutient chaque auteur, d'après le cours.",
       cols: ["Platon", "Aristote", "Hegel"],
       rows: [
         { t: "L'art imite de façon trompeuse et éloigne du vrai", a: [1, 0, 0], n: "platon" },
@@ -1145,7 +1145,7 @@ Recto.add("l-art", (function () {
         { t: "L'art exprime le réel intérieur (Reverdy, la madeleine de Proust)", ok: true },
         { t: "L'art est une copie parfaite du réel", ok: false, why: "Même réaliste, il reste une construction (Stendhal)." },
         { t: "L'artiste maîtrise toujours son œuvre", ok: false, why: "Hors sujet, et contraire au cours (écart intention / résultat)." },
-        { t: "Le beau artistique est un produit de l'esprit", ok: false, why: "Utile seulement si tu l'expliques : en l'état, il ne répond pas à la question du rapport au réel." }
+        { t: "Le beau artistique est un produit de l'esprit", ok: false, why: "Utile seulement si on l'explique : en l'état, il ne répond pas à la question du rapport au réel." }
       ],
       prob: "L'art, qui n'offre que des images, nous détourne-t-il du réel, ou nous le fait-il mieux voir ?",
       plan: ["Oui, si l'on attend de lui la vérité : Platon (fantôme), Hegel.", "Mais l'art n'est pas une science : il exprime une idée, une émotion, une expérience.", "Il nous rapproche même du réel : la banalité (Chardin, Flaubert), le réel intérieur (Reverdy)."],
@@ -1214,11 +1214,11 @@ Recto.add("l-art", (function () {
     ]
   };
   const tips = [
-    "Pour chaque argument, donne une référence précise (auteur, œuvre) et un exemple d'œuvre d'art : Warhol, Goya, Chardin, Delacroix, Rodin…",
-    "Distingue toujours imiter et copier, le beau et l'agréable, l'intention de l'auteur et le sens de l'œuvre.",
-    "Pour un sujet sur le goût : Hume (sensibilité), puis le goût qui s'éduque, puis l'inculture qui le dessert.",
-    "Explique une citation en décortiquant ses mots, comme le cours le fait pour « tous les sens possibles ».",
-    "Termine chaque partie par une transition qui pose la question suivante, comme le cours passe de l'artiste à l'œuvre qui lui échappe."
+    "Une référence précise (auteur, œuvre) et une œuvre d'art par argument : Warhol, Goya, Chardin, Delacroix, Rodin…",
+    "Distinguer imiter et copier, le beau et l'agréable, l'intention de l'auteur et le sens de l'œuvre.",
+    "Sujet sur le goût : Hume (sensibilité), le goût qui s'éduque, l'inculture qui le dessert.",
+    "Expliquer une citation mot à mot, comme le cours pour « tous les sens possibles ».",
+    "Finir chaque partie par une transition qui pose la question suivante."
   ];
 
   /* ---------------- REPÈRES DE LECTURE ---------------- */

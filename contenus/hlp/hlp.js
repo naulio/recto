@@ -18,7 +18,7 @@ window.RECTO_HLP = {
     philosophie: { title: "Philosophie", short: "Philo", tone: "#5856d6", blurb: "Thèses, arguments et concepts des philosophes étudiés en spécialité. Distincte de la philosophie du tronc commun." }
   },
 
-  /* Programme : les intitulés officiels servent de repères (complément, l'ordre de ton professeur peut différer) */
+  /* Programme : les intitulés officiels servent de repères (complément, l'ordre suivi en classe peut différer) */
   objets: [
     { id: "recherche-de-soi", title: "La recherche de soi", sem: "Semestre 1", complement: true,
       entries: ["ch1", "sensibilite", "metamorphoses"] },
@@ -147,7 +147,7 @@ window.RECTO_HLP = {
   texts: [
     /* ---------------------------------------------------------------- */
     { id: "ferry-lettre", chapter: "ch1", discipline: "philosophie", author: "ferry",
-      classement: { chapitre: "en-tete", discipline: "Lettre d'un ministre, texte d'idées : rangée en philosophie (à confirmer avec tes cours)." },
+      classement: { chapitre: "en-tete", discipline: "Lettre d'un ministre, texte d'idées : rangée en philosophie (à confirmer avec les cours)." },
       title: "L'éducation morale de la nation, une priorité", work: "« Lettre aux instituteurs »", year: "1883", yearN: 1883, genre: "Lettre officielle",
       doc: { photos: ["IMG_2599"], printed: "TEXTE 5" },
       chapeau: "Après la loi du 28 mars 1882 qui rend l'école primaire obligatoire, Jules Ferry, ministre de l'Instruction publique, écrit aux instituteurs pour leur expliquer une de leurs missions essentielles : l'instruction civique et morale.",
@@ -584,7 +584,7 @@ window.RECTO_HLP = {
       ],
       manuel: {},
       alertes: [
-        "La feuille ne porte ni nom d'auteur ni titre d'œuvre. Le texte est identifié comme le début de Madame Bovary de Gustave Flaubert (1857) : identification extérieure à tes documents, à confirmer avec ton professeur.",
+        "La feuille ne porte ni nom d'auteur ni titre d'œuvre. Le texte est identifié comme le début de Madame Bovary de Gustave Flaubert (1857) : identification extérieure aux documents, à confirmer.",
         "Le numéro « TEXTE 1 » est barré et remplacé à la main par « 5 »."
       ],
       complement: ["Le « nouveau » est Charles Bovary, futur mari d'Emma, l'héroïne du roman.", "Gustave Flaubert (1821-1880), romancier ; Madame Bovary paraît en volume en 1857."],

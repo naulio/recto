@@ -161,7 +161,7 @@ ok(CB.parts.every((p, i) => p.n === i), "parties numérotées dans l'ordre");
 ok(CB.parts.every(p => pages.some(x => x.part === p.n)), "chaque partie du cours (introduction, I à VIII) a ses pages");
 const notesPages = new Set();
 pages.forEach(p => {
-  const m = /^Tes notes, p\. (\d+)(?:-(\d+))?$/.exec(p.src || "");
+  const m = /^Notes de cours, p\. (\d+)(?:-(\d+))?$/.exec(p.src || "");
   ok(m, `${p.id} : page des notes indiquée`);
   if (m) for (let k = +m[1]; k <= +(m[2] || m[1]); k++) notesPages.add(k);
   ok((p.side || []).length <= 2, `${p.id} : deux encadrés au plus`);
@@ -225,6 +225,25 @@ const tq = P0.interp.find(s => s.t === "tocqueville-uniformiser");
 ok(tq && tq.doc && /affaire nationale/.test(tq.q), "la question d'interprétation relevée dans le manuel est reprise telle quelle (Tocqueville)");
 ok(litt.length && !HD.bacDraw(HB, BK, { disc: "litterature", chs: ["ch1"], texts: [] }, "essai", []).essai.length, "littérature sans cours : pas d'essai (génération verrouillée dans l'interface)");
 console.log(`  ${hdraws} tirages HLP vérifiés`);
+
+/* ------------------------------------------------------------------ */
+section("8. Bac blanc : méthode et corrigés rédigés");
+load("contenus/bac/methode.js");
+const ME = win.RECTO_METHODE;
+const hm = s => { const m = /^(\d+) h(?: (\d+))?$/.exec(s); return m ? +m[1] * 60 + +(m[2] || 0) : 0; };
+[["tc", ["dissertation", "explication"]], ["hlp", ["epreuve", "interpretation", "essai"]]].forEach(([k, ids]) => ids.forEach(id => {
+  const m = ME[k].find(x => x.id === id);
+  ok(m && m.steps.length >= 3 && m.parts.length, `méthode ${k} : ${id} (étapes et structure)`);
+  if (m) ok(m.steps.reduce((a, s) => a + s.min, 0) === hm(m.time), `méthode ${k} : ${id}, les étapes font bien ${m.time}`);
+}));
+ok(ME.grille.length >= 6 && ME.jourJ.length >= 4, "méthode : ce qui compte et le jour J");
+const YOU = /(^|[^\p{L}])(tu|toi|ton|ta|tes|te|vous|votre|vos)(?!\p{L})/iu;
+ok(!YOU.test(JSON.stringify(ME)), "méthode : aucune adresse au lecteur");
+const cr = require("child_process").spawnSync(process.execPath, [path.join(__dirname, "corriges.js")], { encoding: "utf8" });
+const crLine = (cr.stdout.match(/\d+ corrigés[^\n]*/) || [""])[0];
+ok(cr.status === 0, "corrigés : structure, longueurs, citations exactes, ton impersonnel (" + crLine + ")");
+ok(/Tous les sujets ont un corrigé/.test(cr.stdout), "corrigés : un par sujet de dissertation, d'explication, d'essai et d'interprétation");
+console.log("  " + crLine);
 
 /* ------------------------------------------------------------------ */
 console.log(`\n${fails ? "ÉCHECS : " + fails : "Tout est bon"} · ${oks} vérifications réussies`);

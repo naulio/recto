@@ -120,3 +120,10 @@ Exemple complet : `contenus/lecons/hlp-ch1-education.js`. Ce qu'un cours HLP peu
 ## 5. Nouvelle version
 
 Après une modification, change le numéro de version `V` dans `assets/app.js`, `sw.js` et les `?v=` de `index.html` : les navigateurs et l'app installée prendront la nouvelle version. Un nouveau fichier doit aussi être ajouté à la liste `CORE` de `sw.js`. Puis lance `node tests/verifier.js`.
+
+## 6. Corrigés et méthode du bac blanc
+
+- `contenus/bac/methode.js` : les étapes minutées (elles doivent faire le temps annoncé), la structure de chaque exercice, ce qui compte, le jour J.
+- `contenus/bac/corriges-*.js` : un corrigé par sujet, clé = identifiant du sujet (`L-<leçon>-build-N`, `S-<id>`, `E-<id>`, `A-<cours>-build-N`, `I-<texte>`), avec `intro`, `parties` (`titre`, `args` [`idee`, `ref`], `transition`) et `conclusion` ; pour une explication, chaque partie reprend le `from` du mouvement.
+- `node tests/sujet.js <id>` affiche tout ce que le cours dit d'un sujet ; `node tests/corriges.js` vérifie longueurs, citations mot pour mot et ton impersonnel.
+- Écriture : impersonnelle (infinitif, « on »), sans « tu » ni « vous ».

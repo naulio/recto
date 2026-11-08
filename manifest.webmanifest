@@ -1,7 +1,7 @@
 {
   "name": "Recto — apprends, applique",
   "short_name": "Recto",
-  "description": "Tes cours remis au propre, une idée par page, puis des exercices, des fiches et des sujets pour t'en servir.",
+  "description": "Révisions de philosophie et de HLP : cours, fiches, exercices, bac blanc corrigé.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

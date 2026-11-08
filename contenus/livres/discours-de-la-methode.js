@@ -80,7 +80,7 @@ Recto.add("discours-de-la-methode", (function () {
       ] },
     5: { full: 24, ess: 8, express: 4, link: WIKI + "Cinqui%C3%A8me_partie",
       text: {
-        full: "Toute la partie ; tu peux survoler la description détaillée du cœur.",
+        full: "Toute la partie ; la description détaillée du cœur peut être survolée.",
         ess: "Le premier paragraphe (le traité non publié, le monde nouveau), survole le cœur, puis lis attentivement à partir de « s'il y avait de telles machines » jusqu'à la fin.",
         express: "À partir de « s'il y avait de telles machines » jusqu'à la fin."
       },
@@ -119,7 +119,7 @@ Recto.add("discours-de-la-methode", (function () {
         "Six parties : sciences · méthode · morale · métaphysique · physique · raisons d'écrire."
       ],
       citation: "mon dessein n'est pas d'enseigner ici la méthode que chacun doit suivre pour bien conduire sa raison, mais seulement de faire voir en quelle sorte j'ai tâché de conduire la mienne.",
-      piege: "Ne confonds pas avec les Méditations métaphysiques (1641) : le malin génie, le morceau de cire et « je suis, j'existe » n'apparaissent pas dans le Discours.",
+      piege: "Ne pas confondre avec les Méditations métaphysiques (1641) : le malin génie, le morceau de cire et « je suis, j'existe » n'apparaissent pas dans le Discours.",
       video: "Discours de la méthode Descartes résumé explication" },
 
     "bon-sens": { part: 1, title: "Le bon sens, également partagé",
@@ -633,26 +633,26 @@ Recto.add("discours-de-la-methode", (function () {
 
   /* REMETTRE DANS L'ORDRE */
   add("order", [
-    { part: 2, notion: "regles", q: "Remets les quatre règles de la méthode dans l'ordre.",
+    { part: 2, notion: "regles", q: "Remettre les quatre règles de la méthode dans l'ordre.",
       items: ["Ne recevoir pour vrai que ce que je connais évidemment être tel", "Diviser chaque difficulté en autant de parcelles qu'il se peut", "Conduire par ordre mes pensées, des plus simples aux plus composées", "Faire des dénombrements si entiers que je sois assuré de ne rien omettre"],
       explain: "Évidence, analyse, ordre, dénombrement." },
-    { part: 0, notion: "ctx", q: "Remets les six parties du Discours dans l'ordre.",
+    { part: 0, notion: "ctx", q: "Remettre les six parties du Discours dans l'ordre.",
       items: ["Considérations touchant les sciences", "Les principales règles de la méthode", "Quelques règles de la morale tirée de la méthode", "Les preuves de l'existence de Dieu et de l'âme", "Les questions de physique : le cœur, l'âme des bêtes", "Ce qui est requis pour aller plus avant, et pourquoi il écrit"],
       explain: "C'est le plan annoncé par Descartes lui-même au seuil du livre." },
-    { part: 4, notion: "cogito", q: "Rétablis la chaîne des raisons de la IVe partie.",
+    { part: 4, notion: "cogito", q: "Rétablir la chaîne des raisons de la IVe partie.",
       items: ["Rejeter comme faux tout ce qui est douteux", "Je pense, donc je suis", "Je suis une substance dont l'essence est de penser", "Ce que je conçois clairement et distinctement est vrai", "J'ai l'idée d'un être plus parfait que moi", "Dieu existe", "Dieu garantit la vérité de mes idées claires et distinctes"],
       explain: "Doute → cogito → nature de l'âme → critère → idée du parfait → Dieu → garantie." },
-    { part: 0, notion: "monde", q: "Remets dans l'ordre l'itinéraire raconté dans le Discours.",
+    { part: 0, notion: "monde", q: "Remettre dans l'ordre l'itinéraire raconté dans le Discours.",
       items: ["Études au collège, « nourri aux lettres dès [son] enfance »", "Il quitte l'étude des lettres pour le grand livre du monde", "Un hiver en Allemagne, seul dans un poêle", "Neuf ans de voyages, « spectateur plutôt qu'acteur »", "Retraite en Hollande et premières méditations métaphysiques", "Il renonce à publier son traité après une condamnation", "Il publie le Discours et trois essais"],
       explain: "I (études, voyages) → II (poêle) → III (neuf ans, Hollande) → IV (méditations) → VI (condamnation, publication)." },
-    { part: 6, notion: "experiences", q: "Remets dans l'ordre la démarche de recherche décrite dans la VIe partie.",
+    { part: 6, notion: "experiences", q: "Remettre dans l'ordre la démarche de recherche décrite dans la VIe partie.",
       items: ["Chercher les principes ou premières causes, à partir des semences de vérités en nos âmes", "En déduire les premiers et plus ordinaires effets (cieux, astres, terre)", "Descendre aux choses plus particulières", "Recourir aux expériences pour savoir de quelle façon elles dépendent des principes"],
       explain: "Plus on descend vers le particulier, plus les expériences sont nécessaires." }
   ]);
 
   /* ASSOCIER */
   add("match", [
-    { part: 0, q: "Associe chaque image à ce qu'elle signifie (parties I à III).",
+    { part: 0, q: "Associer chaque image à ce qu'elle signifie (parties I à III).",
       pairs: [
         { l: "La ville tracée par un seul ingénieur", r: "Ce qu'un seul conçoit est plus parfait", n: "architecte" },
         { l: "L'homme qui marche seul dans les ténèbres", r: "Avancer lentement pour au moins ne pas tomber", n: "reforme" },
@@ -660,8 +660,8 @@ Recto.add("discours-de-la-methode", (function () {
         { l: "Les voyageurs égarés dans la forêt", r: "Rester ferme dans ses résolutions", n: "maxime2" },
         { l: "Le roc ou l'argile sous le sable", r: "Le fondement certain que cherche le doute", n: "conclusion-morale" },
         { l: "Les palais superbes bâtis sur la boue", r: "La morale des anciens, sans fondement solide", n: "etudes" }
-      ], explain: "Ces images sont tes meilleures preuves de lecture au contrôle." },
-    { part: 0, q: "Associe chaque image à ce qu'elle signifie (parties IV à VI).",
+      ], explain: "Ces images sont les meilleures preuves de lecture au contrôle." },
+    { part: 0, q: "Associer chaque image à ce qu'elle signifie (parties IV à VI).",
       pairs: [
         { l: "La tête de lion sur un corps de chèvre", r: "Imaginer distinctement ne prouve pas l'existence", n: "garantie-reve" },
         { l: "Le triangle et ses trois angles", r: "L'existence est comprise dans l'idée de Dieu", n: "dieu" },
@@ -670,7 +670,7 @@ Recto.add("discours-de-la-methode", (function () {
         { l: "Le lierre", r: "Les disciples qui ne dépassent pas leur maître", n: "experiences" },
         { l: "L'aveugle dans une cave obscure", r: "Se cacher derrière des principes obscurs", n: "experiences" }
       ], explain: "IV : chimère, triangle. V : horloge, pilote. VI : lierre, aveugle." },
-    { part: 1, notion: "etudes", q: "Associe chaque discipline au jugement qu'en porte Descartes.",
+    { part: 1, notion: "etudes", q: "Associer chaque discipline au jugement qu'en porte Descartes.",
       pairs: [
         { l: "Mathématiques", r: "Certaines et évidentes, mais rien de plus relevé bâti dessus" },
         { l: "Philosophie", r: "Il n'y a rien dont on ne dispute" },
@@ -679,14 +679,14 @@ Recto.add("discours-de-la-methode", (function () {
         { l: "Fables et romans", r: "Risque des extravagances des paladins" },
         { l: "Éloquence et poésie", r: "Dons de l'esprit plutôt que fruits de l'étude" }
       ], explain: "Chaque discipline a un mérite, aucune ne donne de certitude utile à la vie." },
-    { part: 2, notion: "regles", cite: true, q: "Associe chaque règle à l'expression qui la résume.",
+    { part: 2, notion: "regles", cite: true, q: "Associer chaque règle à l'expression qui la résume.",
       pairs: [
         { l: "Évidence", r: "« la précipitation et la prévention »" },
         { l: "Analyse", r: "« autant de parcelles qu'il se pourrait »" },
         { l: "Ordre", r: "« comme par degrés »" },
         { l: "Dénombrement", r: "« assuré de ne rien omettre »" }
-      ], explain: "À savoir citer : ces fragments suffisent à prouver ta lecture." },
-    { part: 0, q: "Associe chaque notion à sa définition.",
+      ], explain: "À savoir citer : ces fragments suffisent à prouver la lecture." },
+    { part: 0, q: "Associer chaque notion à sa définition.",
       pairs: [
         { l: "Bon sens", r: "La puissance de bien juger et distinguer le vrai du faux", n: "bon-sens" },
         { l: "Paralogisme", r: "Une erreur de raisonnement", n: "doute" },
@@ -699,7 +699,7 @@ Recto.add("discours-de-la-methode", (function () {
 
   /* CLASSER */
   add("sort", [
-    { part: 3, q: "Range chaque énoncé dans la bonne maxime de la morale par provision.",
+    { part: 3, q: "Ranger chaque énoncé dans la bonne maxime de la morale par provision.",
       buckets: ["Maxime 1", "Maxime 2", "Maxime 3", "Conclusion"],
       items: [
         { t: "Suivre les opinions les plus modérées", b: 0, n: "maxime1" },
@@ -744,7 +744,7 @@ Recto.add("discours-de-la-methode", (function () {
 
   /* SCHÉMAS */
   add("schema", [
-    { part: 4, layout: "flow", q: "Complète le schéma : la chaîne des raisons de la IVe partie.",
+    { part: 4, layout: "flow", q: "Compléter le schéma : la chaîne des raisons de la IVe partie.",
       nodes: [
         { cap: "1", t: "Doute : rejeter comme faux tout ce qui est douteux" },
         { cap: "2", slot: "Je pense, donc je suis", n: "cogito" },
@@ -766,7 +766,7 @@ Recto.add("discours-de-la-methode", (function () {
       ],
       distract: ["Le malin génie", "La folie"],
       explain: "Sens → raisonnements → rêve. La folie et le malin génie appartiennent aux Méditations." },
-    { part: 2, notion: "regles", layout: "pictos", q: "Associe chaque pictogramme à la règle de la méthode qu'il représente.",
+    { part: 2, notion: "regles", layout: "pictos", q: "Associer chaque pictogramme à la règle de la méthode qu'il représente.",
       nodes: [
         { icon: "filter", cap: "Un filtre", slot: "Évidence" },
         { icon: "split", cap: "Un bloc découpé", slot: "Analyse" },
@@ -785,12 +785,12 @@ Recto.add("discours-de-la-methode", (function () {
         { cap: "VI", slot: "L'usage : maîtres et possesseurs de la nature", n: "maitres" }
       ],
       distract: ["Les murs : la logique des syllogismes", "Le toit : la théologie"],
-      explain: "L'image de la maison à rebâtir traverse tout le livre : à réutiliser dans tes introductions." }
+      explain: "L'image de la maison à rebâtir traverse tout le livre : à réutiliser dans les introductions." }
   ]);
 
   /* TABLEAUX */
   add("grid", [
-    { part: 5, notion: "animaux", q: "Coche ce qui vaut pour chacun, selon la Ve partie.",
+    { part: 5, notion: "animaux", q: "Cocher ce qui vaut pour chacun, selon la Ve partie.",
       cols: ["Homme", "Animal", "Machine"],
       rows: [
         { t: "Peut proférer des paroles", a: [1, 1, 1] },
@@ -1060,12 +1060,12 @@ Recto.add("discours-de-la-methode", (function () {
     ]
   };
   const tips = [
-    "Pour chaque argument, cite une image ou une formule du texte (l'architecte, la forêt, le roc et l'argile, la chimère…) : c'est la preuve que tu as lu.",
-    "Ne mélange pas le Discours (1637) et les Méditations (1641) : pas de malin génie, pas de morceau de cire.",
-    "Distingue toujours juger (douter de tout) et agir (suivre fermement le plus probable) : beaucoup de questions reposent sur cette différence.",
-    "Annonce une problématique en une phrase, puis deux ou trois arguments dans l'ordre du texte.",
-    "Emploie le vocabulaire exact : évidence, doute méthodique, substance pensante, clair et distinct, morale par provision.",
-    "Termine par une nuance ou une limite (le « comme » de « maîtres et possesseurs », le provisoire de la morale)."
+    "Une image ou une formule du texte par argument (l'architecte, la forêt, le roc et l'argile, la chimère…) : la preuve d'une lecture réelle.",
+    "Ne pas mélanger le Discours (1637) et les Méditations (1641) : ni malin génie, ni morceau de cire.",
+    "Distinguer juger (douter de tout) et agir (suivre fermement le plus probable).",
+    "Une problématique en une phrase, deux ou trois arguments dans l'ordre du texte.",
+    "Vocabulaire exact : évidence, doute méthodique, substance pensante, clair et distinct, morale par provision.",
+    "Finir sur une nuance (le « comme » de « maîtres et possesseurs », le provisoire de la morale)."
   ];
 
   return { unit, exam, plan, overview, tips, parts, reading, notions, exercises };
