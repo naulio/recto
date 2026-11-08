@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "7"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "8"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -488,7 +488,8 @@
     document.body.classList.toggle("in-item", !!(inBook || spaceNav));
     const hlpItem = inBook && B.meta.space === "hlp";
     document.body.dataset.space = hlpItem || VIEW === "hlp" ? "hlp" : VIEW === "spaces" ? "" : "tc";
-    $("#crumb").innerHTML = inBook ? crumbLink(hlpItem ? "#/hlp" : "#/tronc-commun", hlpItem ? "HLP" : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
+    const hlpDisc = hlpItem && B.meta.discipline ? { litterature: "Littérature", philosophie: "Philosophie" }[B.meta.discipline] : "";
+    $("#crumb").innerHTML = inBook ? crumbLink(hlpItem ? (hlpDisc ? "#/hlp/" + B.meta.discipline : "#/hlp") : "#/tronc-commun", hlpItem ? (hlpDisc ? "HLP · " + hlpDisc : "HLP") : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
       : ["home", "library", "tcbac"].includes(VIEW) ? crumbLink("#/tronc-commun", "Philosophie · Tronc commun")
       : VIEW === "hlp" ? crumbLink("#/hlp", "Spécialité HLP") : "";
     $("#nav").hidden = !inBook && !spaceNav;
@@ -1008,6 +1009,8 @@
       case "ex": return `<div class="co-card ex"><span class="tg">${esc(c.w || "Exemple")}</span><p>${md(c.t)}</p></div>`;
       case "plus": return `<div class="co-card plus"><span class="tg">${esc(c.w || "Complément")}</span><p>${md(c.t)}</p></div>`;
       case "warn": return `<div class="co-card warn"><span class="tg">Attention</span><p>${md(c.t)}</p></div>`;
+      /* Ce que les notes ne permettent pas d'affirmer (illisible, douteux, sans source) */
+      case "check": return `<div class="co-card check"><span class="tg">À vérifier</span><p>${md(c.t)}</p></div>`;
     }
     return "";
   }
@@ -1055,7 +1058,7 @@
         <div class="co-legend" aria-label="Repères de lecture"><mark class="hl">idée clé</mark><b>notion</b><span class="au">auteur</span><i class="wk">œuvre</i></div>
       </nav>
       <article class="card co-page ${G.skim ? "skim" : ""}" id="coPage">
-        <header class="co-head"><span class="eyebrow accent">${esc(where)}</span>${pg.extra ? `<span class="tag ghost">Complément</span>` : ""}<button class="co-skim ${G.skim ? "on" : ""}" id="coSkim" title="Lecture rapide : seules les idées clés restent en avant" aria-pressed="${!!G.skim}"><i></i>Lecture rapide</button><span class="co-count tabnum">${i + 1} / ${C.length}</span></header>
+        <header class="co-head"><span class="eyebrow accent">${esc(where)}</span>${pg.extra ? `<span class="tag ghost">Complément</span>` : ""}${pg.src ? `<span class="co-src" title="Page des notes d'où vient cette page">${esc(pg.src)}</span>` : ""}<button class="co-skim ${G.skim ? "on" : ""}" id="coSkim" title="Lecture rapide : seules les idées clés restent en avant" aria-pressed="${!!G.skim}"><i></i>Lecture rapide</button><span class="co-count tabnum">${i + 1} / ${C.length}</span></header>
         <h1 class="co-title">${esc(pg.title)}</h1>
         <p class="co-lead">${mdc(pg.lead)}</p>
         <div class="co-grid">
@@ -1549,7 +1552,7 @@
           <button class="btn primary sm" data-train-notion="${id}">S'entraîner</button>
           ${n.video ? `<a class="btn secondary sm" href="${yt(n.video)}" target="_blank" rel="noopener">Vidéos ${ICON.ext}</a>` : ""}
           ${B.pageOf && B.pageOf[id] ? `<button class="btn ghost sm" data-goto-page="${B.pageOf[id]}">Relire le cours</button>` : ""}
-          ${n.link ? `<a class="btn ghost sm" href="${esc(n.link)}" data-close>Fiche complète</a>` : ""}
+          ${n.link ? `<a class="btn ghost sm" href="${esc(n.link)}" data-close>${esc(n.linkLabel || "Fiche complète")}</a>` : ""}
           ${n.part && RD(n.part).link ? `<a class="btn ghost sm" href="${RD(n.part).link}" target="_blank" rel="noopener">Texte ${ICON.ext}</a>` : ""}
         </div>
       </div>
@@ -1713,7 +1716,7 @@
     switch (ex.type) {
       case "vf": return "Vrai ou faux ?";
       case "fill": return ex.plain ? "Complète la phrase." : "Complète la citation.";
-      case "part": return "De quel " + U.one + " vient cette phrase ?";
+      case "part": return "De quel" + (U.fem ? "le " : " ") + U.one + " vient cette phrase ?";
       case "flash": return "Réponds de tête, puis retourne la carte.";
       default: return ex.q;
     }

@@ -11,14 +11,14 @@
   const DISCS = ["litterature", "philosophie"];
   const label = t => `${t.a.short} · « ${t.title} »`;
   /* Préparation des données et génération des exercices : sans interface, testées par tests/verifier.js */
-  Recto.hlpData = { prepare, corpusBook };
+  Recto.hlpData = { prepare, corpusBook, bacPool, bacDraw };
   if (!C) return;
   const { $, $$, esc, toast, store, X, ICON } = C;
 
   const K = "recto.hlp";
-  const ST = Object.assign({ lib: { mode: "textes", disc: "tout", q: "" }, tab: {}, atab: {}, bac: { disc: "litterature", chs: ["ch1"], texts: [], fmt: "interpretation" } }, store.get(K) || {});
+  const ST = Object.assign({ lib: { mode: "textes", disc: "tout", q: "" }, tab: {}, atab: {}, bac: {} }, store.get(K) || {});
   ST.lib = Object.assign({ mode: "textes", disc: "tout", q: "" }, ST.lib);
-  ST.bac = Object.assign({ disc: "litterature", chs: ["ch1"], texts: [], fmt: "interpretation" }, ST.bac);
+  ST.bac = Object.assign({ disc: "philosophie", chs: ["ch1"], texts: [], fmt: "epreuve", draw: null, recent: [], drafts: {}, done: {}, timer: null, n: 0 }, ST.bac);
   const saveST = () => store.set(K, ST);
   let H = null, QUIET = false;
   const refresh = () => { QUIET = true; C.rerender(); };
@@ -148,14 +148,16 @@
   function home(root) {
     const ch = H.active[0];
     const nd = d => H.texts.filter(t => t.discipline === d).length;
+    const allCourses = DISCS.flatMap(d => H.courses(d));
+    const bacOpen = DISCS.filter(d => H.courses(d).length).map(d => H.disciplines[d].title.toLowerCase());
     root.innerHTML = `
     <section class="view hlp-home">
       <div class="card hh-hero">
         <div class="eyebrow hlp">Spécialité HLP · ${esc(H.level)}</div>
         <h1 class="hh-t">Humanités, littérature <span class="hl">et philosophie</span></h1>
-        <p class="hh-p">Tes textes étudiés, remis en fiches : la thèse, les arguments, les citations exactes et les liens utiles pour l'essai. Tes cours de spécialité viendront s'ajouter ici.</p>
+        <p class="hh-p">${allCourses.length ? `Ton cours de ${esc(allCourses.map(m => H.disciplines[m.discipline].title.toLowerCase()).filter((x, i, a) => a.indexOf(x) === i).join(" et de "))} remis au propre, et tes textes étudiés en fiches : la thèse, les arguments, les citations exactes et les liens utiles pour l'essai.` : "Tes textes étudiés, remis en fiches : la thèse, les arguments, les citations exactes et les liens utiles pour l'essai. Tes cours de spécialité viendront s'ajouter ici."}</p>
         <div class="hh-facts"><div><b class="cnt" data-v="${H.texts.length}">${H.texts.length}</b><span>textes en fiches</span></div><div><b class="cnt" data-v="${H.authors.length}">${H.authors.length}</b><span>auteurs</span></div><div><b class="cnt" data-v="${H.cites.length}">${H.cites.length}</b><span>citations relevées</span></div></div>
-        <div class="hh-acts"><a class="btn primary lg" href="#/hlp/textes">Textes et auteurs</a><a class="btn secondary lg" href="#/hlp-textes/train">S'entraîner sur les textes</a></div>
+        <div class="hh-acts">${allCourses.length ? `<a class="btn primary lg" href="#/${allCourses[0].id}/cours">Ouvrir le cours</a><a class="btn secondary lg" href="#/hlp/textes">Textes et auteurs</a>` : `<a class="btn primary lg" href="#/hlp/textes">Textes et auteurs</a>`}<a class="btn secondary lg" href="#/hlp-textes/train">S'entraîner sur les textes</a></div>
       </div>
       <div class="card hh-chap">
         <div class="eyebrow">${esc((H.objets.find(o => o.id === ch.objet) || {}).title || "")} · ${esc((H.objets.find(o => o.id === ch.objet) || {}).sem || "")}</div>
@@ -165,7 +167,7 @@
         <div class="hh-disc">${DISCS.map(d => `<a class="hh-d" href="#/hlp/${d}" style="--tone:${tone(d)}"><b>${esc(H.disciplines[d].title)}</b><span>${nd(d)} textes · ${H.courses(d).length ? H.courses(d).length + " cours" : "cours à importer"}</span><small>${esc([...new Set(H.texts.filter(t => t.discipline === d && t.chapter === ch.id).sort((a, b) => a.yearN - b.yearN).map(t => t.a.short))].join(", "))}</small></a>`).join("")}</div>
         <div class="hh-foot"><button class="btn ghost sm" id="chPres">Présentation du chapitre</button><span class="small muted">Ensuite : ${esc(H.chapters.filter(c => c.planned).slice(0, 2).map(c => c.title).join(" · "))}…</span></div>
       </div>
-      <a class="card hh-bac" href="#/hlp/bac"><span class="hh-lock">${LOCK}</span><div><div class="eyebrow">Bac blanc HLP</div><b>Prêt dès l'arrivée de tes cours</b><span>Choix de la discipline, des chapitres et des textes : déjà en place.</span></div>${C.ICON.chev}</a>
+      <a class="card hh-bac ${bacOpen.length ? "open" : ""}" href="#/hlp/bac"><span class="hh-lock">${bacOpen.length ? ICON.check : LOCK}</span><div><div class="eyebrow">Bac blanc HLP</div><b>${bacOpen.length ? "Ouvert en " + esc(bacOpen.join(" et en ")) : "Prêt dès l'arrivée de tes cours"}</b><span>${bacOpen.length ? "Interprétation sur tes textes, essai sur ton cours, ou l'épreuve complète." : "Choix de la discipline, des chapitres et des textes : déjà en place."}</span></div>${C.ICON.chev}</a>
     </section>`;
     $("#chPres", root).onclick = () => chapterModal(ch);
     if (!QUIET) { X.wordsIn($(".hh-t", root)); X.stagger($$(".hh-chap, .hh-bac", root), { y: 14, step: 90 }); C.countAll(root); }
@@ -209,7 +211,7 @@
       <div class="card hd-main scroll">
         <header class="hd-head"><div class="eyebrow">Chapitre ${ch.n} · ${esc(D.title)}</div><h2>${esc(ch.title)}</h2><p class="hh-q">${esc(ch.question)}</p></header>
         <section class="hd-block"><h3>Cours</h3>${courses.length
-          ? `<div class="hd-courses">${courses.map(m => `<a class="hd-course" href="#/${m.id}" style="--tone:${m.tone || D.tone}"><b>${esc(m.title)}</b><span>${esc(m.tagline || "")}</span></a>`).join("")}</div>`
+          ? `<div class="hd-courses">${courses.map(m => { const sm = store.get(C.kSum(m.id)) || {}; return `<a class="hd-course" href="#/${m.id}/cours" style="--tone:${m.tone || D.tone}"><b>${esc(m.title)}</b><span>${esc(m.tagline || "")}</span>${sm.answered ? `<small class="tabnum">${sm.pct} % maîtrisé</small>` : ""}${m.disciplineNote ? `<small class="muted">Discipline ${esc(m.disciplineNote)}</small>` : ""}</a>`; }).join("")}</div>`
           : `<div class="hd-empty"><b>Tes cours de ${esc(D.title.toLowerCase())} arriveront ici.</b><span>Dès qu'ils seront importés : le cours page par page, les fiches de révision, les exercices et le bac blanc ${d === "litterature" ? "littéraire" : "philosophique"}. Rien n'est inventé en attendant.</span></div>`}</section>
         <section class="hd-block"><h3>Textes étudiés <span class="n">${texts.length}</span></h3><div class="tx-list">${texts.map(textRow).join("")}</div></section>
         <section class="hd-block"><h3>${d === "philosophie" ? "Philosophes et penseurs" : "Auteurs"} <span class="n">${authors.length}</span></h3><div class="chips">${authors.map(a => `<a class="chip" href="#/hlp/auteur/${a.id}">${esc(a.name)}</a>`).join("")}</div></section>
@@ -370,15 +372,57 @@
   }
 
   /* =========================================================
-     Bac blanc HLP : sélection en place, génération verrouillée
-     tant qu'aucun cours de la discipline n'est importé
+     Bac blanc HLP
+     Discipline, chapitres, textes : la sélection est respectée.
+     Interprétation : une question sur un texte de la discipline ; essai : un sujet des cours de la discipline.
+     Tant qu'aucun cours de la discipline n'est importé, la génération reste verrouillée.
      ========================================================= */
+  /* Moteur sans interface (testé par tests/verifier.js) */
+  function bacPool(H, books, sel) {
+    const d = sel.disc, chs = sel.chs || [], picked = sel.texts || [];
+    const other = d === "litterature" ? /philosoph/i : /littéra/i;
+    const texts = H.texts.filter(t => t.discipline === d && chs.includes(t.chapter) && (!picked.length || picked.includes(t.id)));
+    const interp = texts.map(t => {
+      const doc = ((t.manuel && t.manuel.bac) || []).find(b => /interpr/i.test(b.k) && !other.test(b.k));
+      return { kind: "interp", id: "I-" + t.id, t: t.id, ch: t.chapter, q: doc ? doc.q : t.problematique, doc: !!doc };
+    });
+    const essai = [];
+    H.courses(d).filter(m => chs.includes(m.chapter) && books[m.id]).forEach(m => books[m.id].exercises.filter(e => e.type === "build").forEach(e => {
+      const tx = (e.tx || []).filter(id => H.T[id] && H.T[id].discipline === d);
+      essai.push({ kind: "essai", id: "A-" + m.id + "-" + e.id, b: m.id, e: e.id, ch: m.chapter, q: e.q, prob: e.prob || "", plan: e.plan || [], cit: e.cit || "",
+        pieges: (e.els || []).filter(x => !x.ok && x.why).map(x => x.t + " : " + x.why), refs: (e.ns || []).map(n => [m.id, n]), tx,
+        hit: picked.length ? tx.filter(id => picked.includes(id)).length : 0 });
+    }));
+    return { interp, essai };
+  }
+  function bacDraw(H, books, sel, fmt, recent, rnd) {
+    rnd = rnd || Math.random; recent = recent || [];
+    const N = { epreuve: { interp: 1, essai: 1 }, interpretation: { interp: 2, essai: 0 }, essai: { interp: 0, essai: 3 } }[fmt] || { interp: 1, essai: 1 };
+    const P = bacPool(H, books, sel);
+    const score = s => rnd() - (recent.includes(s.id) ? 1 : 0) + (s.hit || 0) * 2;
+    const take = (list, n) => list.map(s => [score(s), s]).sort((a, b) => b[0] - a[0]).slice(0, n).map(x => x[1]);
+    const interp = take(P.interp, N.interp);
+    /* Comme à l'épreuve : l'essai prolonge le texte tiré quand un sujet du cours le mobilise */
+    const linked = fmt === "epreuve" && interp.length ? P.essai.filter(s => s.tx.includes(interp[0].t)) : [];
+    const essai = take(linked.length ? linked : P.essai, N.essai);
+    return { interp, essai, pool: { interp: P.interp.length, essai: P.essai.length } };
+  }
+
   const HFMT = {
-    interpretation: { litterature: "Interprétation littéraire", philosophie: "Interprétation philosophique", sub: "Répondre à une question sur un texte" },
-    essai: { litterature: "Essai littéraire", philosophie: "Essai philosophique", sub: "Réfléchir à une question en s'appuyant sur ses lectures" }
+    epreuve: { label: "Épreuve complète", sub: "Un texte : interprétation, puis essai · 4 h", minutes: 240 },
+    interpretation: { litterature: "Interprétation littéraire", philosophie: "Interprétation philosophique", sub: "Une question sur un texte · 2 au choix", minutes: 120 },
+    essai: { litterature: "Essai littéraire", philosophie: "Essai philosophique", sub: "Une question de réflexion · 3 au choix", minutes: 120 }
   };
-  function bacPage(root) {
-    const S = ST.bac, d = DISCS.includes(S.disc) ? S.disc : "litterature", D = H.disciplines[d];
+  const fmtName = (k, d) => (HFMT[k] && (HFMT[k][d] || HFMT[k].label)) || "";
+  const SELF = [["ok", "J'avais l'essentiel"], ["mid", "En partie"], ["ko", "À retravailler"]];
+  let JUMP = false;
+  const bacST = () => { const S = ST.bac; S.drafts = S.drafts || {}; S.done = S.done || {}; S.recent = S.recent || []; return S; };
+  const doneBadge = s => { const r = bacST().done[s.id]; return r ? `<span class="bac-done ${r.r}">${esc((SELF.find(x => x[0] === r.r) || [])[1] || "")}</span>` : ""; };
+  const courseTitle = b => (C.LIB.find(m => m.id === b) || {}).title || b;
+  function loadAll(list, cb) { let left = list.length; if (!left) return cb(); list.forEach(m => C.loadBook(m.id, () => { if (!--left) cb(); })); }
+
+  function bacPage(root, prm) {
+    const S = bacST(), d = DISCS.includes(S.disc) ? S.disc : "philosophie", D = H.disciplines[d];
     const avail = H.active.filter(c => H.texts.some(t => t.chapter === c.id && t.discipline === d) || H.courses(d).some(m => m.chapter === c.id));
     S.chs = S.chs.filter(id => avail.some(c => c.id === id));
     const pool = H.texts.filter(t => t.discipline === d && S.chs.includes(t.chapter));
@@ -386,12 +430,11 @@
     const chosen = S.texts.length ? pool.filter(t => S.texts.includes(t.id)) : pool;
     const courses = H.courses(d).filter(m => S.chs.includes(m.chapter));
     const ready = courses.length > 0;
-    /* Disciplines séparées : un sujet d'interprétation philosophique ne s'affiche pas en littérature, et inversement */
-    const other = d === "litterature" ? /philosoph/i : /littéra/i;
-    const sujets = chosen.flatMap(t => (t.manuel.bac || []).filter(b => !other.test(b.k)).map(b => ({ t, b })));
-    const fmt = HFMT[S.fmt] ? S.fmt : "interpretation";
+    const fmt = HFMT[S.fmt] ? S.fmt : "epreuve";
+    S.fmt = fmt;
+    const item = prm.s && S.draw && S.draw.disc === d && S.draw.items.find(x => x.id === prm.s);
     root.innerHTML = `
-    <section class="view bac hlp-bac" style="--tone:${D.tone}">
+    <section class="view bac hlp-bac ${item ? "ws-open" : ""}" style="--tone:${D.tone}">
       <aside class="card bac-pick">
         <div class="eyebrow hlp">Bac blanc · Spécialité HLP</div>
         <h1>Prépare ton épreuve</h1>
@@ -402,28 +445,15 @@
         <div class="bac-sec">3. Textes <span class="muted">(facultatif)</span> <button class="btn ghost sm" id="hbAllTx">Tous</button></div>
         <div class="chips bac-chips">${pool.map(t => `<button class="chip ${S.texts.includes(t.id) ? "on" : ""}" data-t="${t.id}">${esc(t.a.short)} · ${esc(C.clip(t.title, 34))}</button>`).join("") || `<span class="muted small">Choisis d'abord un chapitre.</span>`}</div>
         <div class="bac-sec">4. Exercice</div>
-        <div class="bac-fmts two">${Object.keys(HFMT).map(k => `<button class="bac-f ${k === fmt ? "on" : ""}" data-f="${k}"><b>${esc(HFMT[k][d])}</b><small>${esc(HFMT[k].sub)}</small></button>`).join("")}</div>
+        <div class="bac-fmts">${Object.keys(HFMT).map(k => `<button class="bac-f ${k === fmt ? "on" : ""} ${k === "epreuve" ? "wide" : ""}" data-f="${k}"><b>${esc(fmtName(k, d))}</b><small>${esc(HFMT[k].sub)}</small></button>`).join("")}</div>
         <div class="bac-go">
-          <p class="note">${ready ? `Prêt : ${courses.length} cours de ${esc(D.title.toLowerCase())} importé${courses.length > 1 ? "s" : ""}.` : `Génération verrouillée : aucun cours de ${esc(D.title.toLowerCase())} importé pour ${S.chs.length > 1 ? "ces chapitres" : "ce chapitre"}.`}</p>
-          <button class="btn primary lg" id="hbGen" ${ready && S.chs.length ? "" : "disabled"}>${ready ? "Générer le sujet" : LOCK + " Disponible avec tes cours"}</button>
+          <p class="note">${ready
+            ? `${S.texts.length ? chosen.length + " texte" + (chosen.length > 1 ? "s choisis" : " choisi") : "Tous les textes du chapitre"} · cours « ${esc(courses.map(m => m.title).join(" », « "))} ».`
+            : `Génération verrouillée : aucun cours de ${esc(D.title.toLowerCase())} importé pour ${S.chs.length > 1 ? "ces chapitres" : "ce chapitre"}.`}</p>
+          <button class="btn primary lg" id="hbGen" ${ready && S.chs.length ? "" : "disabled"}>${ready ? (S.draw && S.draw.disc === d ? "Nouveau sujet" : "Générer le sujet") : LOCK + " Disponible avec tes cours"}</button>
         </div>
       </aside>
-      <div class="card bac-main" id="hbMain">
-        <div class="bac-lock">
-          <span class="bac-lock-i">${LOCK}</span>
-          <h2>${ready ? "Ton sujet apparaîtra ici" : "Les sujets arriveront avec tes cours"}</h2>
-          <p>${ready ? "Choisis tes chapitres et tes textes, puis génère un sujet." : `Le bac blanc HLP a besoin de tes cours de ${esc(D.title.toLowerCase())} pour proposer des sujets fidèles à ce que tu as étudié. Dès qu'ils seront importés, ce bouton fonctionnera avec la sélection ci-contre. Les ${H.texts.filter(t => t.discipline === d).length} fiches de textes de ${esc(D.title.toLowerCase())} sont déjà prêtes.`}</p>
-          <dl class="bac-stat">
-            <dt>Discipline</dt><dd>${esc(D.title)} <span class="muted">· séparée de l'autre discipline</span></dd>
-            <dt>Chapitres</dt><dd>${S.chs.length ? S.chs.map(id => "Ch. " + H.CH[id].n + " · " + esc(H.CH[id].title)).join(", ") : "aucun"}</dd>
-            <dt>Textes</dt><dd>${chosen.length} fiche${chosen.length > 1 ? "s" : ""} ${S.texts.length ? "choisie" + (chosen.length > 1 ? "s" : "") : "(tous les textes du chapitre)"}</dd>
-            <dt>Cours</dt><dd>${courses.length ? courses.length + " importé" + (courses.length > 1 ? "s" : "") : "0 importé · en attente"}</dd>
-            <dt>Exercice</dt><dd>${esc(HFMT[fmt][d])}</dd>
-          </dl>
-          ${sujets.length ? `<div class="bac-docsuj"><div class="eyebrow">Sujets relevés dans tes documents (pour information)</div><ul>${sujets.map(x => `<li><span class="tag ghost">${esc(x.b.k)}</span>${esc(x.b.q)} <a href="#/hlp/texte/${x.t.id}?tab=dissertation">${esc(x.t.a.short)}</a></li>`).join("")}</ul></div>` : ""}
-          <p class="note">Repère (complément) : l'épreuve écrite de HLP dure 4 heures ; elle porte sur un texte et comprend une interprétation, dans la discipline du texte, puis un essai, dans l'autre discipline.</p>
-        </div>
-      </div>
+      <div class="card bac-main" id="hbMain"></div>
     </section>`;
     $$("#hbDisc button", root).forEach(b => b.onclick = () => { S.disc = b.dataset.d; S.texts = []; saveST(); refresh(); });
     $$("[data-ch]", root).forEach(b => b.onclick = () => { const id = b.dataset.ch; S.chs = S.chs.includes(id) ? S.chs.filter(x => x !== id) : S.chs.concat(id); saveST(); refresh(); });
@@ -431,20 +461,176 @@
     $$("[data-t]", root).forEach(b => b.onclick = () => { const id = b.dataset.t; S.texts = S.texts.includes(id) ? S.texts.filter(x => x !== id) : S.texts.concat(id); saveST(); refresh(); });
     $("#hbAllTx", root).onclick = () => { S.texts = []; saveST(); refresh(); };
     $$(".bac-f", root).forEach(b => b.onclick = () => { S.fmt = b.dataset.f; saveST(); refresh(); });
-    $("#hbGen", root).onclick = () => { if (ready) generateHLP(root, d, courses); };
+    $("#hbGen", root).onclick = e => { if (ready) hGenerate(e.currentTarget, d, courses); };
+    const main = $("#hbMain", root);
+    if (!ready) lockHTML(main, d, chosen);
+    else if (item) hWorkspace(main, item, d);
+    else hSheet(main, d);
+    if (JUMP && window.matchMedia && matchMedia("(max-width: 1080px)").matches) setTimeout(() => {
+      const top = Math.max(0, main.getBoundingClientRect().top + window.scrollY - 64);
+      window.scrollTo({ top, behavior: "smooth" });
+      setTimeout(() => { if (Math.abs(window.scrollY - top) > 40) window.scrollTo(0, top); }, 700);
+    }, 60);
+    JUMP = false;
   }
-  /* Quand des cours seront importés : les sujets de dissertation (« build ») des leçons HLP du chapitre
-     deviennent des sujets d'essai, travaillés avec le même lecteur que le tronc commun. */
-  function generateHLP(root, d, courses) {
-    let left = courses.length;
-    const go = () => {
-      const subs = courses.flatMap(m => (C.BOOKS[m.id] ? C.BOOKS[m.id].exercises.filter(e => e.type === "build").map(e => ({ b: m.id, e })) : []));
-      if (!subs.length) return toast("Ces cours ne contiennent pas encore de sujets.");
-      const pick = C.shuffle(subs).slice(0, 3);
-      const main = $("#hbMain", root);
-      main.innerHTML = `<div class="bac-sheet-h"><div><div class="eyebrow">Bac blanc HLP · ${esc(H.disciplines[d].title)}</div><h2>Choisis un sujet</h2></div></div><div class="bac-list scroll">${pick.map((x, i) => `<button class="bac-s diss" data-b="${x.b}" data-e="${x.e.id}"><span class="bac-s-k">Sujet ${i + 1}</span><span class="bac-s-q">${esc(x.e.q)}</span><span class="bac-s-f"><span class="bac-s-go">Travailler ce sujet ${ICON.chev}</span></span></button>`).join("")}</div>`;
-      $$(".bac-s", main).forEach(b => b.onclick = () => C.startIn(b.dataset.b, { title: "Bac blanc HLP", ids: [b.dataset.e], from: "reflexion" }));
-    };
-    courses.forEach(m => C.loadBook(m.id, () => { if (!--left) go(); }));
+
+  function lockHTML(main, d, chosen) {
+    const S = bacST(), D = H.disciplines[d], other = d === "litterature" ? /philosoph/i : /littéra/i;
+    const sujets = chosen.flatMap(t => (t.manuel.bac || []).filter(b => !other.test(b.k)).map(b => ({ t, b })));
+    main.innerHTML = `<div class="bac-lock">
+      <span class="bac-lock-i">${LOCK}</span>
+      <h2>Les sujets arriveront avec tes cours</h2>
+      <p>Le bac blanc HLP a besoin de tes cours de ${esc(D.title.toLowerCase())} pour proposer des sujets fidèles à ce que tu as étudié. Dès qu'ils seront importés, ce bouton fonctionnera avec la sélection ci-contre. Les ${H.texts.filter(t => t.discipline === d).length} fiches de textes de ${esc(D.title.toLowerCase())} sont déjà prêtes.</p>
+      <dl class="bac-stat">
+        <dt>Discipline</dt><dd>${esc(D.title)} <span class="muted">· séparée de l'autre discipline</span></dd>
+        <dt>Chapitres</dt><dd>${S.chs.length ? S.chs.map(id => "Ch. " + H.CH[id].n + " · " + esc(H.CH[id].title)).join(", ") : "aucun"}</dd>
+        <dt>Textes</dt><dd>${chosen.length} fiche${chosen.length > 1 ? "s" : ""}</dd>
+        <dt>Cours</dt><dd>0 importé · en attente</dd>
+      </dl>
+      ${sujets.length ? `<div class="bac-docsuj"><div class="eyebrow">Sujets relevés dans tes documents (pour information)</div><ul>${sujets.map(x => `<li><span class="tag ghost">${esc(x.b.k)}</span>${esc(x.b.q)} <a href="#/hlp/texte/${x.t.id}?tab=dissertation">${esc(x.t.a.short)}</a></li>`).join("")}</ul></div>` : ""}
+      <p class="note">Repère (complément) : l'épreuve écrite de HLP dure 4 heures ; elle porte sur un texte et comprend une interprétation, dans la discipline du texte, puis un essai, dans l'autre discipline.</p>
+    </div>`;
+  }
+
+  function hGenerate(btn, d, courses) {
+    const S = bacST();
+    loadAll(courses, () => {
+      const r = bacDraw(H, C.BOOKS, { disc: d, chs: S.chs, texts: S.texts }, S.fmt, S.recent);
+      const title = (b, n) => (C.notion(b, n) || {}).title;
+      const items = r.interp.map(x => {
+        /* Les fiches du cours utiles pour ce texte : celles des sujets d'essai qui le mobilisent */
+        const refs = [], seen = new Set();
+        courses.forEach(m => ((C.BOOKS[m.id] || {}).exercises || []).filter(e => e.type === "build" && (e.tx || []).includes(x.t))
+          .forEach(e => (e.ns || []).forEach(n => { const k = m.id + "|" + n; if (!seen.has(k) && title(m.id, n)) { seen.add(k); refs.push([m.id, n, title(m.id, n)]); } })));
+        return Object.assign({}, x, { refs: refs.slice(0, 8) });
+      }).concat(r.essai.map(x => Object.assign({}, x, { refs: x.refs.filter(([b, n]) => title(b, n)).map(([b, n]) => [b, n, title(b, n)]) })));
+      if (!items.length) return toast("Aucun sujet pour cette sélection.");
+      S.n = (S.n || 0) + 1;
+      S.draw = { disc: d, chs: S.chs.slice(), texts: S.texts.slice(), fmt: S.fmt, items, at: Date.now(), n: S.n };
+      S.recent = items.map(x => x.id).concat(S.recent).slice(0, 24);
+      S.timer = null;
+      saveST();
+      JUMP = true;
+      if (btn) { X.pop(btn); X.burst(btn, { count: 10 }); }
+      if (location.hash !== "#/hlp/bac") location.hash = "#/hlp/bac"; else C.rerender();
+    });
+  }
+
+  function itemLabel(s, d) {
+    if (s.kind === "interp") { const t = H.T[s.t]; return { k: fmtName("interpretation", d) + " · " + t.a.short, x: `${t.a.name}, ${t.work}${t.ref ? ", " + t.ref : ""}` }; }
+    return { k: fmtName("essai", d), x: s.tx.length ? "Textes à mobiliser : " + s.tx.map(id => H.T[id].a.short).join(", ") : "" };
+  }
+  function hSheet(main, d) {
+    const S = bacST(), Dr = S.draw, D = H.disciplines[d];
+    if (!Dr || Dr.disc !== d) {
+      main.innerHTML = `<div class="bac-empty"><div class="bac-empty-in"><div class="eyebrow">Comme le jour de l'épreuve</div><h2>Ton sujet apparaîtra ici</h2>
+        <p>Choisis tes chapitres, éventuellement des textes, puis un exercice. Les sujets ne portent que sur ta sélection, et seulement en ${esc(D.title.toLowerCase())}.</p>
+        <ol class="bac-how"><li><b>Épreuve complète</b><span>Un texte étudié : une question d'interprétation, puis un essai qui prolonge le texte (4 h).</span></li><li><b>Interprétation</b><span>Une question sur un texte de ta sélection : thèse, arguments, citations, à découvrir étape par étape.</span></li><li><b>Essai</b><span>Un sujet de ton cours, avec problématique, plan, fiches du cours et textes à mobiliser.</span></li></ol></div></div>`;
+      return;
+    }
+    const F = HFMT[Dr.fmt] || HFMT.epreuve;
+    const mixed = Dr.chs.join() !== S.chs.join() || Dr.texts.join() !== S.texts.join() || Dr.fmt !== S.fmt;
+    const dated = new Date(Dr.at).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+    const ep = Dr.fmt === "epreuve";
+    main.innerHTML = `
+      <header class="bac-sheet-h">
+        <div><div class="eyebrow">Bac blanc HLP n° ${Dr.n || 1} · ${esc(dated)} · ${esc(fmtName(Dr.fmt, d))}</div>
+          <h2>${ep ? "Le texte, puis l'essai" : Dr.items.length > 1 ? "Tu traites un sujet au choix" : "Ton sujet"}</h2>
+          <div class="bac-tags"><span class="tag">${esc(D.title)}</span>${Dr.chs.map(id => `<span class="tag ghost">Ch. ${H.CH[id].n} · ${esc(H.CH[id].title)}</span>`).join("")}<span class="tag ghost">${F.minutes / 60} heure${F.minutes > 60 ? "s" : ""}</span></div></div>
+        ${timerHTML()}
+      </header>
+      ${mixed ? `<p class="note bac-mixed">Ta sélection a changé depuis ce tirage : clique « Nouveau sujet » pour en tenir compte.</p>` : ""}
+      <div class="bac-list scroll">
+        ${Dr.items.map((s, i) => { const L = itemLabel(s, d); return `<button class="bac-s ${s.kind === "interp" ? "expl" : "diss"}" data-s="${esc(s.id)}"><span class="bac-s-k">${ep ? "Question " + (i + 1) : "Sujet " + (i + 1)} · ${esc(L.k)}</span><span class="bac-s-q">${esc(s.q)}</span>${L.x ? `<span class="bac-s-x">${esc(L.x)}</span>` : ""}<span class="bac-s-f">${doneBadge(s)}<span class="bac-s-go">Travailler ${ep ? "cette question" : "ce sujet"} ${C.ICON.chev}</span></span></button>`; }).join("")}
+        ${ep ? `<p class="note">À l'épreuve réelle, l'essai se fait dans l'autre discipline que celle du texte. Ici, tout reste en ${esc(D.title.toLowerCase())}, comme tu l'as choisi.</p>` : ""}
+      </div>`;
+    $$(".bac-s", main).forEach(b => b.onclick = () => { location.hash = "#/hlp/bac?s=" + encodeURIComponent(b.dataset.s); });
+    bindTimer(main);
+    if (!QUIET) X.stagger($$(".bac-s", main), { y: 10, step: 70 });
+  }
+
+  function timerHTML() {
+    const t = bacST().timer;
+    if (!t) return `<button class="btn secondary sm bac-timer" id="tStart">Lancer le chrono</button>`;
+    return `<div class="bac-clock"><span class="tabnum" id="tLeft"></span><small>restant</small><button class="btn ghost gray sm" id="tStop">Arrêter</button></div>`;
+  }
+  function bindTimer(main) {
+    const S = bacST();
+    const st = $("#tStart", main);
+    if (st) st.onclick = () => { S.timer = { start: Date.now(), min: (HFMT[(S.draw || {}).fmt] || HFMT.epreuve).minutes }; saveST(); refresh(); };
+    const sp = $("#tStop", main);
+    if (sp) sp.onclick = () => { S.timer = null; saveST(); refresh(); };
+    const left = $("#tLeft", main);
+    if (!left || !S.timer) return;
+    const tick = () => { const ms = S.timer.start + S.timer.min * 60000 - Date.now(); left.textContent = ms > 0 ? C.fmtHMS(ms) : "Temps écoulé"; left.classList.toggle("late", ms <= 0); };
+    tick();
+    const iv = setInterval(tick, 1000);
+    C.onClean(() => clearInterval(iv));
+  }
+  function step(k, title, body) {
+    return `<section class="bac-step" data-k="${k}"><header><span class="bac-step-n">${k}</span><h4>${esc(title)}</h4><button class="btn ghost sm" data-open>Afficher</button></header><div class="bac-step-b" hidden>${body}</div></section>`;
+  }
+  function hWorkspace(main, s, d) {
+    const S = bacST();
+    const back = `<button class="btn ghost sm bac-back" id="wBack">${ICON.back} Retour au sujet</button>`;
+    const refsHTML = s.refs && s.refs.length
+      ? `<div class="bac-refs">${s.refs.map(r => `<button class="chip" data-ref="${r[0]}|${r[1]}"><span class="bk">Cours</span>${esc(r[2])}</button>`).join("")}</div><p class="note">Touche une fiche pour l'ouvrir.</p>`
+      : `<p class="note">Aucune fiche du cours n'est reliée à ce sujet.</p>`;
+    const draft = `<label class="bac-draft"><span>Ton brouillon (gardé sur cet appareil)</span><textarea id="wDraft" rows="4" placeholder="${s.kind === "interp" ? "Ce que le texte affirme, comment il le justifie, ta réponse à la question…" : "Tes définitions, ta problématique, tes idées de plan…"}">${esc(S.drafts[s.id] || "")}</textarea></label>`;
+    const selfHTML = `<div class="bac-self-end"><span>Bilan de ce sujet</span>${SELF.map(([k, l]) => `<button class="btn sm ${S.done[s.id] && S.done[s.id].r === k ? "secondary on" : "ghost gray"}" data-r="${k}">${esc(l)}</button>`).join("")}</div>`;
+    if (s.kind === "interp") {
+      const t = H.T[s.t];
+      main.innerHTML = `
+        <header class="bac-ws-h">${back}<div class="eyebrow">${esc(fmtName("interpretation", d))} · ${esc(t.a.name)}</div><div class="bac-tags">${doneBadge(s)}</div>${timerHTML()}</header>
+        <div class="bac-ws two">
+          <article class="bac-text scroll">
+            <p class="bac-consigne">${s.doc ? "Question relevée dans ton manuel" : "Question d'interprétation"}</p>
+            <h2 class="bac-ws-q">${esc(s.q)}</h2>
+            <p class="bac-src">${esc(t.a.name)}, ${esc(t.work)}${t.ref ? ", " + esc(t.ref) : ""} · ${esc(t.year)}</p>
+            <p class="note">Le texte n'est pas reproduit ici : relis-le dans ton manuel (photo ${esc(t.doc.photos.join(", "))}).</p>
+            <div class="eyebrow">Passages clés</div>
+            <ul class="bac-notes">${t.citations.slice(0, 4).map(c => `<li>« ${esc(c.t)} »${c.where ? ` <span class="muted">(${esc(c.where)})</span>` : ""}</li>`).join("")}</ul>
+            <a class="btn ghost sm" href="#/hlp/texte/${t.id}">Fiche complète du texte</a>
+          </article>
+          <div class="bac-guide scroll">
+            ${draft}
+            ${step(1, "De quoi parle le texte", `<p>${esc(t.sujet)}</p><p class="note">Problème : ${esc(t.problematique)}</p>`)}
+            ${step(2, "La thèse", `<p>${esc(t.these)}</p>`)}
+            ${step(3, "Les arguments", `<ol class="bac-plan">${t.arguments.map(a => `<li>${esc(a)}</li>`).join("")}</ol>`)}
+            ${step(4, "Les citations à exploiter", `<ul>${t.citations.map(c => `<li><b>« ${esc(c.t)} »</b> ${esc(c.sens)}</li>`).join("")}</ul>`)}
+            ${step(5, "Ce que ton cours apporte", refsHTML)}
+            ${step(6, "Le piège", `<p>${esc(t.piege || "")}</p>`)}
+            ${selfHTML}
+          </div>
+        </div>`;
+    } else {
+      const txHTML = s.tx.length
+        ? `<ul class="bac-tx">${s.tx.map(id => { const t = H.T[id]; return `<li><a href="#/hlp/texte/${id}"><b>${esc(t.a.short)}</b> · « ${esc(t.title)} »</a><span>${esc(t.short)}</span></li>`; }).join("")}</ul><p class="note">Seulement des textes de ${esc(H.disciplines[d].title.toLowerCase())} : les disciplines restent séparées.</p>`
+        : `<p class="note">Aucun texte étudié n'est relié à ce sujet.</p>`;
+      main.innerHTML = `
+        <header class="bac-ws-h">${back}<div class="eyebrow">${esc(fmtName("essai", d))} · sujet du cours « ${esc(courseTitle(s.b))} »</div><div class="bac-tags">${doneBadge(s)}</div>${timerHTML()}</header>
+        <div class="bac-ws">
+          <h2 class="bac-ws-q">${esc(s.q)}</h2>
+          <div class="bac-guide scroll">
+            ${draft}
+            ${step(1, "Analyser le sujet", `<p>Définis chaque mot du sujet, repère ce que la question suppose, puis reformule-la. Ensuite seulement, compare avec la problématique proposée.</p>`)}
+            ${step(2, "Une problématique", `<p>${esc(s.prob)}</p>`)}
+            ${step(3, "Un plan possible", `<ol class="bac-plan">${s.plan.map(p => `<li>${esc(p)}</li>`).join("")}</ol>${s.cit ? `<p class="bac-cit">Citation clé : « ${esc(s.cit)} »</p>` : ""}`)}
+            ${step(4, "Fiches du cours", refsHTML)}
+            ${step(5, "Textes étudiés à mobiliser", txHTML)}
+            ${step(6, "Pièges à éviter", s.pieges.length ? `<ul>${s.pieges.map(p => `<li>${esc(p)}</li>`).join("")}</ul>` : `<p class="note">Pas de piège noté.</p>`)}
+            <div class="bac-train"><div><b>S'entraîner au plan</b><span>Choisis les arguments qui répondent au sujet, puis compare au plan modèle (exercice du cours).</span></div><button class="btn secondary sm" id="wTrain">Lancer</button></div>
+            ${selfHTML}
+          </div>
+        </div>`;
+      $("#wTrain", main).onclick = () => C.startIn(s.b, { title: "Sujet d'essai", ids: [s.e], from: "reflexion", back: location.hash });
+    }
+    $("#wBack", main).onclick = () => { location.hash = "#/hlp/bac"; };
+    $$(".bac-step", main).forEach(sec => { const b = $("[data-open]", sec); if (b) b.onclick = () => { sec.classList.add("open"); $(".bac-step-b", sec).hidden = false; b.remove(); X.stagger([$(".bac-step-b", sec)], { y: 6 }); }; });
+    const ta = $("#wDraft", main);
+    if (ta) ta.addEventListener("input", () => { S.drafts[s.id] = ta.value.slice(0, 6000); saveST(); });
+    $$(".bac-self-end [data-r]", main).forEach(b => b.onclick = () => { S.done[s.id] = { r: b.dataset.r, at: Date.now() }; saveST(); $$(".bac-self-end [data-r]", main).forEach(x => { x.className = "btn sm " + (x === b ? "secondary on" : "ghost gray"); }); if (b.dataset.r === "ok") { X.pop(b); X.burst(b, { count: 12 }); } toast("Noté. Il apparaîtra sur la feuille de sujets."); });
+    $$("[data-ref]", main).forEach(b => b.onclick = e => { e.stopPropagation(); const [bk, n] = b.dataset.ref.split("|"); C.ficheIn(bk, n); });
+    bindTimer(main);
   }
 })();

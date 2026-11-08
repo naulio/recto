@@ -16,7 +16,7 @@ win.BOOKS = {};
 const ctx = vm.createContext(win);
 const load = f => vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), ctx, { filename: f });
 ["contenus/bibliotheque.js", "contenus/lecons/le-langage.js", "contenus/lecons/l-art.js", "contenus/livres/discours-de-la-methode.js",
-  "contenus/hlp/hlp.js", "contenus/bac/tronc-commun.js", "assets/bac.js", "assets/hlp.js"].forEach(load);
+  "contenus/hlp/hlp.js", "contenus/lecons/hlp-ch1-education.js", "contenus/bac/tronc-commun.js", "assets/bac.js", "assets/hlp.js"].forEach(load);
 const LIB = win.RECTO_LIBRARY.items, H0 = win.RECTO_HLP, BANK = win.RECTO_BAC_TC, BOOKS = win.BOOKS;
 const Engine = win.Recto.bacEngine, HD = win.Recto.hlpData;
 const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
@@ -77,7 +77,9 @@ ok(T["camus-maitre"].doc.extraits === 2, "deux extraits d'une même page réunis
 /* Séparation des disciplines et des espaces */
 const byDisc = d => H0.texts.filter(t => t.discipline === d).length;
 ok(byDisc("litterature") > 0 && byDisc("philosophie") > 0, `textes classés dans les deux disciplines (${byDisc("litterature")} / ${byDisc("philosophie")})`);
-ok(H0.courses.litterature.length === 0 && H0.courses.philosophie.length === 0, "aucun cours de spécialité inventé");
+ok(H0.courses.litterature.length === 0 && H0.courses.philosophie.length === 0, "aucun cours de spécialité inventé dans les données des textes");
+const HLPC = LIB.filter(m => m.space === "hlp" && m.type === "lecon");
+ok(HLPC.length === 1 && HLPC[0].id === "hlp-ch1-education", "un seul cours de spécialité : celui des notes de la classe");
 H0.authors.forEach(a => ok(H0.texts.some(t => t.author === a.id), `${a.id} : l'auteur a au moins un texte`));
 H0.authors.forEach(a => ok(a.presentation && a.idees && a.idees.length, `${a.id} : fiche auteur complète`));
 console.log(`  ${H0.texts.length} textes · ${H0.authors.length} auteurs · ${H0.texts.reduce((n, t) => n + t.citations.length, 0)} citations · ${H0.docs.length} photos`);
@@ -146,6 +148,83 @@ ok(crossed === 40, `« Le langage » + « L'art » : un sujet mobilise les deux 
 const all = Engine.draw(subjects, NIDS, "dissertation", []);
 ok(all.diss.length === 3, "toutes les notions : tirage complet");
 console.log(`  ${draws} tirages vérifiés sur ${subsets.length} sélections possibles`);
+
+/* ------------------------------------------------------------------ */
+section("6. Cours HLP : Éducation, émancipation et transmission (notes de la classe)");
+const CB = BOOKS["hlp-ch1-education"], CM = LIB.find(m => m.id === "hlp-ch1-education");
+ok(CB, "cours HLP chargé");
+ok(CM.space === "hlp" && CM.discipline === "philosophie" && CM.chapter === "ch1", "cours rangé en spécialité, philosophie, chapitre 1");
+ok(!LIB.filter(m => !m.space || m.space === "tc").some(m => m.id === CM.id), "le cours HLP n'apparaît pas dans le tronc commun");
+ok(BANK.map && !BANK.map[CM.id], "le cours HLP ne nourrit pas le bac blanc du tronc commun");
+const CN = CB.notions, pages = CB.course;
+ok(CB.parts.every((p, i) => p.n === i), "parties numérotées dans l'ordre");
+ok(CB.parts.every(p => pages.some(x => x.part === p.n)), "chaque partie du cours (introduction, I à VIII) a ses pages");
+const notesPages = new Set();
+pages.forEach(p => {
+  const m = /^Tes notes, p\. (\d+)(?:-(\d+))?$/.exec(p.src || "");
+  ok(m, `${p.id} : page des notes indiquée`);
+  if (m) for (let k = +m[1]; k <= +(m[2] || m[1]); k++) notesPages.add(k);
+  ok((p.side || []).length <= 2, `${p.id} : deux encadrés au plus`);
+  (p.ns || []).forEach(n => ok(CN[n], `${p.id} : fiche ${n} existante`));
+  (p.side || []).forEach(s => ok(["q", "def", "ex", "plus", "warn", "check"].includes(s.k), `${p.id} : encadré de type connu (${s.k})`));
+});
+for (let k = 1; k <= 11; k++) ok(notesPages.has(k), `page ${k} des notes reprise dans le cours`);
+const checks = pages.flatMap(p => (p.side || []).filter(s => s.k === "check").map(s => p.id + " " + s.t)).join("\n");
+[["alienation", /illisible/], ["autonomie", /Lisbonne/], ["dewey", /1859/], ["ici-maintenant", /Hegel/], ["traites", /1393/], ["dates", /sans source/], ["pervertir", /Beauvoir/], ["empirisme", /papillon/]]
+  .forEach(([id, rx]) => ok(new RegExp("^" + id + " .*" + rx.source, "m").test(checks), `« À vérifier » présent : ${id} (${rx.source})`));
+Object.keys(CN).forEach(n => ok(pages.some(p => (p.ns || []).includes(n)), `fiche ${n} : reliée à une page du cours`));
+const HT = {}; H0.texts.forEach(t => { HT[t.id] = t; });
+Object.keys(CN).forEach(n => { if (CN[n].link) ok(HT[CN[n].link.replace("#/hlp/texte/", "")], `fiche ${n} : texte lié existant`); });
+const nOf = e => [e.notion].concat(e.ns || [], (e.pairs || []).map(p => p.n), (e.items || []).map(i => i && i.n), (e.rows || []).map(r => r.n), (e.nodes || []).map(x => x.n), (e.branches || []).flat().map(x => x.n)).filter(Boolean);
+const cids = CB.exercises.map(e => e.id);
+ok(new Set(cids).size === cids.length, "identifiants d'exercices uniques");
+CB.exercises.forEach(e => {
+  const nl = nOf(e);
+  ok(nl.length && nl.every(n => CN[n]), `${e.id} : rattaché à des fiches existantes`);
+  if (e.type === "qcm") ok(new Set(e.options).size === e.options.length && e.answer === 0, `${e.id} : propositions distinctes`);
+  if (e.type === "fill") ok(/\[\[.+?\]\]/.test(e.text), `${e.id} : texte à trous`);
+  if (e.type === "part") ok(CB.parts[e.a] && e.a > 0, `${e.id} : partie valide`);
+  if (e.type === "build") {
+    ok(e.q && e.prob && e.plan.length >= 3 && e.els.some(x => !x.ok), `${e.id} : sujet d'essai complet`);
+    ok(e.tx && e.tx.length && e.tx.every(id => HT[id] && HT[id].discipline === CM.discipline), `${e.id} : textes à mobiliser existants et de la même discipline`);
+  }
+});
+Object.keys(CN).forEach(n => ok(CB.exercises.filter(e => nOf(e).includes(n)).length >= 4, `fiche ${n} : au moins 4 exercices`));
+CB.kit.quotes.forEach(q => ok(CN[q.n] && q.usages.length >= 3, `kit : ${q.id} relié à une fiche`));
+ok(CB.kit.bridges.length === CB.kit.quotes.length - 1, "kit : un pont entre chaque citation");
+console.log(`  ${pages.length} pages · ${Object.keys(CN).length} fiches · ${CB.exercises.length} exercices · ${CB.exercises.filter(e => e.type === "build").length} sujets d'essai`);
+
+/* ------------------------------------------------------------------ */
+section("7. Bac blanc HLP : discipline, chapitres et textes respectés");
+const HB = HD.prepare(win.RECTO_HLP, LIB), BK = { "hlp-ch1-education": CB };
+const philo = HB.texts.filter(t => t.discipline === "philosophie"), litt = HB.texts.filter(t => t.discipline === "litterature");
+const P0 = HD.bacPool(HB, BK, { disc: "philosophie", chs: ["ch1"], texts: [] });
+ok(P0.interp.length === philo.length, `philosophie : une interprétation par texte de philosophie (${P0.interp.length})`);
+ok(P0.essai.length === 10, `philosophie : les 10 sujets d'essai du cours (${P0.essai.length})`);
+const PL = HD.bacPool(HB, BK, { disc: "litterature", chs: ["ch1"], texts: [] });
+ok(PL.essai.length === 0 && PL.interp.every(s => HB.T[s.t].discipline === "litterature"), "littérature : aucun sujet venu du cours de philosophie");
+ok(HD.bacPool(HB, BK, { disc: "philosophie", chs: [], texts: [] }).interp.length === 0, "aucun chapitre choisi : aucun sujet");
+const N = { epreuve: [1, 1], interpretation: [2, 0], essai: [0, 3] };
+let hdraws = 0;
+Object.keys(N).forEach(fmt => {
+  [[]].concat(philo.map(t => [t.id]), [[philo[0].id, philo[3].id]]).forEach(texts => {
+    for (let k = 0; k < 10; k++) {
+      const r = HD.bacDraw(HB, BK, { disc: "philosophie", chs: ["ch1"], texts }, fmt, []);
+      hdraws++;
+      ok(r.interp.length === Math.min(N[fmt][0], texts.length || 99) && r.essai.length === N[fmt][1], `${fmt} (${texts.join("+") || "tous"}) : nombre de sujets`);
+      r.interp.forEach(s => ok(HB.T[s.t].discipline === "philosophie" && (!texts.length || texts.includes(s.t)), `${fmt} : interprétation dans la sélection (${s.t})`));
+      r.essai.forEach(s => ok(s.tx.every(id => HB.T[id].discipline === "philosophie"), `${fmt} : essai sans texte de l'autre discipline`));
+      if (texts.length === 1 && r.essai.length) ok(r.essai[0].tx.includes(texts[0]), `${fmt} : l'essai mobilise le texte choisi (${texts[0]})`);
+      if (fmt === "epreuve" && r.interp.length) ok(r.essai[0].tx.includes(r.interp[0].t), "épreuve complète : l'essai prolonge le texte tiré");
+      const ids = r.interp.concat(r.essai).map(s => s.id);
+      ok(new Set(ids).size === ids.length, `${fmt} : pas de sujet en double`);
+    }
+  });
+});
+const tq = P0.interp.find(s => s.t === "tocqueville-uniformiser");
+ok(tq && tq.doc && /affaire nationale/.test(tq.q), "la question d'interprétation relevée dans le manuel est reprise telle quelle (Tocqueville)");
+ok(litt.length && !HD.bacDraw(HB, BK, { disc: "litterature", chs: ["ch1"], texts: [] }, "essai", []).essai.length, "littérature sans cours : pas d'essai (génération verrouillée dans l'interface)");
+console.log(`  ${hdraws} tirages HLP vérifiés`);
 
 /* ------------------------------------------------------------------ */
 console.log(`\n${fails ? "ÉCHECS : " + fails : "Tout est bon"} · ${oks} vérifications réussies`);

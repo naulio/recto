@@ -110,6 +110,13 @@ Règle : un sujet n'est tiré que si **toutes** ses notions sont cochées. Pour 
 
 Elle apparaît alors dans la section de sa discipline (et nulle part dans le tronc commun), avec cours, fiches, exercices et bilan. Le bac blanc HLP de cette discipline et de ce chapitre se débloque : ses sujets de dissertation (`build`) deviennent des sujets d'essai.
 
+Exemple complet : `contenus/lecons/hlp-ch1-education.js`. Ce qu'un cours HLP peut ajouter :
+
+- `src: "Tes notes, p. 3"` sur une page : la page des notes d'origine, affichée en haut du cours.
+- Un encadré `{ k: "check", t: "…" }` (« À vérifier ») : un mot illisible, une date douteuse, un chiffre sans source. On le signale, on ne le complète pas.
+- Sur un sujet `build` : `tx: ["id-du-texte", …]`, les textes étudiés de la même discipline à mobiliser (fiches de `contenus/hlp/hlp.js`). L'épreuve complète du bac blanc choisit un essai qui prolonge le texte tiré.
+- Sur une fiche : `link: "#/hlp/texte/id"` et `linkLabel: "Texte étudié : …"`, un bouton vers la fiche du texte.
+
 ## 5. Nouvelle version
 
 Après une modification, change le numéro de version `V` dans `assets/app.js`, `sw.js` et les `?v=` de `index.html` : les navigateurs et l'app installée prendront la nouvelle version. Un nouveau fichier doit aussi être ajouté à la liste `CORE` de `sw.js`. Puis lance `node tests/verifier.js`.

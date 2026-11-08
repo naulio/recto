@@ -1,7 +1,7 @@
 /* Recto · service worker : l'app reste utilisable hors ligne.
    Réseau d'abord (toujours la dernière version quand on est connecté), cache en secours.
    À chaque nouvelle version : changer V ici, dans index.html et dans assets/app.js. */
-const V = "7";
+const V = "8";
 const CACHE = "recto-v" + V;
 const CORE = [
   "./",
@@ -19,6 +19,7 @@ const CORE = [
   "contenus/livres/discours-de-la-methode.js?v=" + V,
   "contenus/bac/tronc-commun.js?v=" + V,
   "contenus/hlp/hlp.js?v=" + V,
+  "contenus/lecons/hlp-ch1-education.js?v=" + V,
   "assets/icons/apple-touch-icon.png",
   "assets/icons/icon-192.png",
   "assets/icons/icon-512.png"

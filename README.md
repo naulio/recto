@@ -22,9 +22,10 @@ On coche une ou plusieurs notions (*Le langage*, *L'art*, et, d'après le *Disco
 ### Spécialité HLP
 
 - **Textes et auteurs** : les 18 textes du chapitre 1 (*Éducation, transmission et émancipation*), lus sur les photos du dossier `images/` : une fiche par texte (thèse, idées, arguments, citations exactes et leur sens, rapprochements, oppositions, document d'origine, annotations retenues, points à vérifier), une fiche par auteur, toutes les citations, et l'inventaire des photos. Les photos ne sont pas publiées avec le site.
-- **Littérature** et **Philosophie** : les chapitres, les textes de chaque discipline, et la place pour les cours, vide tant qu'ils ne sont pas fournis.
+- **Littérature** et **Philosophie** : les chapitres, les textes de chaque discipline et les cours de spécialité.
+- **Cours de philosophie, chapitre 1** : *Éducation, émancipation et transmission* (Axe 1, la recherche de soi), remis au propre à partir des 11 pages de notes de la classe (dossier `images/cours-hlp/`, non publié) : 32 pages, 35 fiches, 191 exercices, 10 sujets d'essai reliés aux textes étudiés. Chaque page indique la page des notes d'où elle vient ; ce qui est illisible, douteux ou sans source est signalé « À vérifier ».
 - **S'entraîner sur les textes** : les fiches deviennent des exercices (thèses, citations, auteurs, chronologie, oppositions) dans le moteur d'entraînement de Recto.
-- **Bac blanc HLP** : choix de la discipline, des chapitres et des textes déjà en place ; la génération des sujets s'ouvrira à l'arrivée des cours de spécialité.
+- **Bac blanc HLP** : on choisit la discipline, les chapitres, éventuellement des textes, puis l'épreuve complète (une interprétation sur un texte, puis un essai qui le prolonge, 4 h), l'interprétation seule ou l'essai seul. Ouvert en philosophie ; la littérature s'ouvrira avec son cours.
 
 ## Ce qu'elle contient
 
