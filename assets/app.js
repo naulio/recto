@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "9"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "10"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -391,8 +391,8 @@
      Routage (#/  ·  #/bibliotheque  ·  #/<contenu>/<vue>?param=…)
      ========================================================= */
   const BOOK_VIEWS = ["cours", "plan", "carte", "train", "reflexion", "citations", "bilan", "lecture", "player"];
-  /* Vues hors contenu : accueil des espaces, accueil du tronc commun, bibliothèque, bac blanc, espace HLP */
-  const SPACE_VIEWS = ["spaces", "home", "library", "tcbac", "hlp"];
+  /* Vues hors contenu : accueil (tronc commun ou HLP), bibliothèque, bac blanc, espace HLP */
+  const SPACE_VIEWS = ["home", "library", "tcbac", "hlp"];
   const SPACE_NAV = {};   /* onglets propres à un espace (fournis par les modules) */
   const isCorpus = () => !!(B && B.meta.type === "corpus");
   const defView = () => isCorpus() ? "train" : B && B.course ? "cours" : "plan";
@@ -406,16 +406,15 @@
     const seg = (path || "").split("/").filter(Boolean);
     const q = {};
     (qs || "").split("&").filter(Boolean).forEach(kv => { const i = kv.indexOf("="); q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? "1" : decodeURIComponent(kv.slice(i + 1)); });
-    if (!seg.length) return { view: "spaces", q };
-    if (seg[0] === "tronc-commun") return { view: seg[1] === "bac-blanc" ? "tcbac" : "home", q };
+    if (!seg.length) return { view: "home", q };
+    if (seg[0] === "tronc-commun") return seg[1] === "bac-blanc" ? { view: "tcbac", q } : { view: "home", q: Object.assign({}, q, { type: "tc" }) };
     if (seg[0] === "hlp") return { view: "hlp", q: Object.assign({}, q, { sub: seg[1] || "accueil", id: seg[2] || null }) };
     if (seg[0] === "bibliotheque" || seg[0] === "livres") return { view: "library", q };
     return { book: seg[0], view: seg[1] || null, q };
   }
   const qsOf = params => { const q = Object.keys(params || {}).filter(k => params[k] != null && params[k] !== false && typeof params[k] !== "object").map(k => encodeURIComponent(k) + "=" + encodeURIComponent(params[k] === true ? 1 : params[k])); return q.length ? "?" + q.join("&") : ""; };
   function hashFor(view, params) {
-    if (view === "spaces") return "#/";
-    if (view === "home") return "#/tronc-commun";
+    if (view === "home") return "#/";
     if (view === "tcbac") return "#/tronc-commun/bac-blanc" + qsOf(params);
     if (view === "hlp") { const p = Object.assign({}, params), sub = p.sub || "accueil", id = p.id; delete p.sub; delete p.id; return "#/hlp" + (sub !== "accueil" || id ? "/" + sub : "") + (id ? "/" + encodeURIComponent(id) : "") + qsOf(p); }
     if (view === "library") return "#/bibliotheque" + (params && params.type ? "?type=" + params.type : "");
@@ -440,8 +439,12 @@
       const last = store.get(K_LAST);
       const fid = TCLIB.find(b => b.id === last) ? last : (TCLIB[0] && TCLIB[0].id);
       const prm = r.q || {};
-      if (!fid) { VIEW = r.view; PARAMS = prm; return render(); }
-      return loadBook(fid, () => { if (BOOKS[fid]) useBook(fid); VIEW = r.view; PARAMS = prm; render(); });
+      /* L'accueil peut afficher la spécialité : son cours est chargé aussi (sans devenir le contenu courant) */
+      const hlpC = r.view === "home" && LIB.find(m => m.space === "hlp" && m.type === "lecon");
+      const show = () => { VIEW = r.view; PARAMS = prm; render(); };
+      const then = () => hlpC && !BOOKS[hlpC.id] ? loadBook(hlpC.id, show) : show();
+      if (!fid) return then();
+      return loadBook(fid, () => { if (BOOKS[fid]) useBook(fid); then(); });
     }
     if (r.view && !r.book) { VIEW = r.view; PARAMS = r.q || {}; return render(); }
     if (!LIB.find(b => b.id === r.book)) { location.replace("#/"); return; }
@@ -487,10 +490,10 @@
     const spaceNav = !inBook && SPACE_NAV[VIEW] ? SPACE_NAV[VIEW](PARAMS || {}) : null;
     document.body.classList.toggle("in-item", !!(inBook || spaceNav));
     const hlpItem = inBook && B.meta.space === "hlp";
-    document.body.dataset.space = hlpItem || VIEW === "hlp" ? "hlp" : VIEW === "spaces" ? "" : "tc";
+    document.body.dataset.space = hlpItem || VIEW === "hlp" || (VIEW === "home" && store.get(HOME_TYPE) === "hlp") ? "hlp" : "tc";
     const hlpDisc = hlpItem && B.meta.discipline ? { litterature: "Littérature", philosophie: "Philosophie" }[B.meta.discipline] : "";
     $("#crumb").innerHTML = inBook ? crumbLink(hlpItem ? (hlpDisc ? "#/hlp/" + B.meta.discipline : "#/hlp") : "#/tronc-commun", hlpItem ? (hlpDisc ? "HLP · " + hlpDisc : "HLP") : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
-      : ["home", "library", "tcbac"].includes(VIEW) ? crumbLink("#/tronc-commun", "Philosophie · Tronc commun")
+      : ["library", "tcbac"].includes(VIEW) ? crumbLink("#/tronc-commun", "Philosophie · Tronc commun")
       : VIEW === "hlp" ? crumbLink("#/hlp", "Spécialité HLP") : "";
     $("#nav").hidden = !inBook && !spaceNav;
     if (inBook) {
@@ -500,7 +503,7 @@
       $("#nav").innerHTML = spaceNav.map(n => `<button data-href="${esc(n.href)}" class="${n.on ? "on" : ""}"><span class="l">${esc(n.l)}</span><span class="s">${esc(n.s || n.l)}</span></button>`).join("");
       $$("#nav button").forEach(b => b.onclick = () => { if (location.hash === b.dataset.href) route(); else location.hash = b.dataset.href; });
     }
-    $("#topIcons").innerHTML = `<a class="top-icon ${VIEW === "spaces" ? "on" : ""}" href="#/" title="Accueil" aria-label="Accueil">${ICON.home}</a><a class="top-icon ${VIEW === "library" ? "on" : ""}" href="#/bibliotheque" title="Bibliothèque du tronc commun" aria-label="Bibliothèque du tronc commun">${ICON.library}</a><button class="top-icon" id="openSettings" title="Réglages" aria-label="Réglages">${ICON.gear}</button>`;
+    $("#topIcons").innerHTML = `<a class="top-icon ${VIEW === "home" ? "on" : ""}" href="#/" title="Accueil" aria-label="Accueil">${ICON.home}</a><a class="top-icon ${VIEW === "library" ? "on" : ""}" href="#/bibliotheque" title="Bibliothèque du tronc commun" aria-label="Bibliothèque du tronc commun">${ICON.library}</a><button class="top-icon" id="openSettings" title="Réglages" aria-label="Réglages">${ICON.gear}</button>`;
     $("#openSettings").onclick = openSettings;
     const br = $(".brand");
     if (br && !br.dataset.fx) { br.dataset.fx = 1; br.addEventListener("pointerenter", flipLogo); }
@@ -514,7 +517,8 @@
      ========================================================= */
   const SOON = {
     livre: { t: "D'autres livres arrivent", s: "" },
-    lecon: { t: "D'autres leçons arrivent", s: "" }
+    lecon: { t: "D'autres leçons arrivent", s: "" },
+    hlp: { t: "Cours de littérature à venir", s: "" }
   };
   function coverHTML(meta, cls) {
     const sm = store.get(kSum(meta.id));
@@ -532,8 +536,20 @@
   function bindCovers(root) { $$("[data-book]", root).forEach(b => b.onclick = () => openBook(b.dataset.book)); }
   const ofType = t => TCLIB.filter(m => m.type === t);
 
+  /* Accueil : tronc commun ou spécialité HLP (choix mémorisé) */
+  const HOME_TYPE = "recto.home.type";
   let HOME_TAB = "lecon";
+  const typeSel = type => `<div class="segmented big home-type" id="homeType" role="tablist" aria-label="Type de révision"><button data-type="tc" class="${type === "tc" ? "on" : ""}">Tronc commun</button><button data-type="hlp" class="${type === "hlp" ? "on" : ""}">Spécialité HLP</button></div>`;
+  function bindType(root) {
+    $$("#homeType button", root).forEach(b => b.onclick = () => {
+      if (b.classList.contains("on")) return;
+      store.set(HOME_TYPE, b.dataset.type);
+      if (location.hash.replace(/^#\/?/, "") !== "") location.hash = "#/"; else render();
+    });
+  }
   VIEWS.home = function (root) {
+    if (PARAMS.type === "tc" || PARAMS.type === "hlp") store.set(HOME_TYPE, PARAMS.type);
+    if (store.get(HOME_TYPE) === "hlp") return homeHlp(root);
     const sm = B ? store.get(kSum(B.id)) : null;
     const started = sm && sm.answered;
     const list = ofType(HOME_TAB);
@@ -541,7 +557,7 @@
     const cells = shown.length + (list.length < 6 ? 1 : 0);
     const pagesSeen = B && B.course ? B.course.filter(p => S.course.seen.includes(p.id)).length : 0;
     const prog = B && started ? `<div class="hero-prog"><div class="hp-top"><span>Préparation · ${esc(B.meta.title)}</span><b>${sm.pct} %</b></div><div class="bar ${sm.pct >= 80 ? "good" : sm.pct >= 50 ? "mid" : "weak"}"><i style="width:${sm.pct}%"></i></div>${S.run ? `<p class="resume-run" id="homeRun">Session en cours · reste ${fmtLeft(runTimes().left)}</p>` : `<p class="muted">${sm.tested} notions testées sur ${sm.total} · ${sm.answered} exercices faits</p>`}</div>`
-      : B && pagesSeen ? `<div class="hero-prog"><div class="hp-top"><span>Cours lu · ${esc(B.meta.title)}</span><b>${Math.round(pagesSeen / B.course.length * 100)} %</b></div><div class="bar"><i style="width:${Math.round(pagesSeen / B.course.length * 100)}%"></i></div><p class="muted">${pagesSeen} pages sur ${B.course.length}</p></div>` : "";
+      : B && pagesSeen ? `<div class="hero-prog"><div class="hp-top"><span>Cours lu · ${esc(B.meta.title)}</span><b>${Math.round(pagesSeen / B.course.length * 100)} %</b></div><div class="bar"><i style="width:${Math.round(pagesSeen / B.course.length * 100)}%"></i></div><p class="muted">${pagesSeen} page${pagesSeen > 1 ? "s" : ""} sur ${B.course.length}</p></div>` : "";
     const cta = !B ? "" : S.run ? "Revenir à la session" : started ? "Reprendre" : pagesSeen ? "Continuer le cours" : B.course ? "Apprendre" : "Commencer";
     const facts = !B ? "" : B.course
       ? `<div><b class="cnt" data-v="${B.course.length}">${B.course.length}</b><span>pages de cours</span></div><div><b class="cnt" data-v="${NIDS.length}">${NIDS.length}</b><span>fiches</span></div><div><b class="cnt" data-v="${EXS.length}">${EXS.length}</b><span>exercices</span></div>`
@@ -549,7 +565,7 @@
     root.innerHTML = `
     <section class="view home">
       <div class="card hero">
-        <div class="eyebrow accent">Philosophie · Tronc commun</div>
+        ${typeSel("tc")}
         <h1 class="hero-t">Apprendre.<br><span class="hl">Appliquer.</span></h1>
         <div class="hero-cta">${B ? `<button class="btn primary xl" id="start">${cta} · ${esc(B.meta.title)}</button>` : ""}<a class="btn secondary xl" href="#/tronc-commun/bac-blanc" id="toBac">Bac blanc</a></div>
         ${prog}
@@ -562,56 +578,42 @@
     </section>`;
     const s = $("#start"); if (s) s.onclick = () => openBook(B.id, S.run || started || !B.course ? "plan" : "cours");
     $$("#shelfTab button").forEach(b => b.onclick = () => { HOME_TAB = b.dataset.t; render(); });
+    bindType(root);
     bindCovers(root);
     homeFx(root);
   };
 
-  /* =========================================================
-     Accueil général : les deux espaces (tronc commun et HLP)
-     ========================================================= */
-  const SPACE_ICON = {
-    tc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="6.2"/><path d="M12 3v18"/></svg>',
-    hlp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 4.5C13 5.5 8.5 10 6.5 17.5"/><path d="M19.5 4.5c-.4 5.6-4.2 9.6-10.4 11.2"/><path d="M6.5 17.5L5 20.5"/><path d="M4 20.5h9"/></svg>'
-  };
-  const SPACE_FILL = {};   /* remplissage asynchrone d'une carte d'espace (fourni par les modules) */
-  VIEWS.spaces = function (root) {
-    const last = store.get(K_LAST), lastMeta = TCLIB.find(m => m.id === last);
-    const sums = TCLIB.map(m => ({ m, s: store.get(kSum(m.id)) }));
-    const started = sums.filter(x => x.s && x.s.answered);
-    const tcPct = started.length ? Math.round(avg(started.map(x => x.s.pct))) : null;
-    const row = (m, s) => `<button class="sp-row" data-book="${m.id}" style="--tone:${m.tone || "#1d1d1f"}"><span class="sp-dot"></span><span class="sp-rt"><b>${esc(m.title)}</b><small>${esc((KIND[m.type] || KIND.livre).one + (m.author ? " · " + m.author : ""))}</small></span><span class="sp-rp">${s && s.answered ? s.pct + " %" : "Nouveau"}</span></button>`;
+  /* Accueil, version spécialité HLP : le cours, les textes, le bac blanc HLP */
+  let HLP_TAB = "lecon";
+  function homeHlp(root) {
+    const items = LIB.filter(m => m.space === "hlp");
+    const courses = items.filter(m => m.type === "lecon"), corpus = items.filter(m => m.type === "corpus");
+    const course = courses[0], cb = course && BOOKS[course.id];
+    const sm = course ? store.get(kSum(course.id)) : null;
+    const started = sm && sm.answered;
+    const list = HLP_TAB === "lecon" ? courses : corpus;
+    const prog = started ? `<div class="hero-prog"><div class="hp-top"><span>Préparation · ${esc(course.title)}</span><b>${sm.pct} %</b></div><div class="bar ${sm.pct >= 80 ? "good" : sm.pct >= 50 ? "mid" : "weak"}"><i style="width:${sm.pct}%"></i></div><p class="muted">${sm.tested} notions testées sur ${sm.total} · ${sm.answered} exercices faits</p></div>` : "";
+    const facts = cb ? `<div><b class="cnt" data-v="${cb.course.length}">${cb.course.length}</b><span>pages de cours</span></div><div><b class="cnt" data-v="${Object.keys(cb.notions).length}">${Object.keys(cb.notions).length}</b><span>fiches</span></div><div><b class="cnt" data-v="${cb.exercises.length}">${cb.exercises.length}</b><span>exercices</span></div>` : "";
     root.innerHTML = `
-    <section class="view spaces">
-      <header class="sp-head">
-        <div><div class="eyebrow accent">Recto</div><h1 class="sp-t">Que réviser <span class="hl">aujourd'hui ?</span></h1></div>
-        <div class="sp-days">${daysHTML()}</div>
-      </header>
-      <article class="card space sp-tc" data-go="#/tronc-commun" aria-label="Philosophie, tronc commun">
-        <div class="sp-top"><span class="sp-badge">${SPACE_ICON.tc}</span><div><div class="eyebrow">Philosophie</div><h2>Tronc commun</h2></div>${tcPct != null ? `<span class="sp-pct"><b class="cnt" data-v="${tcPct}">${tcPct}</b><small>% de préparation</small></span>` : ""}</div>
-        <p class="sp-p">Leçons, livre au programme, exercices, bac blanc.</p>
-        <div class="sp-list">${sums.map(x => row(x.m, x.s)).join("")}</div>
-        <div class="sp-acts"><button class="btn primary lg" data-go="#/tronc-commun">Ouvrir le tronc commun</button><button class="btn secondary lg" data-go="#/tronc-commun/bac-blanc">Bac blanc</button></div>
-        ${lastMeta ? `<p class="sp-resume">Reprendre : <a href="#/${lastMeta.id}">${esc(lastMeta.title)}</a></p>` : ""}
-      </article>
-      <article class="card space sp-hlp" data-go="#/hlp" aria-label="Spécialité HLP">
-        <div class="sp-top"><span class="sp-badge">${SPACE_ICON.hlp}</span><div><div class="eyebrow">Spécialité</div><h2>HLP</h2></div></div>
-        <p class="sp-p">Humanités, littérature et philosophie : cours, textes en fiches, bac blanc.</p>
-        <div class="sp-list" id="spHlp"><div class="sp-row ghost"></div><div class="sp-row ghost"></div><div class="sp-row ghost"></div></div>
-        <div class="sp-acts"><button class="btn primary lg" data-go="#/hlp">Ouvrir la spécialité</button><button class="btn secondary lg" data-go="#/hlp/textes">Textes et auteurs</button></div>
-      </article>
+    <section class="view home">
+      <div class="card hero">
+        ${typeSel("hlp")}
+        <h1 class="hero-t">Apprendre.<br><span class="hl">Appliquer.</span></h1>
+        <div class="hero-cta">${course ? `<button class="btn primary xl" id="start">${started ? "Reprendre" : "Apprendre"} · ${esc(course.title)}</button>` : ""}<a class="btn secondary xl" href="#/hlp/bac">Bac blanc</a></div>
+        ${prog}
+        ${facts ? `<div class="hero-facts">${daysHTML()}${facts}</div>` : ""}
+      </div>
+      <div class="card shelf">
+        <div class="row-head"><div class="segmented big" id="shelfTab"><button data-t="lecon" class="${HLP_TAB === "lecon" ? "on" : ""}">Cours <span class="n">${courses.length}</span></button><button data-t="corpus" class="${HLP_TAB === "corpus" ? "on" : ""}">Textes <span class="n">${corpus.length}</span></button></div><a class="link" href="#/hlp${HLP_TAB === "corpus" ? "/textes" : ""}">Tout voir</a></div>
+        <div class="covers two">${list.map(m => coverHTML(m)).join("")}${HLP_TAB === "lecon" ? soonHTML("hlp") : `<a class="cover soon" href="#/hlp/textes"><span class="cv-title">Textes et auteurs</span><span class="cv-author">Fiches, auteurs, citations</span></a>`}</div>
+      </div>
     </section>`;
-    root.querySelector(".spaces").addEventListener("click", e => {
-      if (e.target.closest("a")) return;
-      const b = e.target.closest("[data-book]"); if (b) { openBook(b.dataset.book); return; }
-      const g = e.target.closest("[data-go]"); if (g) location.hash = g.dataset.go;
-    });
-    if (SPACE_FILL.hlp) SPACE_FILL.hlp($("#spHlp", root));
-    if (!LOGO_DONE) { LOGO_DONE = true; setTimeout(flipLogo, 150); }
-    X.wordsIn($(".sp-t", root));
-    X.stagger($$(".space", root), { y: 16, step: 90, duration: 520 });
-    $$(".space", root).forEach(c => X.spotlight(c));
-    countAll(root);
-  };
+    const s = $("#start"); if (s) s.onclick = () => openBook(course.id, started ? "plan" : "cours");
+    $$("#shelfTab button").forEach(b => b.onclick = () => { HLP_TAB = b.dataset.t; render(); });
+    bindType(root);
+    bindCovers(root);
+    homeFx(root);
+  }
 
   let LIB_SUBJ = "Toutes";
   VIEWS.library = function (root, prm) {
@@ -2869,7 +2871,7 @@
   }
   window.Recto.core = {
     V, $, $$, esc, md, ICON, toast, store, X, shuffle, clip, sum, avg, fold, dayKey, fmtHMS, kSum,
-    G: () => G, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV, SPACE_FILL,
+    G: () => G, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV,
     view: () => VIEW, params: () => PARAMS, hash: (v, p) => hashFor(v, p),
     go: (v, p) => { const h = hashFor(v, p); if (location.hash === h) route(); else location.hash = h; },
     rerender: () => render(), onClean: f => CLEAN.push(f),

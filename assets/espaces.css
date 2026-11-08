@@ -466,3 +466,11 @@ a.chip, a.chip:hover { text-decoration: none; color: var(--text); }
   .mt-grille tbody th { white-space: normal; }
   .bf-list { grid-template-columns: 1fr; }
 }
+
+/* ---------- Accueil : choix du type de révision ---------- */
+.home-type { align-self: flex-start; }
+.home-type button { padding-left: 1.125rem; padding-right: 1.125rem; }
+@media (max-width: 680px) {
+  .home-type { align-self: stretch; }
+  .home-type button { flex: 1; padding-left: 0.5rem; padding-right: 0.5rem; }
+}

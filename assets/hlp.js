@@ -121,14 +121,8 @@
   }
 
   /* =========================================================
-     Carte de l'accueil général et onglets de l'espace
+     Onglets de l'espace
      ========================================================= */
-  C.SPACE_FILL.hlp = el => ensure(() => {
-    if (!el.isConnected) return;
-    const n = d => H.texts.filter(t => t.discipline === d).length, cc = d => H.courses(d).length;
-    el.innerHTML = DISCS.map(d => `<button class="sp-row" data-go="#/hlp/${d}" style="--tone:${tone(d)}"><span class="sp-dot"></span><span class="sp-rt"><b>${esc(H.disciplines[d].title)}</b><small>${n(d)} textes · ${cc(d) ? cc(d) + " cours" : "cours à importer"}</small></span><span class="sp-rp">${C.ICON.chev}</span></button>`).join("")
-      + `<button class="sp-row" data-go="#/hlp/textes" style="--tone:#0b7a8a"><span class="sp-dot"></span><span class="sp-rt"><b>Textes et auteurs</b><small>${H.texts.length} fiches · ${H.authors.length} auteurs · ${H.cites.length} citations</small></span><span class="sp-rp">${C.ICON.chev}</span></button>`;
-  });
   C.SPACE_NAV.hlp = prm => SECTIONS.map(([k, l, s]) => ({ href: k === "accueil" ? "#/hlp" : "#/hlp/" + k, l, s, on: (prm.sub === "texte" || prm.sub === "auteur" ? "textes" : prm.sub || "accueil") === k }));
 
   C.VIEWS.hlp = function (root, prm) {
