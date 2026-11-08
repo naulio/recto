@@ -27,6 +27,18 @@ ids.forEach(id => {
       if (ok > max + 3 && ok > avg * 1.6) out.push(`${exId} · bonne réponse trop longue (${ok} mots, les autres ${others.join("/")}) · ${e.q}`);
       else if (avg < 3.5 && ok >= 6) out.push(`${exId} · mauvaises réponses trop courtes (${others.join("/")} mots) · ${e.q}`);
     }
+    /* Pas de question d'histoire : aucune réponse ne doit tenir à une année précise */
+    /* Un titre n'est pas une date : le roman d'Orwell */
+    const YR = /\b(1[0-9]{3}|20[0-2][0-9])\b/, untitled = s => String(s || "").replace(/(roman|dans|Orwell,?)\s+1984/g, "");
+    const YEAR = { test: s => YR.test(untitled(s)) }, years = s => (untitled(s).match(/\b(1[0-9]{3}|20[0-2][0-9])\b/g) || []).length;
+    const dated =
+      e.type === "fill" && /\[\[[^\]]*\b(1[0-9]{3}|20[0-2][0-9])\b/.test(e.text) ? "un trou est une année" :
+      e.type === "qcm" && (YEAR.test(e.q) && !e.passage || (e.options || []).some(o => YEAR.test(o))) ? "année dans la question ou les propositions" :
+      e.type === "vf" && YEAR.test(e.s) ? "année dans l'affirmation" :
+      e.type === "match" && (e.pairs || []).some(p => YEAR.test(p.l) || YEAR.test(p.r)) ? "année à associer" :
+      e.type === "order" && (/chronolog|plus ancien|plus récent/i.test(e.q) || years(e.explain) >= 3) ? "ordre chronologique" :
+      e.type === "flash" && (YEAR.test(e.f) || /\bdates?\b/i.test(e.f) || years(e.b) >= 3) ? "carte sur des dates" : "";
+    if (dated) { total++; out.push(`${exId} · question de date (${dated}) · ${e.q || e.s || e.f || e.text}`); }
     if (e.type === "flash") {
       total++;
       const f = String(e.f).trim();

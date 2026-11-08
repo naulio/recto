@@ -405,9 +405,9 @@ Recto.add("discours-de-la-methode", (function () {
 
   /* QCM */
   add("qcm", [
-    { part: 0, notion: "ctx", q: "Sous quelle forme le Discours paraît-il en 1637 ?",
+    { part: 0, notion: "ctx", q: "Sous quelle forme le Discours paraît-il ?",
       options: ["En français, sans nom d'auteur, comme préface à trois essais scientifiques", "En latin, sous son nom, comme traité de métaphysique", "En français, sous son nom, comme manuel pour les collèges", "En latin, sans nom d'auteur, en réponse à Galilée"], answer: 0,
-      explain: "Leyde, 1637 : préface à la Dioptrique, aux Météores et à la Géométrie. Le choix du français est justifié dans la VIe partie." },
+      explain: "Un récit, pas un traité. Le choix du français est justifié dans la VIe partie : être jugé par la raison naturelle." },
     { part: 0, notion: "ctx", q: "Pourquoi « Discours » et non « Traité » de la méthode ?",
       options: ["Pour montrer qu'il ne veut pas enseigner la méthode, seulement en parler à partir de son parcours", "Pour montrer qu'il enseigne la méthode que chacun doit suivre, sans entrer dans les démonstrations", "Parce qu'un traité aurait exigé le latin des écoles, alors qu'il écrit pour tous en français", "Parce que le texte a d'abord été prononcé comme un discours devant les docteurs de la Sorbonne"], answer: 0,
       explain: "Il veut « faire voir en quelle sorte [il a] tâché de conduire [sa raison] », pas imposer une méthode. Il l'écrit aussi à Mersenne en 1637." },
@@ -547,7 +547,7 @@ Recto.add("discours-de-la-methode", (function () {
 
   /* VRAI / FAUX */
   add("vf", [
-    { part: 0, notion: "ctx", s: "Le Discours de la méthode a été publié en latin, sous le nom de Descartes.", a: false, explain: "En 1637 à Leyde, en français et sans nom d'auteur." },
+    { part: 0, notion: "ctx", s: "Le Discours de la méthode a été publié en latin, sous le nom de Descartes.", a: false, explain: "En français et sans nom d'auteur." },
     { part: 4, notion: "doute", s: "Le malin génie fait partie des raisons de douter du Discours.", a: false, explain: "Le malin génie est dans les Méditations (1641). Dans le Discours : les sens, les erreurs de raisonnement, le rêve." },
     { part: 1, notion: "bon-sens", s: "Pour Descartes, certains hommes naissent avec plus de bon sens que d'autres.", a: false, explain: "La puissance de bien juger est « naturellement égale en tous les hommes »." },
     { part: 2, notion: "reforme", s: "Descartes conseille à chacun de se défaire de toutes ses opinions.", a: false, explain: "« Ce n'est pas un exemple que chacun doive suivre. »" },
@@ -604,7 +604,7 @@ Recto.add("discours-de-la-methode", (function () {
     { part: 6, notion: "maitres", text: "et ainsi nous rendre comme [[maîtres|maitre|maîtres]] et [[possesseurs|possesseur]] de la nature.", explain: "Note le « comme »." },
     { part: 6, notion: "maitres", text: "la conservation de la [[santé]], laquelle est sans doute le premier bien et le fondement de tous les autres biens de cette vie", explain: "Le but premier de la philosophie pratique." },
     { part: 6, notion: "experiences", text: "Et si j'écris en [[français]], qui est la langue de mon pays, plutôt qu'en [[latin]], qui est celle de mes précepteurs", explain: "Pour ceux qui usent de leur raison naturelle toute pure." },
-    { part: 0, notion: "ctx", plain: true, text: "Le Discours paraît en [[1637]] à [[Leyde|leiden]], comme préface à trois essais : la Dioptrique, les [[Météores]] et la [[Géométrie]].", explain: "Publié sans nom d'auteur, en français." }
+    { part: 0, notion: "ctx", plain: true, text: "Le Discours paraît sans nom d'[[auteur]], en [[français|francais]], comme [[préface|preface]] à trois essais scientifiques.", explain: "Ce n'est pas un traité : c'est le récit d'un itinéraire." }
   ]);
 
   /* QUELLE PARTIE ? */
@@ -837,7 +837,7 @@ Recto.add("discours-de-la-methode", (function () {
     { part: 2, notion: "maths", f: "Que reproche-t-il à la logique ?", b: "Ses syllogismes servent à expliquer ce qu'on sait, pas à découvrir ; et elle a trop de préceptes" },
     { part: 2, notion: "reforme", f: "Pourquoi ne pas réformer l'État ?", b: "Les grands corps sont trop malaisés à relever une fois abattus ; on ne réforme que ses propres pensées" },
     { part: 2, notion: "reforme", f: "Que vaut la pluralité des voix pour les vérités difficiles à découvrir ?", b: "Pas une preuve pour les vérités difficiles : un homme seul les trouve plus vraisemblablement qu'un peuple" },
-    { part: 0, notion: "ctx", f: "Date, lieu, forme de publication ?", b: "1637, Leyde, anonyme, en français, préface à la Dioptrique, aux Météores et à la Géométrie" },
+    { part: 0, notion: "ctx", f: "Sous quelle forme le Discours paraît-il, et pourquoi n'est-ce pas un traité ?", b: "Anonyme, en français, comme préface à trois essais scientifiques. Le récit d'un itinéraire, « une fable » : il parle de sa méthode sans l'imposer." },
     { part: 3, notion: "conclusion-morale", f: "« Il suffit de bien juger pour bien faire » ?", b: "La conduite dépend du jugement : cultiver sa raison, c'est aussi s'assurer de bien agir" },
     { part: 6, notion: "experiences", f: "Le rôle des expériences (VIe partie) ?", b: "D'autant plus nécessaires qu'on avance : elles tranchent entre plusieurs explications. Trop nombreuses pour un seul homme" },
     { part: 1, notion: "monde", f: "Que lui apprennent ses voyages ?", b: "À ne pas croire trop fermement ce qu'il ne tient que de l'exemple et de la coutume" },

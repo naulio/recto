@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "14"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "15"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -264,7 +264,7 @@
     }
     if (!store.get(K_LAST) && store.get("ergo.last")) store.set(K_LAST, store.get("ergo.last"));
   })();
-  const G = Object.assign({ recall: true, len: 12, noQuotes: false, fx: 2, motion: "auto", days: [], celebrated: "", hl: true, skim: false, kitN: 3 }, store.get(K_SET) || {});
+  const G = Object.assign({ recall: true, len: 12, noQuotes: false, noQuotesHlp: false, fx: 2, motion: "auto", days: [], celebrated: "", hl: true, skim: false, kitN: 3 }, store.get(K_SET) || {});
   /* Effets visuels : fx.js s'il est chargé, sinon des fonctions vides */
   const X = window.FX || new Proxy({}, { get: () => () => 0 });
   function applyFx() {
@@ -303,7 +303,12 @@
     if (inTC(B.meta)) store.set(K_LAST, id);
     saveSummary();
   }
-  const avail = e => !(G.noQuotes && e.cite);
+  /* « Sans citations » : un réglage par espace. En spécialité il reste désactivé par défaut,
+     et l'interface conseille de garder les citations (elles comptent à l'épreuve). */
+  const nqKey = hlp => (hlp == null ? !!(B && B.meta.space === "hlp") : hlp) ? "noQuotesHlp" : "noQuotes";
+  const noQ = hlp => !!G[nqKey(hlp)];
+  const nqLabel = hlp => (hlp == null ? !!(B && B.meta.space === "hlp") : hlp) ? `Sans citations<small class="nq-rec">Recommandé : garder les citations</small>` : "Sans citations";
+  const avail = e => !(noQ() && e.cite);
 
   /* =========================================================
      Maîtrise
@@ -870,7 +875,7 @@
         <div class="ctrl-label">${esc(U.many.charAt(0).toUpperCase() + U.many.slice(1))} déjà ${B.course ? (U.fem ? "apprises" : "appris") : (U.fem ? "lues" : "lus")} </div>
         <div class="part-toggles" style="grid-template-columns:repeat(${Math.min(CH.length, 6)},1fr)">${CH.map(p => `<button class="ptog ${S.plan.read.includes(p) ? "on" : ""}" data-p="${p}" ${running ? "disabled" : ""} title="${esc(PARTS[p].title)}">${PARTS[p].roman}</button>`).join("")}</div>
         <div class="mix" id="mix"></div>
-        <div class="set-line"><span>Sans citations</span>${switchHTML("nq", G.noQuotes)}</div>
+        <div class="set-line"><span>${nqLabel()}</span>${switchHTML("nq", noQ())}</div>
         <div class="ctrl-foot" id="ctrlFoot"></div>
       </div>
       <div class="card plan-tl">
@@ -891,7 +896,7 @@
       b.classList.toggle("on");
       save(); refreshPlan();
     }));
-    bindSwitch("nq", v => { G.noQuotes = v; save(); toast(v ? "Sans citations" : "Citations réactivées"); });
+    bindSwitch("nq", v => { G[nqKey()] = v; save(); toast(v ? "Sans citations" : "Citations réactivées"); });
     refreshPlan();
   };
   function switchHTML(id, on) { return `<span class="switch ${on ? "on" : ""}" id="${id}" role="switch" aria-checked="${on}" tabindex="0"><i></i></span>`; }
@@ -1719,7 +1724,7 @@
         <div class="t-set">
           <div class="t-set-row"><span class="lbl">Longueur des séries</span><span class="segmented" id="len">${[8, 12, 20].map(n => `<button data-n="${n}" class="${n === G.len ? "on" : ""}">${n}</button>`).join("")}</span></div>
           <div class="t-set-row"><span class="lbl">Rappel actif</span>${switchHTML("recall", G.recall)}</div>
-          <div class="t-set-row"><span class="lbl">Sans citations</span>${switchHTML("nq", G.noQuotes)}</div>
+          <div class="t-set-row"><span class="lbl">${nqLabel()}</span>${switchHTML("nq", noQ())}</div>
         </div>
         <button class="btn primary lg" id="smart">Commencer · ${G.len} exercices</button>
       </div>
@@ -1751,7 +1756,7 @@
     };
     $$("#len button").forEach(b => b.onclick = () => { G.len = +b.dataset.n; save(); render(); });
     bindSwitch("recall", v => { G.recall = v; save(); });
-    bindSwitch("nq", v => { G.noQuotes = v; save(); render(); toast(v ? "Mode sans citations activé." : "Exercices de citation réactivés."); });
+    bindSwitch("nq", v => { G[nqKey()] = v; save(); render(); toast(v ? "Mode sans citations activé." : "Exercices de citation réactivés."); });
     countAll(root);
   };
 
@@ -2195,6 +2200,7 @@
   /* IM-01 / IM-02 : petit onglet de réglages */
   function openSettings() {
     let dirty = false;
+    const hlpNow = document.body.dataset.space === "hlp";
     const rmSys = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     const seg = (id, opts, cur) => `<div class="segmented" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(v) === String(cur) ? "on" : ""}">${l}</button>`).join("")}</div>`;
     const card = openModal(`
@@ -2202,7 +2208,7 @@
       <div class="set-row"><div><b>Effets visuels</b><span>Jamais de son.</span></div>${seg("sFx", [[0, "Aucun"], [1, "Doux"], [2, "Complet"]], G.fx)}</div>
       <div class="set-row"><div><b>Animations</b><span>« Auto » : réglage de l'appareil${rmSys ? " (réduites)" : ""}.</span></div>${seg("sMo", [["auto", "Auto"], ["reduce", "Réduites"], ["full", "Complètes"]], G.motion)}</div>
       <div class="set-row"><div><b>Rappel actif</b><span>Propositions masquées avant de répondre.</span></div>${switchHTML("sRecall", G.recall)}</div>
-      <div class="set-row"><div><b>Sans citations</b></div>${switchHTML("sNq", G.noQuotes)}</div>
+      <div class="set-row"><div><b>Sans citations</b>${hlpNow ? "<span>Spécialité · recommandé : garder les citations.</span>" : ""}</div>${switchHTML("sNq", noQ(hlpNow))}</div>
       <div class="set-row"><div><b>Repères de lecture</b><span>Idées clés, auteurs, œuvres.</span></div>${switchHTML("sHl", G.hl !== false)}</div>
       <div class="set-row"><div><b>Longueur des séries</b></div>${seg("sLen", [[8, "8"], [12, "12"], [20, "20"]], G.len)}</div>
       ${installRowHTML()}
@@ -2212,7 +2218,7 @@
     segBind("sMo", v => { G.motion = v; applyFx(); });
     segBind("sLen", v => { G.len = +v; dirty = true; });
     bindSwitch("sRecall", v => { G.recall = v; save(); dirty = true; });
-    bindSwitch("sNq", v => { G.noQuotes = v; save(); dirty = true; });
+    bindSwitch("sNq", v => { G[nqKey(hlpNow)] = v; save(); dirty = true; });
     bindSwitch("sHl", v => { G.hl = v; save(); applyFx(); });
     const si = $("#sInstall", card); if (si) si.onclick = () => { INSTALL.prompt(); INSTALL.userChoice.finally(() => { INSTALL = null; closeModal(); }); };
     $("#sTry", card).onclick = e => { const b = e.currentTarget; X.ripple(b, e.clientX, e.clientY, "rgba(0,113,227,.25)"); X.pop(b); X.burst(b); };
@@ -3303,8 +3309,8 @@
     Object.keys(last).forEach(id => { const t = EX[id] && EX[id].type; if (t) (byType[t] = byType[t] || []).push(last[id].r); });
     const tAvg = t => byType[t] && byType[t].length >= 2 ? avg(byType[t]) : null;
     if (tAvg("build") != null && tAvg("build") < 0.6) out.push("Arguments hors sujet : reformuler la question avant de choisir.");
-    if (!G.noQuotes && tAvg("part") != null && tAvg("part") < 0.6) out.push("Citations mal situées : refaire « Quelle partie ? » avec la Carte.");
-    if (!G.noQuotes && tAvg("fill") != null && tAvg("fill") < 0.6) out.push("Formules exactes à fixer : refaire les textes à trous.");
+    if (!noQ() && tAvg("part") != null && tAvg("part") < 0.6) out.push("Citations mal situées : refaire « Quelle partie ? » avec la Carte.");
+    if (!noQ() && tAvg("fill") != null && tAvg("fill") < 0.6) out.push("Formules exactes à fixer : refaire les textes à trous.");
     if (tAvg("vf") != null && tAvg("vf") < 0.6) out.push("Pièges des vrai/faux : relire chaque justification.");
     if (errs.length > 8) out.push(`${errs.length} erreurs non corrigées : les refaire avant d'avancer.`);
     return out;
@@ -3345,7 +3351,7 @@
       L.push(pad + "L'essentiel : " + n.essentiel);
       if (n.retenir && n.retenir.length) { L.push(pad + "À retenir :"); n.retenir.forEach(r => L.push(pad + "  • " + r)); }
       if (n.piege) L.push(pad + "Piège : " + n.piege);
-      if (n.citation && !G.noQuotes) L.push(pad + "Citation : « " + n.citation + " »");
+      if (n.citation && !noQ()) L.push(pad + "Citation : « " + n.citation + " »");
       return L;
     };
 
@@ -3389,7 +3395,7 @@
     if (!weak.length) h.push(`<p>Aucune notion fragile parmi celles testées.</p>`);
     weak.forEach((x, i) => {
       const n = NOTIONS[x.id];
-      h.push(`<div class="pr-notion"><h3><span>${i + 1}. ${esc(n.title)} · ${esc(partLabel(n.part))}</span><span>${pct(x.m)} %</span></h3><p>${esc(n.essentiel)}</p>${n.retenir ? `<ul>${n.retenir.map(r => `<li>${esc(r)}</li>`).join("")}</ul>` : ""}${n.piege ? `<p class="pr-trap"><b>Piège :</b> ${esc(n.piege)}</p>` : ""}${n.citation && !G.noQuotes ? `<p class="pr-cit">« ${esc(n.citation)} »</p>` : ""}${(errs[x.id] || []).map(a => `<div class="pr-err"><div class="q">${esc(a.q)}</div><div class="g">Ma réponse : ${esc(a.g)}</div><div class="e">Attendu : ${esc(a.e)}</div></div>`).join("")}</div>`);
+      h.push(`<div class="pr-notion"><h3><span>${i + 1}. ${esc(n.title)} · ${esc(partLabel(n.part))}</span><span>${pct(x.m)} %</span></h3><p>${esc(n.essentiel)}</p>${n.retenir ? `<ul>${n.retenir.map(r => `<li>${esc(r)}</li>`).join("")}</ul>` : ""}${n.piege ? `<p class="pr-trap"><b>Piège :</b> ${esc(n.piege)}</p>` : ""}${n.citation && !noQ() ? `<p class="pr-cit">« ${esc(n.citation)} »</p>` : ""}${(errs[x.id] || []).map(a => `<div class="pr-err"><div class="q">${esc(a.q)}</div><div class="g">Ma réponse : ${esc(a.g)}</div><div class="e">Attendu : ${esc(a.e)}</div></div>`).join("")}</div>`);
     });
     if (untested.length) h.push(`<p><b>Jamais testées :</b> ${untested.map(x => esc(NOTIONS[x.id].title)).join(", ")}.</p>`);
     h.push(`<h2>2. Tips</h2><ul class="pr-tips">${tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>`);
@@ -3471,7 +3477,7 @@
   }
   window.Recto.core = {
     V, $, $$, esc, md, ICON, toast, store, X, shuffle, clip, sum, avg, fold, dayKey, fmtHMS, kSum,
-    G: () => G, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV,
+    G: () => G, noQ, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV,
     /* Suivi en direct des chronos */
     live: LIVE, liveHTML, liveTxt, liveLong,
     view: () => VIEW, params: () => PARAMS, hash: (v, p) => hashFor(v, p),

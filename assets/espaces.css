@@ -767,6 +767,15 @@ a.fr-dot:hover { opacity: 1; transform: scale(1.5); text-decoration: none; }
 .imp-mk.truth { background: var(--tone); box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--tone) 18%, transparent); }
 .imp-range { width: 100%; accent-color: var(--accent); }
 .imp-year { font-size: 1.75rem; letter-spacing: -.02em; min-width: 4.5rem; }
+/* Le siècle, pas l'année : six segments alignés sous la frise (marges égales, les centres restent en place) */
+.imp-cents { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin: -0.75rem 0.75rem 0; }
+.imp-cent { margin: 0 0.1875rem; padding: 0.625rem 0; border-radius: 0.75rem; background: var(--fill); font-size: 0.9375rem; font-weight: 600; color: var(--text-2); transition: background .15s, color .15s, transform .15s; }
+.imp-cent sup { font-size: .7em; }
+.imp-cent:not(:disabled):hover { background: var(--fill-2); color: var(--text); }
+.imp-cent:not(:disabled):active { transform: scale(.97); }
+.imp-cent.ok { background: color-mix(in srgb, var(--tone) 16%, transparent); color: var(--tone); }
+.imp-cent.ko { background: var(--orange-soft); color: var(--orange); }
+.imp-cent:disabled { cursor: default; }
 .imp-duel { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 .imp-col { min-height: 6rem; padding: 0.75rem; border-radius: var(--r-md); background: var(--fill); display: flex; flex-direction: column; gap: 0.5rem; }
 .imp-col > b { font-size: 0.875rem; color: var(--tone); }

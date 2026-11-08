@@ -181,30 +181,33 @@
       }
     };
   }
-  /* Situer dans le temps : estimer l'année, le repère glisse jusqu'à la vraie place */
+  /* Situer dans le temps : le siècle suffit (pas l'année). Le repère glisse du siècle choisi jusqu'à la vraie place */
+  const ROMAN_C = { 16: "XVI", 17: "XVII", 18: "XVIII", 19: "XIX", 20: "XX", 21: "XXI" };
   function stTime(t) {
-    const Y0 = 1500, Y1 = 2025, pct = y => ((Math.min(Y1, Math.max(Y0, y)) - Y0) / (Y1 - Y0) * 100).toFixed(2) + "%";
-    const cents = [[1550, "XVI"], [1650, "XVII"], [1750, "XVIII"], [1850, "XIX"], [1950, "XX"]];
+    const Y0 = 1500, Y1 = 2100, pct = y => ((Math.min(Y1, Math.max(Y0, y)) - Y0) / (Y1 - Y0) * 100).toFixed(2) + "%";
+    const cs = [16, 17, 18, 19, 20, 21], y = t.yearN;
+    /* 1900 est au XIXᵉ siècle, mais on l'entend souvent comme le début du XXᵉ : les deux sont acceptés */
+    const good = [Math.floor((y - 1) / 100) + 1, Math.floor(y / 100) + 1];
     return {
-      eye: "Situer dans le temps", gate: true, hint: "Placer le repère",
-      html: `<h2 class="imp-q">En quelle année ?</h2>
+      eye: "Situer dans le temps", gate: true, hint: "Choisir le siècle",
+      html: `<h2 class="imp-q">Quel siècle ?</h2>
         <div class="imp-time">
-          <div class="imp-tl"><div class="fr-line"></div>${cents.map(([y, c]) => `<span class="imp-tk" style="left:${pct(y)}">${c}<sup>e</sup></span>`).join("")}<span class="imp-mk guess" style="left:${pct(1760)}"></span><span class="imp-mk truth" hidden></span></div>
-          <input type="range" class="imp-range" min="${Y0}" max="${Y1}" step="5" value="1760" aria-label="Année estimée">
-          <div class="imp-row"><b class="imp-year tabnum">1760</b><span class="imp-delta" hidden></span><button class="btn primary" id="impTimeOk">Valider</button></div>
+          <div class="imp-tl"><div class="fr-line"></div><span class="imp-mk truth" hidden></span></div>
+          <div class="imp-cents">${cs.map(c => `<button class="imp-cent" data-c="${c}">${ROMAN_C[c]}<sup>e</sup></button>`).join("")}</div>
+          <div class="imp-row"><span class="imp-delta" hidden></span></div>
         </div>`,
       bind(el, api) {
-        const r = $(".imp-range", el), g = $(".imp-mk.guess", el), tr = $(".imp-mk.truth", el), yv = $(".imp-year", el);
-        r.oninput = () => { g.style.left = pct(+r.value); yv.textContent = r.value; };
-        $("#impTimeOk", el).onclick = () => {
+        const tr = $(".imp-mk.truth", el);
+        $$(".imp-cent", el).forEach(b => b.onclick = () => {
           if (el.dataset.done) return; el.dataset.done = "1";
-          const d = Math.abs(+r.value - t.yearN); r.disabled = true; $("#impTimeOk", el).disabled = true;
-          tr.hidden = false; X.glide(tr, pct(+r.value), pct(t.yearN));
-          yv.textContent = t.year;
-          const dl = $(".imp-delta", el); dl.hidden = false; dl.textContent = d <= 5 ? "exact" : "± " + d + " ans"; dl.classList.toggle("far", d > 40);
-          $("#impTimeOk", el).hidden = true; X.pop(dl, 1.06);
-          api.done(d <= 15 ? true : d <= 40 ? .5 : false);
-        };
+          const c = +b.dataset.c, ok = good.includes(c), real = ok ? c : good[0];
+          $$(".imp-cent", el).forEach(x => { x.disabled = true; x.classList.toggle("ok", +x.dataset.c === real); });
+          if (!ok) b.classList.add("ko");
+          tr.hidden = false; X.glide(tr, pct((c - 1) * 100 + 50), pct(y));
+          const dl = $(".imp-delta", el); dl.hidden = false; dl.textContent = ROMAN_C[real] + "ᵉ siècle"; dl.classList.toggle("far", !ok);
+          X.pop(dl, 1.06);
+          api.done(ok);
+        });
       }
     };
   }
@@ -432,7 +435,8 @@
     const chap = chapOf(t, H), authors = [...new Set(chap.map(x => x.a.short))];
     const mk = x => {
       const out = [];
-      x.citations.forEach(c => { const ok = c.who || x.a.short; out.push({ q: "« " + c.t + " »", k: "Qui l'a écrit ?", ok, opts: C.shuffle([ok].concat(pickN(authors.filter(a => a !== ok), 3))) }); });
+      if (NQ()) out.push({ q: x.short, k: "Qui le soutient ?", ok: x.a.short, opts: C.shuffle([x.a.short].concat(pickN(authors.filter(a => a !== x.a.short), 3))) });
+      else x.citations.forEach(c => { const ok = c.who || x.a.short; out.push({ q: "« " + c.t + " »", k: "Qui l'a écrit ?", ok, opts: C.shuffle([ok].concat(pickN(authors.filter(a => a !== ok), 3))) }); });
       (x.vf || []).forEach(v => out.push({ q: v.s, k: "Vrai ou faux ?", ok: v.a ? "Vrai" : "Faux", opts: ["Vrai", "Faux"] }));
       return out;
     };
@@ -527,6 +531,8 @@
       }
     };
   }
+  /* « Sans citations » en spécialité (désactivé par défaut) : les visites ne gardent que les méthodes sur le texte */
+  const NQ = () => !!(C.noQ && C.noQ(true));
   /* Le choix des méthodes de citation selon le niveau de la citation (rappels réussis) */
   function quoteKinds(level) {
     const speak = C.speechOK && Math.random() < .34 ? "voix" : "dictee";
@@ -559,7 +565,7 @@
         </div>
         <p class="imp-next">${score.tot ? `${score.ok} réponse${score.ok > 1 ? "s" : ""} juste${score.ok > 1 ? "s" : ""} sur ${score.tot}. ` : ""}Prochain rappel : ${esc(dayFR(r.next || Date.now() + DAY))}.</p>
         <div class="imp-row center"><a class="imp-gal" href="#/hlp/textes?m=auteurs" id="impGal">Auteurs retenus <b class="tabnum">${gallery(H).length}</b> / ${H.authors.length}</a></div>
-        <div class="imp-row center"><button class="btn primary" id="impTrain">S'entraîner sur ce texte</button><a class="btn secondary" href="#/hlp/citation/${t.id}">Retenir les citations</a></div>`;
+        <div class="imp-row center"><button class="btn primary" id="impTrain">S'entraîner sur ce texte</button>${c ? `<a class="btn secondary" href="#/hlp/citation/${t.id}">Retenir les citations</a>` : ""}</div>`;
       },
       enter() {
         const r = rec(t.id) || { n: 0 }, weak = score.tot && score.ok / score.tot < .5;
@@ -575,7 +581,7 @@
     };
   }
   function build(t, H, recall, score, opts) {
-    const cite = t.citations.find(c => c.fill) || t.citations[0];
+    const nq = NQ(), cite = nq ? null : t.citations.find(c => c.fill) || t.citations[0];
     const ci = t.citations.indexOf(cite), qk = cite ? qkey(t, ci) : null, level = qk ? (qrec(qk) || {}).n || 0 : 0, per = {};
     const textPool = [
       t.idees.length >= 3 ? () => stOrder(t) : null,
@@ -593,13 +599,13 @@
     if (!recall) {
       S.push(stMeet(t, H), stBet(t, H, false), stThesis(t));
       if (t.idees.length) S.push(stThread(t));
-      S.push(...C.shuffle(pickN(textPool, 4).map(f => f()).concat(qSteps)));
+      S.push(...C.shuffle(pickN(textPool, nq ? 6 : 4).map(f => f()).concat(qSteps)));
       S.push(stPhrase(t, false));
       if (!(rec(t.id) || {}).anchor) S.push(stAnchor(t));
       S.push(stBlitz(t, H));
     } else {
       S.push(stBet(t, H, true));
-      const tm = pickN([() => stLie(t, H), () => stTime(t), rival(t, H) ? () => stDuel(t, H) : null].filter(Boolean), 1).map(f => f());
+      const tm = pickN([() => stLie(t, H), () => stTime(t), rival(t, H) ? () => stDuel(t, H) : null, nq && (t.vf || []).length ? () => stVF(t) : null].filter(Boolean), nq ? 3 : 1).map(f => f());
       S.push(...C.shuffle(qSteps.concat(tm)));
       S.push(stPhrase(t, true));
     }
@@ -712,14 +718,23 @@
     const text = texts[0] || H.texts[0];
     const Q = qall(), cands = [];
     H.texts.forEach(t => t.citations.forEach((c, i) => { const k = qkey(t, i), r = Q[k]; cands.push({ t, i, k, w: r && r.next ? (r.next <= now ? 0 : 2) + r.next / 1e14 : A[t.id] ? 1 + Math.random() / 10 : 3 + Math.random() / 10 }); }));
+    if (NQ()) {
+      const rest = H.texts.filter(t => t !== text).map(t => ({ t, w: A[t.id] && A[t.id].next ? A[t.id].next : now * 2 + Math.random() })).sort((a, b) => a.w - b.w);
+      return { text, quotes: [], more: rest.slice(0, 2).map(o => o.t) };
+    }
     const quotes = cands.filter(o => o.t !== text).sort((a, b) => a.w - b.w).slice(0, 2);
-    return { text, quotes };
+    return { text, quotes, more: [] };
   }
   function dayView(root, prm, H, tone) {
     const P = todayPick(H), t = P.text, score = { ok: 0, tot: 0 }, per = {};
     const S = [stBet(t, H, true)];
     const tm = pickN([() => stLie(t, H), () => stTime(t), rival(t, H) ? () => stDuel(t, H) : null].filter(Boolean), 1)[0];
     if (tm) S.push(tm());
+    P.more.forEach(x => {
+      S.push(stBet(x, H, true));
+      const f = pickN([() => stLie(x, H), () => stTime(x), rival(x, H) ? () => stDuel(x, H) : null].filter(Boolean), 1)[0];
+      if (f) S.push(f());
+    });
     P.quotes.forEach(o => {
       const lvl = (qrec(o.k) || {}).n || 0;
       quoteKinds(lvl).forEach(kd => { const st = trackQuote(stQuote(kd, o.t.citations[o.i], o.t, H), o.k, per); if (st) S.push(st); });
@@ -727,7 +742,7 @@
     S.push({
       eye: "Fait pour aujourd'hui", last: true,
       enter() {
-        const r = rec(t.id) || { n: 0 }; schedule(r, !score.tot || score.ok / score.tot >= .5); put(t.id, r);
+        [t].concat(P.more).forEach(x => { const r = rec(x.id) || { n: 0 }; schedule(r, !score.tot || score.ok / score.tot >= .5); put(x.id, r); });
         settleQuotes(per); logDay();
       },
       html: () => { const n = streak(); return `<div class="imp-day"><span class="mx-dots big"><i></i><i></i><i></i></span>
@@ -740,7 +755,7 @@
 
   /* ---------- Galerie : les auteurs dont au moins un texte a été visité ---------- */
   function gallery(H) { const A = all(); return [...new Set(H.texts.filter(t => A[t.id] && A[t.id].last).map(t => t.author))]; }
-  function dueCount(H) { const now = Date.now(), A = all(), Q = qall(); return H.texts.filter(t => A[t.id] && A[t.id].next <= now).length + Object.keys(Q).filter(k => Q[k].next && Q[k].next <= now).length; }
+  function dueCount(H) { const now = Date.now(), A = all(), Q = qall(); return H.texts.filter(t => A[t.id] && A[t.id].next <= now).length + (NQ() ? 0 : Object.keys(Q).filter(k => Q[k].next && Q[k].next <= now).length); }
 
   Recto.impregner = { view, quoteView, dayView, rec, due, frise, GAPS, symSVG, gallery, dueCount, streak, doneToday, qrec, qkey,
     /* pour les tests (tests/methodes.js) */

@@ -72,5 +72,34 @@ for (let k = 0; k < 20; k++) {
 /* Choix des méthodes selon le niveau */
 [0, 1, 2, 3].forEach(l => { const K = I._kinds(l); ok(K.length === 2 && K[0] !== K[1], `niveau ${l} : deux méthodes différentes`); });
 
+/* Situer dans le temps : le siècle, jamais l'année à deviner */
+H.texts.forEach(t => {
+  for (let k = 0; k < 30; k++) {
+    const st = I._build(t, H, false, { ok: 0, tot: 0 }, { train() {} }).find(s => s.eye === "Situer dans le temps");
+    if (!st) continue;
+    ok(/Quel siècle/.test(st.html) && /imp-cent/.test(st.html) && !/imp-range|En quelle année/.test(st.html), `${t.id} : « Situer dans le temps » demande le siècle`);
+    break;
+  }
+});
+
+/* « Sans citations » en spécialité : plus aucune étape ni question sur une citation */
+win.Recto.core.noQ = () => true;
+H.texts.forEach(t => {
+  [false, true].forEach(recall => {
+    for (let k = 0; k < 20; k++) {
+      const S = I._build(t, H, recall, { ok: 0, tot: 0 }, { train() {} });
+      ok(S.length >= (recall ? 4 : 9), `${t.id} ${recall ? "rappel" : "visite"} sans citations : ${S.length} étapes`);
+      const html = S.map(st => typeof st.html === "function" ? st.html() : st.html).join("");
+      ok(!/imp-ex|<blockquote|#\/hlp\/citation\//.test(html), `${t.id} ${recall ? "rappel" : "visite"} sans citations : aucune citation à apprendre`);
+    }
+  });
+  ok(I._blitz(t, H).every(b => b.k !== "Qui l'a écrit ?"), `${t.id} : bilan éclair sans citations`);
+});
+for (let k = 0; k < 10; k++) {
+  const P = I._todayPick(H);
+  ok(P.quotes.length === 0 && P.more.length === 2 && new Set([P.text].concat(P.more)).size === 3, "Les 3 du jour sans citations : trois textes différents");
+}
+delete win.Recto.core.noQ;
+
 console.log(`\n${fails ? "ÉCHECS : " + fails : "Tout est bon"} · ${oks} vérifications réussies`);
 process.exit(fails ? 1 : 0);

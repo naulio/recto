@@ -102,13 +102,12 @@
         if (chunk.length < 3) continue;
         push({ id: "match-" + d + "-" + k, type: "match", part: partOf["ch1|" + d], q: "Associe chaque texte à son idée principale.", pairs: chunk.map(t => ({ l: label(t), r: t.short, n: t.id })) });
       }
-      const seen = new Set(), dated = list.filter(t => !/confirmer/.test(t.year) && !seen.has(t.author) && seen.add(t.author)).sort((a, b) => a.yearN - b.yearN).slice(0, 6);
-      if (dated.length >= 3) push({ id: "order-" + d, type: "order", part: partOf["ch1|" + d], ns: dated.map(t => t.id), q: "Range ces textes du plus ancien au plus récent.",
-        items: dated.map(t => `${t.a.short}, ${t.work.replace(/^« [^»]*? », /, "").replace(/\s*\([^)]*\)/g, "")}`), explain: dated.map(t => `${t.a.short} (${t.yearN})`).join(" · ") });
+      /* Pas d'ordre chronologique à l'année près : l'époque suffit, ce qui compte est l'idée */
       const auth = [...new Set(list.map(t => t.author))].map(id => H.A[id]);
       const B3 = ["XVIe-XVIIIe siècles", "XIXe siècle", "XXe-XXIe siècles"], bk = a => a.century <= 18 ? 0 : a.century === 19 ? 1 : 2;
+      const sc = n => ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"][n] + "ᵉ";
       if (auth.length >= 4) push({ id: "sort-" + d, type: "sort", part: partOf["ch1|" + d], q: "Classe ces auteurs selon leur époque.", buckets: B3,
-        items: auth.map(a => ({ t: a.name, b: bk(a), n: a.texts.find(t => t.discipline === d).id })), explain: auth.map(a => `${a.short} : ${a.dates}`).join(" · ") });
+        items: auth.map(a => ({ t: a.name, b: bk(a), n: a.texts.find(t => t.discipline === d).id })), explain: auth.map(a => `${a.short} : ${sc(a.century)}`).join(" · ") });
     });
     return {
       unit: { one: "partie", many: "parties", fem: true },
@@ -116,7 +115,7 @@
       plan: { priority: parts.slice(1).map(p => p.n) },
       overview: { title: "Les textes de la spécialité", intro: H.active.map(c => "Chapitre " + c.n + " · " + c.title + " : " + c.question).join(" "), boxes: [
         { t: "Les fiches", b: "Une fiche complète par texte dans Textes et auteurs." },
-        { t: "Sans citations", b: "Le mode « sans citations » retire les questions sur les formules exactes." }] },
+        { t: "Sans citations", b: "Le mode « sans citations » retire les questions sur les formules exactes. Désactivé par défaut : en spécialité, mieux vaut les garder." }] },
       tips: ["Pour chaque texte, sache dire en une phrase sa thèse et cite une formule exacte.", "Prépare des couples de textes qui s'opposent : ils font les meilleurs plans d'essai."],
       parts, notions, exercises: ex
     };
@@ -158,7 +157,7 @@
         <div class="hh-facts"><div><b class="cnt" data-v="${H.texts.length}">${H.texts.length}</b><span>textes en fiches</span></div><div><b class="cnt" data-v="${H.authors.length}">${H.authors.length}</b><span>auteurs</span></div><div><b class="cnt" data-v="${H.cites.length}">${H.cites.length}</b><span>citations relevées</span></div></div>
         <div class="hh-acts">${allCourses.length ? `<a class="btn primary lg" href="#/${allCourses[0].id}/cours">Ouvrir le cours</a><a class="btn secondary lg" href="#/hlp/textes">Textes et auteurs</a>` : `<a class="btn primary lg" href="#/hlp/textes">Textes et auteurs</a>`}<a class="btn secondary lg" href="#/hlp-textes/train">S'entraîner sur les textes</a></div>
         ${Recto.impregner ? (() => { const I = Recto.impregner, done = I.doneToday(), st = I.streak(), g = I.gallery(H).length;
-          return `<a class="hh-day" href="#/hlp/jour"><span class="mx-dots">${[0, 1, 2].map(() => `<i class="${done ? "on" : ""}"></i>`).join("")}</span><span class="hh-day-t"><b>Les 3 du jour</b><small>${done ? "Fait" : "Un texte, deux citations · 3 min"}${st > 1 ? " · " + st + " jours de suite" : ""}</small></span><span class="hh-day-g" title="Auteurs retenus">${g}/${H.authors.length}</span></a>`; })() : ""}
+          return `<a class="hh-day" href="#/hlp/jour"><span class="mx-dots">${[0, 1, 2].map(() => `<i class="${done ? "on" : ""}"></i>`).join("")}</span><span class="hh-day-t"><b>Les 3 du jour</b><small>${done ? "Fait" : C.noQ(true) ? "Trois textes · 3 min" : "Un texte, deux citations · 3 min"}${st > 1 ? " · " + st + " jours de suite" : ""}</small></span><span class="hh-day-g" title="Auteurs retenus">${g}/${H.authors.length}</span></a>`; })() : ""}
       </div>
       <div class="card hh-chap">
         <div class="eyebrow">${esc((H.objets.find(o => o.id === ch.objet) || {}).title || "")} · ${esc((H.objets.find(o => o.id === ch.objet) || {}).sem || "")}</div>
@@ -341,7 +340,7 @@
   }
   function trainText(t) {
     const bk = C.BOOKS["hlp-textes"];
-    const ids = bk.exercises.filter(e => e.nlist.includes(t.id) && !(C.G().noQuotes && e.cite)).map(e => e.id);
+    const ids = bk.exercises.filter(e => e.nlist.includes(t.id) && !(C.noQ(true) && e.cite)).map(e => e.id);
     C.startIn("hlp-textes", { title: "Texte · " + t.a.short, ids: C.shuffle(ids).slice(0, 8), back: location.hash });
   }
 
