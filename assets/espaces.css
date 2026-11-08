@@ -103,6 +103,12 @@ a.chip, a.chip:hover { text-decoration: none; color: var(--text); }
 .hd-course { display: flex; flex-direction: column; gap: 0.25rem; padding: 1rem; border-radius: 0.875rem; background: color-mix(in srgb, var(--tone) 8%, #fff); color: var(--text); }
 .hd-course:hover { text-decoration: none; }
 .hd-course span { font-size: 0.8125rem; color: var(--text-2); }
+.hd-course.big { gap: 0.5rem; padding: 1.25rem 1.375rem; }
+.hd-c-t { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+.hd-c-t b { font-size: 1.25rem; }
+.hd-c-t span { font-size: 0.8125rem; font-weight: 600; color: var(--tone); }
+.hd-acts { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.375rem; }
+.hd-h-btn { margin-left: auto; }
 .tx-list { display: flex; flex-direction: column; gap: 0.375rem; }
 .tx-row { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; align-items: center; gap: 0.875rem; padding: 0.75rem 0.875rem; border-radius: 0.875rem; background: var(--fill); color: var(--text); box-shadow: inset 0.1875rem 0 0 var(--tone); transition: background .15s; }
 .tx-row:hover { background: var(--fill-2); text-decoration: none; }
@@ -473,4 +479,72 @@ a.chip, a.chip:hover { text-decoration: none; color: var(--text); }
 @media (max-width: 680px) {
   .home-type { align-self: stretch; }
   .home-type button { flex: 1; padding-left: 0.5rem; padding-right: 0.5rem; }
+}
+
+/* ---------- Retour vers le bac blanc depuis une leçon ---------- */
+.crumb .crumb-back { display: inline-flex; align-items: center; gap: 0.25rem; height: 1.75rem; padding: 0 0.75rem 0 0.5rem; border-radius: 61rem; background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+.crumb .crumb-back svg { width: 0.875rem; height: 0.875rem; }
+.crumb .crumb-back:hover { color: var(--accent-text); background: rgba(0, 113, 227, .14); }
+@media (max-width: 1080px) {
+  .crumb:has(.crumb-back) { display: inline-flex; }
+  .crumb:has(.crumb-back) > :not(.crumb-back) { display: none; }
+}
+
+/* ---------- Bac blanc · Plan : date, programme, séance minutée ---------- */
+.bp { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(15rem, 19rem) minmax(0, 1fr); gap: 1.25rem; }
+.bp-cal { display: flex; flex-direction: column; gap: 0.75rem; min-height: 0; overflow: auto; scrollbar-width: thin; }
+.bp-date { display: flex; flex-direction: column; gap: 0.375rem; font-size: 0.75rem; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; }
+.bp-date input { height: 2.75rem; padding: 0 0.875rem; border: 0; border-radius: 0.75rem; background: var(--fill); font: inherit; font-size: 1rem; font-weight: 600; color: var(--text); text-transform: none; letter-spacing: 0; }
+.bp-date input:focus { outline: none; box-shadow: 0 0 0 0.1875rem rgba(0, 113, 227, .2); }
+.bp-count { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+.bp-count b { font-size: 1.75rem; letter-spacing: -.02em; color: var(--accent-text); }
+.hlp-bac .bp-count b { color: var(--tone); }
+.bp-count span { font-size: 0.875rem; color: var(--text-2); }
+.bp-days { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
+.bp-day { width: 100%; display: grid; grid-template-columns: 4.25rem minmax(0, 1fr) auto; grid-template-areas: "d t p" "d u p"; align-items: center; column-gap: 0.625rem; padding: 0.5rem 0.75rem; border-radius: 0.75rem; background: var(--fill); text-align: left; transition: background .15s, box-shadow .15s; }
+.bp-day:hover { background: var(--fill-2); }
+.bp-day.on { background: #fff; box-shadow: inset 0 0 0 2px var(--accent); }
+.hlp-bac .bp-day.on { box-shadow: inset 0 0 0 2px var(--tone); }
+.bp-day.today .bp-d { color: var(--accent-text); }
+.bp-d { grid-area: d; font-size: 0.8125rem; font-weight: 700; text-transform: capitalize; }
+.bp-t { grid-area: t; font-size: 0.8438rem; font-weight: 600; }
+.bp-u { grid-area: u; font-size: 0.75rem; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bp-p { grid-area: p; font-size: 0.75rem; color: var(--text-3); }
+.bp-day.mock .bp-t, .bp-day.final-mock .bp-t { color: var(--indigo); }
+.bp-day.exam .bp-t { color: var(--red); }
+.bp-sess { display: flex; flex-direction: column; gap: 0.75rem; min-height: 0; overflow: auto; scrollbar-width: thin; }
+.bp-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+.bp-h h3 { font-size: 1.375rem; margin-top: 0.125rem; }
+.bp-prog { font-size: 0.875rem; font-weight: 700; color: var(--text-2); white-space: nowrap; }
+.bp-slider { display: flex; align-items: center; gap: 0.875rem; }
+.bp-slider input { flex: 1; }
+.bp-slider b { min-width: 4.5rem; text-align: right; font-size: 1.125rem; }
+.bp-blocks { list-style: none; display: flex; flex-direction: column; gap: 0.375rem; }
+.bp-b { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr) auto auto; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.875rem; background: var(--fill); box-shadow: inset 0.1875rem 0 0 var(--accent); }
+.bp-b.exos, .bp-b.build { box-shadow: inset 0.1875rem 0 0 var(--teal-mark); }
+.bp-b.corr, .bp-b.mock { box-shadow: inset 0.1875rem 0 0 var(--indigo); }
+.bp-b.method { box-shadow: inset 0.1875rem 0 0 var(--orange-mark); }
+.bp-b.pause { box-shadow: none; background: transparent; border: 1px dashed var(--line-2); }
+.bp-b.done { opacity: .55; }
+.bp-time { font-size: 0.75rem; font-weight: 700; color: var(--text-3); }
+.bp-m { min-width: 0; display: flex; flex-direction: column; gap: 0.125rem; }
+.bp-m b { font-size: 0.9375rem; }
+.bp-m > span { font-size: 0.8125rem; line-height: 1.4; color: var(--text-2); }
+.bp-units { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; }
+.bp-units .chip { height: 1.75rem; font-size: 0.75rem; }
+.bp-dur { font-size: 0.75rem; color: var(--text-3); white-space: nowrap; }
+.bp-acts { display: flex; align-items: center; gap: 0.375rem; }
+.bp-ck { width: 1.75rem; height: 1.75rem; border-radius: 50%; display: grid; place-items: center; background: #fff; color: transparent; box-shadow: inset 0 0 0 1.5px var(--fill-3); transition: background .15s, color .15s; }
+.bp-ck svg { width: 0.875rem; height: 0.875rem; }
+.bp-ck.on { background: var(--green-mark); color: #fff; box-shadow: none; }
+@media (max-width: 1080px) {
+  .bp { grid-template-columns: 1fr; }
+  .bp-cal, .bp-sess { overflow: visible; }
+}
+@media (max-width: 680px) {
+  .bp-b { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "m a" "t a"; }
+  .bp-b .bp-m { grid-area: m; }
+  .bp-b .bp-acts { grid-area: a; }
+  .bp-b .bp-time { display: none; }
+  .bp-b .bp-dur { grid-area: t; }
 }

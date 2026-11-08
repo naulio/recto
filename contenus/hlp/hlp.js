@@ -109,7 +109,7 @@ window.RECTO_HLP = {
       presentation: "Romancier, auteur de Madame Bovary (1857) et de L'Éducation sentimentale (1869), célèbre pour son travail du style et son ironie.",
       contexte: "Madame Bovary paraît en volume en 1857, après un procès dont Flaubert sort acquitté.",
       idees: ["L'école comme groupe qui impose ses codes.", "Le rire collectif et l'humiliation de l'élève venu d'ailleurs."],
-      alerte: "Le nom de Flaubert n'apparaît pas sur la photo : l'attribution du texte est à confirmer." },
+      alerte: "Le nom de Flaubert n'apparaît pas dans le document : l'attribution du texte est à confirmer." },
     { id: "mill", name: "John Stuart Mill", short: "Mill", sort: "Mill", dates: "1806-1873", datesDoc: false, year: 1806, century: 19, epoque: "XIXe siècle · libéralisme, utilitarisme", bio: "biographie p. 416 du manuel",
       presentation: "Philosophe et économiste anglais, défenseur de la liberté individuelle (De la liberté, 1859) et de l'égalité des sexes.",
       contexte: "Député, il défend en 1867 le droit de vote des femmes au Parlement britannique. Le manuel rappelle que ses idées sur l'égalité ont été élaborées avec son épouse, Harriet Taylor Mill.",
@@ -201,7 +201,7 @@ window.RECTO_HLP = {
       ],
       manuel: { encadre: "Le débat des philosophes des Lumières : instruire ou éduquer ? Helvétius condamne une éducation réduite à la transmission de savoirs encyclopédiques : elle doit être morale. Diderot répond que seules les lumières acquises avec le savoir forment un homme de bien." },
       alertes: [],
-      complement: ["La « Lettre aux instituteurs » est datée du 17 novembre 1883 (date absente de la photo).", "La loi du 16 juin 1881 avait d'abord rendu l'école primaire gratuite."],
+      complement: ["La « Lettre aux instituteurs » est datée du 17 novembre 1883 (date absente du document).", "La loi du 16 juin 1881 avait d'abord rendu l'école primaire gratuite."],
       vf: [
         { s: "Pour Ferry, l'école laïque doit renoncer à toute éducation morale.", a: false, explain: "Au contraire : la loi place « au premier rang l'enseignement moral et civique »." },
         { s: "Ferry confie l'instruction religieuse aux familles et à l'Église.", a: true, explain: "« L'instruction religieuse appartient aux familles et à l'Église, l'instruction morale à l'école. »" }
@@ -520,7 +520,7 @@ window.RECTO_HLP = {
         { t: "Petit dessin d'oiseau dans la marge", keep: false, why: "Sans intérêt pédagogique." }
       ],
       manuel: {},
-      alertes: ["La note 1 du manuel (sur « sépulcral ») n'est pas visible sur la photo."],
+      alertes: ["La note 1 du manuel (sur « sépulcral ») n'est pas visible dans le document."],
       complement: ["Sépulcral : qui évoque le tombeau, la mort.", "Hugo est député en 1848, exilé sous le Second Empire, puis sénateur sous la IIIe République.", "1881, année du recueil, est aussi celle de la loi sur la gratuité de l'école primaire."],
       vf: [
         { s: "Pour Hugo, l'ignorance mène au crime.", a: true, explain: "« C'est dans cette ombre-là qu'ils ont trouvé le crime. »" }
@@ -736,7 +736,7 @@ window.RECTO_HLP = {
         "Description détaillée de l'uniforme.",
         "Reprises à partir de la l. 10 : « Par ces jeunes hussards de la République. Par ces nourrissons de la République. »"
       ],
-      exemples: ["L'uniforme : pantalon noir à liseré violet, redingote, casquette plate aux palmes violettes.", "La photo du manuel : instituteurs de l'École normale de Loches, vers 1907."],
+      exemples: ["L'uniforme : pantalon noir à liseré violet, redingote, casquette plate aux palmes violettes.", "L'illustration du manuel : instituteurs de l'École normale de Loches, vers 1907."],
       neutre: "L'école républicaine n'est pas neutre : ses maîtres sont formés pour enraciner les valeurs de la République, comme une armée.",
       piege: "L'« École normale » du texte forme les instituteurs (une par département) : ce n'est pas l'École normale supérieure.",
       connaissances: ["Charles Péguy (1873-1914), L'Argent (1913).", "Les « hussards noirs » de la République.", "Les écoles normales d'instituteurs."],
@@ -857,7 +857,7 @@ window.RECTO_HLP = {
     /* ---------------------------------------------------------------- */
     { id: "nietzsche-allemands", chapter: "ch1", discipline: "philosophie", author: "nietzsche",
       classement: { chapitre: "theme", discipline: "Texte d'un philosophe : philosophie." },
-      title: "Contre le dressage des esprits", titleNote: "Titre de travail : le titre du manuel est coupé sur la photo.", work: "« Ce qui abandonne les Allemands », Crépuscule des idoles", ref: "trad. P. Wotling", year: "1889", yearN: 1889, genre: "Essai philosophique",
+      title: "Contre le dressage des esprits", titleNote: "Titre de travail : le titre du manuel est coupé dans le document.", work: "« Ce qui abandonne les Allemands », Crépuscule des idoles", ref: "trad. P. Wotling", year: "1889", yearN: 1889, genre: "Essai philosophique",
       doc: { photos: ["IMG_2611"], printed: "TEXTE 6" },
       chapeau: "Nietzsche défend une éducation qui ne viserait pas à standardiser les individus pour les adapter aux besoins de la société et de l'État, mais à permettre à chacun de développer sa singularité en devenant lui-même.",
       short: "L'éducation supérieure est une vocation, pas un dressage",
@@ -919,8 +919,8 @@ window.RECTO_HLP = {
         notes: ["1. Formule inspirée du poète latin Horace : « Le beau appartient à peu d'hommes »."],
         bac: [{ k: "Vers le Grand oral", q: "En quoi la vocation peut-elle entrer en conflit avec la profession ?" }]
       },
-      alertes: ["Le titre du texte, en haut de la page, est coupé sur la photo : « Contre le dressage des esprits » est un titre de travail."],
-      complement: ["Le chapitre est plus souvent traduit « Ce qui manque aux Allemands » ; la photo porte « Ce qui abandonne les Allemands » (à vérifier dans le manuel).", "Crépuscule des idoles est écrit en 1888 et publié début 1889."],
+      alertes: ["Le titre du texte, en haut de la page, est coupé dans le document : « Contre le dressage des esprits » est un titre de travail."],
+      complement: ["Le chapitre est plus souvent traduit « Ce qui manque aux Allemands » ; le document porte « Ce qui abandonne les Allemands » (à vérifier dans le manuel).", "Crépuscule des idoles est écrit en 1888 et publié début 1889."],
       vf: [
         { s: "Pour Nietzsche, une éducation supérieure doit être accessible à la masse.", a: false, explain: "« Éducation supérieure » et masse : « cela entre d'emblée en contradiction »." }
       ] },
@@ -1039,8 +1039,8 @@ window.RECTO_HLP = {
         { t: "« femme soumise = faible » (marge, en bas)", lecture: "probable", keep: true },
         { t: "« → faire abnégation : … » (marge)", lecture: "partielle", keep: false, why: "Fin illisible." }
       ],
-      manuel: { notes: ["Notes coupées à gauche sur la photo : « …de soi au profit d'autrui » (abnégation), « …, soumission » (assujettissement), « …renoncer » (abdication)."] },
-      alertes: ["Les notes de bas de page sont coupées au bord gauche de la photo."],
+      manuel: { notes: ["Notes coupées à gauche dans le document : « …de soi au profit d'autrui » (abnégation), « …, soumission » (assujettissement), « …renoncer » (abdication)."] },
+      alertes: ["Les notes de bas de page sont coupées au bord gauche du document."],
       complement: ["Mill (1806-1873), philosophe et économiste anglais ; député, il défend en 1867 le droit de vote des femmes."],
       vf: [
         { s: "Selon Mill, les hommes se contentent de l'obéissance des femmes.", a: false, explain: "« Les maîtres des femmes veulent plus que l'obéissance » : ils utilisent toute la force de l'éducation." }
@@ -1288,7 +1288,7 @@ window.RECTO_HLP = {
       },
       alertes: [
         "Référence imprimée : « tome II, Livre IV, chap. VII, 1835 ». Le passage sur le despotisme doux est habituellement situé au chapitre VI du livre IV, et le tome II date de 1840 : à vérifier.",
-        "Le texte s'étend sur deux feuilles photographiées ensemble (IMG_2616) : le début en haut, la suite sur la feuille du bas."
+        "Le texte s'étend sur deux pages successives du manuel : le début en haut, la suite sur la feuille du bas."
       ],
       complement: ["Tocqueville analyse deux dangers de la démocratie : la tyrannie de la majorité et ce despotisme doux."],
       vf: [

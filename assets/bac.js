@@ -94,6 +94,39 @@
   };
   Recto.bacEngine = Engine;
 
+  /* Calendrier du bac blanc (sans interface, testé par tests/verifier.js) */
+  const DAY = 864e5;
+  const dKey = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const fromKey = k => { const p = String(k || "").split("-").map(Number); return p.length === 3 && p[0] ? new Date(p[0], p[1] - 1, p[2]) : null; };
+  const today0 = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const dayLabel = d => d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const DAY_TYPE = {
+    learn: "Apprendre et s'entraîner", consolid: "Consolider", sprint: "Tout revoir", mock: "Épreuve blanche",
+    "final-mock": "Sujet chronométré et révision finale", final: "Veille : révision finale", exam: "Jour du bac blanc"
+  };
+
+  /* Le programme : du jour présent au jour de l'épreuve (sans date : une séance qui couvre tout) */
+  function program(units, examKey, now) {
+    const t0 = now ? fromKey(now) : today0(), ex = fromKey(examKey);
+    const n = ex ? Math.round((ex - t0) / DAY) : null;
+    const days = [];
+    /* jours civils (et non 24 h) : pas de décalage au changement d'heure */
+    const add = (i, type, us) => days.push({ key: dKey(new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + i)), i, type, units: us || [] });
+    if (n == null || n > 45) { add(0, "learn", units); return { n, days }; }
+    if (n < 0) return { n, days };
+    if (n === 0) add(0, "exam");
+    else if (n === 1) { add(0, "sprint", units); add(1, "exam"); }
+    else if (n === 2) { add(0, "learn", units); add(1, "final-mock", units); add(2, "exam"); }
+    else {
+      const L = n - 2;   /* jours d'apprentissage ; puis épreuve blanche (J-2), veille (J-1), épreuve */
+      const per = Math.max(1, Math.ceil(units.length / L));
+      for (let i = 0; i < L; i++) { const us = units.slice(i * per, i * per + per); add(i, us.length ? "learn" : "consolid", us.length ? us : units); }
+      add(n - 2, "mock", units); add(n - 1, "final", units); add(n, "exam");
+    }
+    return { n, days };
+  }
+  Recto.bacPlan = { program, dKey, fromKey };
+
   /* =========================================================
      Outils partagés avec la spécialité HLP : chargement, méthode, corrigés
      ========================================================= */
@@ -138,18 +171,147 @@
     return `<div class="cg">${step("A", "Introduction rédigée", `<p class="cg-txt">${esc(c.intro)}</p>`, open)}${step("B", "Développement", c.parties.map(part).join(""), open)}${step("C", "Conclusion rédigée", `<p class="cg-txt">${esc(c.conclusion)}</p>`, open)}</div>`;
   }
   Recto.bacUI = { loadScripts, methodHTML, corrigeHTML, step, bindSteps, CORR, fmtMin, SELF };
+  /* =========================================================
+     Plan de révision du bac blanc : date de l'épreuve, programme jour par jour, séance minutée.
+     Partagé par le tronc commun et la spécialité ; chaque espace fournit ce qu'il faut apprendre (« unités »)
+     et les actions (ouvrir le cours, lancer des exercices, ouvrir un corrigé, lancer l'épreuve).
+     ========================================================= */
+
+  function rng(seed) {
+    let h = 2166136261;
+    for (const c of String(seed)) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+    return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  const pickSeeded = (arr, n, seed) => { const r = rng(seed); return arr.map(x => [r(), x]).sort((a, b) => a[0] - b[0]).slice(0, n).map(x => x[1]); };
+  /* Exercices d'un contenu sur des fiches données (tirage stable dans la journée) */
+  const QUICK = ["qcm", "vf", "fill", "flash", "match", "order", "sort", "schema", "grid", "part"];
+  function exIds(book, fiches, n, seed, build) {
+    const bk = C.BOOKS[book]; if (!bk) return [];
+    const pool = bk.exercises.filter(e => (build ? e.type === "build" : QUICK.includes(e.type)) && (e.nlist || []).some(x => fiches.includes(x)));
+    return pickSeeded(pool.map(e => e.id), n, seed);
+  }
+
+  /* Les blocs d'une séance de « min » minutes pour un jour du programme */
+  function blocks(day, min, cfg, seed) {
+    const out = [], us = day.units, books = [...new Set(us.map(u => u.book))];
+    const fichesOf = b => [...new Set(us.filter(u => u.book === b).flatMap(u => u.fiches))];
+    const pauses = min >= 150 ? 2 : min >= 75 ? 1 : 0, W = min - pauses * 5;
+    const subj = cfg.subjects(us);
+    const corr = subj.length ? subj[day.i % subj.length] : null;
+    const learn = (share, t, d) => us.length && out.push({ k: "learn", min: Math.round(W * share), t, d, units: us });
+    const exos = (share, t) => {
+      const m = Math.round(W * share), tot = books.reduce((a, b) => a + fichesOf(b).length, 0) || 1;
+      books.forEach(b => { const mb = Math.max(5, Math.round(m * fichesOf(b).length / tot)); const ids = exIds(b, fichesOf(b), Math.max(4, Math.round(mb * 60 / 50)), seed + b, false); if (ids.length) out.push({ k: "exos", min: mb, t: t || "Exercices", d: cfg.bookName(b) + " · " + ids.length + " exercices", book: b, ids }); });
+    };
+    const build = share => {
+      const m = Math.round(W * share); let done = false;
+      books.forEach(b => { if (done) return; const ids = exIds(b, fichesOf(b), Math.max(1, Math.round(m / 6)), seed + "b" + b, true); if (ids.length) { done = true; out.push({ k: "build", min: m, t: cfg.buildName || "Plans de dissertation", d: ids.length + " sujet" + (ids.length > 1 ? "s" : "") + " : choisir les arguments, comparer au plan modèle", book: b, ids }); } });
+      return done;
+    };
+    const study = (share, t) => corr && out.push({ k: "corr", min: Math.round(W * share), t: t || "Étudier un corrigé", d: corr.q, id: corr.id });
+    const method = (share, tab, t) => out.push({ k: "method", min: Math.max(5, Math.round(W * share)), t: t || "Méthode", d: tab === "jour" ? "Consignes et minutage de l'épreuve" : tab === "grille" ? "Ce qui est valorisé ou pénalisé" : cfg.methodName(tab), tab });
+    const pause = () => out.push({ k: "pause", min: 5, t: "Pause", d: "Sans écran." });
+    const mtab = cfg.methods[day.i % cfg.methods.length];
+    if (day.type === "learn" || day.type === "consolid") {
+      if (day.type === "learn") learn(0.3, "Apprendre", "Les fiches et le cours de : " + us.map(u => u.short).join(", "));
+      exos(day.type === "learn" ? 0.3 : 0.4);
+      if (pauses) pause();
+      const hasBuild = build(day.type === "learn" ? 0.15 : 0.2);
+      study(hasBuild ? 0.2 : 0.3);
+      if (pauses > 1) pause();
+      method(0.05, mtab);
+    } else if (day.type === "sprint") {
+      learn(0.35, "Tout revoir", "« À retenir », citations et pièges de chaque fiche");
+      exos(0.25, "Exercices rapides");
+      if (pauses) pause();
+      study(0.2, "Lire un corrigé en entier");
+      method(0.1, "jour", "Le jour J");
+    } else if (day.type === "mock" || day.type === "final-mock") {
+      const full = day.type === "mock" && min >= 240;
+      const sm = full ? 240 : Math.round(W * (day.type === "mock" ? 0.75 : 0.55));
+      out.push({ k: "mock", min: sm, t: full ? "Épreuve blanche complète" : "Sujet en temps limité", d: full ? "Conditions réelles, chrono lancé" : "Problématique, plan détaillé, introduction et conclusion rédigées" });
+      if (pauses) pause();
+      study(day.type === "mock" ? 0.2 : 0.15, "Comparer au corrigé");
+      if (day.type === "final-mock") { learn(0.2, "Révision finale", "« À retenir », citations et pièges"); method(0.1, "jour", "Le jour J"); }
+    } else if (day.type === "final") {
+      learn(0.35, "Révision finale", "« À retenir », citations et pièges, sans nouvelle notion");
+      exos(0.25, "Exercices rapides");
+      if (pauses) pause();
+      method(0.2, "grille", "Ce que le correcteur attend");
+      study(0.2, "Relire un corrigé");
+    }
+    return out;
+  }
+
+  /* L'onglet Plan : calendrier, programme, séance du jour */
+  function planTab(el, cfg) {
+    const P = cfg.state;
+    P.done = P.done || {};
+    const prog = program(cfg.units, P.date);
+    const tk = dKey(today0());
+    const sel = prog.days.find(d => d.key === P.sel) || prog.days.find(d => d.key === tk) || prog.days[0];
+    const min = Math.min(240, Math.max(30, P.min || 120));
+    const bl = sel && sel.type !== "exam" ? blocks(sel, min, cfg, sel.key) : [];
+    const doneL = (P.done[sel && sel.key + "|" + min] || []);
+    const nDone = doneL.length;
+    const count = prog.n == null ? "" : prog.n < 0 ? "Date passée" : prog.n === 0 ? "C'est aujourd'hui" : prog.n === 1 ? "Demain" : "J-" + prog.n;
+    let t = 0;
+    const exDate = fromKey(P.date);
+    el.innerHTML = `
+      <div class="bp">
+        <section class="bp-cal">
+          <label class="bp-date"><span>Date du bac blanc</span><input type="date" id="bpDate" value="${esc(P.date || "")}" min="${tk}"></label>
+          <div class="bp-count">${count ? `<b class="tabnum">${esc(count)}</b>` : ""}<span>${exDate ? esc(dayLabel(exDate)) : "Aucune date : une séance qui couvre tout"}</span></div>
+          ${prog.days.length > 1 ? `<ol class="bp-days">${prog.days.map(d => {
+            const dd = fromKey(d.key), all = blocks(d, min, cfg, d.key).length, dn = (P.done[d.key + "|" + min] || []).length;
+            return `<li><button class="bp-day ${d === sel ? "on" : ""} ${d.key === tk ? "today" : ""} ${d.type}" data-day="${d.key}"><span class="bp-d">${esc(dd.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" }))}</span><span class="bp-t">${esc(DAY_TYPE[d.type])}</span>${d.type === "learn" && d.units.length < cfg.units.length ? `<span class="bp-u">${esc(d.units.map(u => u.short).join(", "))}</span>` : ""}${d.type !== "exam" && all ? `<span class="bp-p tabnum">${dn}/${all}</span>` : ""}</button></li>`;
+          }).join("")}</ol>` : ""}
+        </section>
+        <section class="bp-sess">
+          ${sel ? `<header class="bp-h"><div><div class="eyebrow">${sel.key === tk ? "Aujourd'hui" : esc(dayLabel(fromKey(sel.key)))}</div><h3>${esc(DAY_TYPE[sel.type])}</h3></div>${bl.length ? `<span class="bp-prog tabnum">${nDone} / ${bl.length}</span>` : ""}</header>` : ""}
+          ${sel && sel.type === "exam" ? `<ol class="mt-jour">${(window.RECTO_METHODE ? window.RECTO_METHODE.jourJ : []).map(j => `<li>${esc(j)}</li>`).join("")}</ol>`
+          : sel ? `<div class="bp-slider"><input type="range" id="bpMin" min="30" max="240" step="15" value="${min}" aria-label="Durée de la séance"><b class="tabnum">${fmtMin(min)}</b></div>
+          <ol class="bp-blocks">${bl.map((b, i) => { const s = t; t += b.min; const ok = doneL.includes(i);
+            return `<li class="bp-b ${b.k} ${ok ? "done" : ""}"><span class="bp-time tabnum">${fmtMin(s)}</span><div class="bp-m"><b>${esc(b.t)}</b><span>${esc(b.d || "")}</span>${b.k === "learn" ? `<div class="bp-units">${b.units.map((u, j) => `<button class="chip" data-unit="${j}">${esc(u.short)}</button>`).join("")}</div>` : ""}</div><span class="bp-dur tabnum">${b.min} min</span><div class="bp-acts">${b.k !== "pause" && b.k !== "learn" ? `<button class="btn secondary sm" data-go="${i}">${b.k === "mock" ? "Lancer" : "Ouvrir"}</button>` : ""}<button class="bp-ck ${ok ? "on" : ""}" data-ck="${i}" aria-label="Fait" title="Fait">${C.ICON.check}</button></div></li>`; }).join("")}</ol>` : `<p class="note">Aucune séance.</p>`}
+        </section>
+      </div>`;
+    const date = $("#bpDate", el);
+    date.onchange = () => { P.date = date.value || null; P.sel = null; cfg.save(); cfg.refresh(); };
+    $$("[data-day]", el).forEach(b => b.onclick = () => { P.sel = b.dataset.day; cfg.save(); cfg.refresh(); });
+    const sl = $("#bpMin", el);
+    if (sl) {
+      const setP = () => sl.style.setProperty("--p", ((sl.value - 30) / 210 * 100) + "%");
+      setP();
+      sl.oninput = () => { setP(); $(".bp-slider b", el).textContent = fmtMin(+sl.value); };
+      sl.onchange = () => { P.min = +sl.value; cfg.save(); cfg.refresh(); };
+    }
+    $$("[data-ck]", el).forEach(b => b.onclick = () => {
+      const k = sel.key + "|" + min, i = +b.dataset.ck, L = P.done[k] || [];
+      P.done[k] = L.includes(i) ? L.filter(x => x !== i) : L.concat(i);
+      cfg.save(); if (!L.includes(i)) X.pop(b); cfg.refresh();
+    });
+    const mark = i => { const k = sel.key + "|" + min, L = P.done[k] || []; if (!L.includes(i)) { P.done[k] = L.concat(i); cfg.save(); } };
+    $$("[data-go]", el).forEach(b => b.onclick = () => { const i = +b.dataset.go, bk = bl[i]; mark(i); cfg.act(bk); });
+    $$(".bp-b.learn [data-unit]", el).forEach(b => b.onclick = () => { const li = b.closest(".bp-b"), i = [...li.parentNode.children].indexOf(li); mark(i); cfg.open(bl[i].units[+b.dataset.unit]); });
+    if (!cfg.quiet()) X.stagger($$(".bp-b", el), { y: 8, step: 40 });
+  }
+  /* Retour au bac blanc depuis une leçon ouverte par le plan */
+  function markBack(label) { try { sessionStorage.setItem("recto.back", JSON.stringify({ h: location.hash, l: label })); } catch (e) { /* stockage indisponible */ } }
+  Object.assign(Recto.bacUI, { planTab, program, blocks, markBack, dKey });
 
   /* =========================================================
      Écran du tronc commun : fiches, méthode, corrigés, épreuve
      ========================================================= */
   const K = "recto.bac.tc";
-  const ST = Object.assign({ sel: [], fmt: "epreuve", tab: "fiches", mtab: "dissertation", draw: null, recent: [], done: {}, drafts: {}, qres: {}, timer: null, n: 0 }, store.get(K) || {});
+  const ST = Object.assign({ sel: [], fmt: "epreuve", tab: "plan", mtab: "dissertation", draw: null, recent: [], done: {}, drafts: {}, qres: {}, timer: null, n: 0, plan: {} }, store.get(K) || {});
+  if (!ST.planSeen) { ST.tab = "plan"; ST.planSeen = true; }
+  ST.plan = ST.plan || {};
   const saveST = () => store.set(K, ST);
   let BANK = null, SUBJ = null, LOADING = false, QUIET = false, JUMP = false;
   const refresh = () => { QUIET = true; C.rerender(); };
   const WAITERS = [];
   const FILES = ["contenus/bac/methode.js", "contenus/bac/corriges-langage.js", "contenus/bac/corriges-art.js", "contenus/bac/corriges-raison.js", "contenus/bac/corriges-explications.js"];
-  const TABS = [["fiches", "Fiches"], ["methode", "Méthode"], ["corriges", "Corrigés"], ["epreuve", "Épreuve"]];
+  const TABS = [["plan", "Plan"], ["fiches", "Fiches"], ["methode", "Méthode"], ["corriges", "Corrigés"], ["epreuve", "Épreuve"]];
   const HOME = "#/tronc-commun/bac-blanc";
 
   /* Chargement : la banque de sujets, les contenus du tronc commun, la méthode et les corrigés */
@@ -199,7 +361,8 @@
   function draw(root, prm) {
     const sel = ST.sel.filter(id => NOT(id));
     ST.sel = sel;
-    const tab = TABS.some(t => t[0] === ST.tab) ? ST.tab : "fiches";
+    const tab = TABS.some(t => t[0] === ST.tab) ? ST.tab : "plan";
+    try { sessionStorage.removeItem("recto.back"); } catch (e) { /* stockage indisponible */ }
     const F = FORMATS[ST.fmt] ? ST.fmt : "epreuve";
     const subj = prm.s && byId(prm.s);
     const cnt = Engine.counts(SUBJ, sel);
@@ -232,7 +395,8 @@
       main.innerHTML = `<div class="segmented big bac-tabs" id="bTabs">${TABS.map(([k, l]) => `<button data-tab="${k}" class="${k === tab ? "on" : ""}">${l}</button>`).join("")}</div><div class="bac-tab" id="bTab"></div>`;
       $$("#bTabs button", main).forEach(b => b.onclick = () => { ST.tab = b.dataset.tab; saveST(); refresh(); });
       const el = $("#bTab", main);
-      if (tab === "fiches") fiches(el, sel);
+      if (tab === "plan") planTC(el, sel);
+      else if (tab === "fiches") fiches(el, sel);
       else if (tab === "methode") method(el);
       else if (tab === "corriges") corriges(el, sel);
       else sheet(el);
@@ -252,13 +416,44 @@
     if (!sel.length) { el.innerHTML = empty("Choisir au moins une notion."); return; }
     el.innerHTML = `<div class="bf scroll">${sel.map(n => {
       const fs = fichesOf(n), books = [...new Set(fs.map(x => x[0]))];
-      return `<section class="bf-n"><header><h3>${esc(nTitle(n))}</h3><span class="muted small tabnum">${fs.length} fiches</span></header>${books.map(b => `<div class="bf-src">${esc(bookShort(b))}</div><div class="bf-list">${fs.filter(x => x[0] === b).map(([b2, f]) => {
+      return `<section class="bf-n"><header><h3>${esc(nTitle(n))}</h3><span class="muted small tabnum">${fs.length} fiches</span></header>${books.map(b => `<div class="bf-src"><span>${esc(bookShort(b))}</span><button class="btn ghost sm" data-open-b="${b}">Cours</button><button class="btn ghost sm" data-train-b="${b}" data-n="${n}">S'entraîner</button></div><div class="bf-list">${fs.filter(x => x[0] === b).map(([b2, f]) => {
         const x = C.notion(b2, f);
         return `<button class="bf-row" data-ref="${b2}|${f}"><b>${esc(x.title)}</b>${x.citation ? `<span>« ${esc(C.clip(x.citation, 120))} »</span>` : x.retenir && x.retenir[0] ? `<span>${esc(C.clip(x.retenir[0], 120))}</span>` : ""}</button>`;
       }).join("")}</div>`).join("")}</section>`;
     }).join("")}</div>`;
     bindRefs(el);
+    $$("[data-open-b]", el).forEach(b => b.onclick = () => { Recto.bacUI.markBack("Bac blanc"); location.hash = "#/" + b.dataset.openB + (C.BOOKS[b.dataset.openB].course ? "/cours" : "/carte"); });
+    $$("[data-train-b]", el).forEach(b => b.onclick = () => { const bk = b.dataset.trainB, fs2 = fichesOf(b.dataset.n).filter(x => x[0] === bk).map(x => x[1]); C.startIn(bk, { title: nTitle(b.dataset.n) + " · " + bookShort(bk), ids: C.shuffle(C.BOOKS[bk].exercises.filter(e => e.type !== "build" && (e.nlist || []).some(x => fs2.includes(x))).map(e => e.id)).slice(0, 15), back: HOME }); });
     if (!QUIET) X.stagger($$(".bf-row", el).slice(0, 14), { y: 6, step: 25 });
+  }
+
+  /* ---------- Plan : date du bac blanc, programme jour par jour, séance minutée ---------- */
+  function unitsTC(sel) {
+    const map = new Map();
+    sel.forEach(n => fichesOf(n).forEach(([b, f]) => {
+      const bk = C.BOOKS[b], p = bk.notions[f].part, k = b + "|" + p;
+      if (!map.has(k)) { const P = bk.parts[p] || {}; map.set(k, { book: b, part: p, fiches: [], short: bookShort(b) + " " + (P.roman || "intro") }); }
+      const u = map.get(k); if (!u.fiches.includes(f)) u.fiches.push(f);
+    }));
+    return [...map.values()];
+  }
+  function planTC(el, sel) {
+    if (!sel.length) { el.innerHTML = empty("Choisir au moins une notion."); return; }
+    const M = window.RECTO_METHODE, mt = id => ((M && M.tc.find(m => m.id === id)) || {}).title || (id === "grille" ? "Ce qui compte" : "Le jour J");
+    const pool = Engine.pool(SUBJ, "diss", sel).concat(Engine.pool(SUBJ, "expl", sel)).filter(s => CORR()[s.id]);
+    Recto.bacUI.planTab(el, {
+      state: ST.plan, save: saveST, refresh, quiet: () => QUIET,
+      units: unitsTC(sel), methods: ["dissertation", "explication", "grille"], methodName: mt, bookName: bookShort,
+      subjects: us => { const fs2 = us.flatMap(u => u.fiches); const sc = s => (s.refs || []).filter(r => fs2.includes(r[1])).length; const hit = pool.filter(s => sc(s) > 0).sort((a, b) => sc(b) - sc(a)); return (hit.length ? hit : pool).map(s => ({ id: s.id, q: s.kind === "expl" ? "Explication · " + s.src : s.q })); },
+      open: u => { Recto.bacUI.markBack("Bac blanc"); location.hash = "#/" + u.book + (C.BOOKS[u.book].course ? "/cours?part=" : "/carte?part=") + u.part; },
+      act: b => {
+        if (b.k === "exos") C.startIn(b.book, { title: "Bac blanc · " + bookShort(b.book), ids: b.ids, back: HOME });
+        else if (b.k === "build") C.startIn(b.book, { title: "Plans de dissertation", ids: b.ids, from: "reflexion", back: HOME });
+        else if (b.k === "corr") location.hash = HOME + "?s=" + encodeURIComponent(b.id) + "&c=1";
+        else if (b.k === "method") { ST.tab = "methode"; ST.mtab = b.tab; saveST(); refresh(); }
+        else if (b.k === "mock") { ST.fmt = b.min >= 240 ? "epreuve" : "dissertation"; generate(null); }
+      }
+    });
   }
 
   /* ---------- Méthode ---------- */

@@ -246,5 +246,29 @@ ok(/Tous les sujets ont un corrigé/.test(cr.stdout), "corrigés : un par sujet 
 console.log("  " + crLine);
 
 /* ------------------------------------------------------------------ */
+section("9. Bac blanc : calendrier de révision");
+const PLAN = win.Recto.bacPlan;
+const U = ["u1", "u2", "u3", "u4", "u5", "u6", "u7"].map(id => ({ id }));
+const types = p => p.days.map(d => d.type).join(",");
+/* Dimanche 8 novembre 2026, bac blanc le mardi 10 : J-2 */
+const p2 = PLAN.program(U, "2026-11-10", "2026-11-08");
+ok(p2.n === 2 && types(p2) === "learn,final-mock,exam", `bac blanc dans 2 jours : apprendre, sujet chronométré, épreuve (${types(p2)})`);
+ok(p2.days.map(d => d.key).join() === "2026-11-08,2026-11-09,2026-11-10", "dates du programme : 8, 9, 10 novembre");
+ok(p2.days[0].units.length === U.length, "à J-2, tout est revu le premier jour");
+const p1 = PLAN.program(U, "2026-11-09", "2026-11-08");
+ok(types(p1) === "sprint,exam", "bac blanc demain : tout revoir, puis l'épreuve");
+ok(types(PLAN.program(U, "2026-11-08", "2026-11-08")) === "exam", "bac blanc aujourd'hui : consignes du jour J");
+ok(PLAN.program(U, "2026-11-01", "2026-11-08").days.length === 0, "date passée : aucun programme");
+const p6 = PLAN.program(U, "2026-11-14", "2026-11-08");
+ok(p6.n === 6 && types(p6) === "learn,learn,learn,learn,mock,final,exam", `J-6 : quatre jours d'apprentissage, épreuve blanche, veille, épreuve (${types(p6)})`);
+ok([...new Set(p6.days.filter(d => d.type === "learn").flatMap(d => d.units.map(u => u.id)))].length === U.length, "J-6 : toutes les unités sont apprises avant l'épreuve blanche");
+const p20 = PLAN.program(U, "2026-11-28", "2026-11-08");
+ok(p20.days.filter(d => d.type === "consolid").length > 0 && p20.days.slice(-3).map(d => d.type).join() === "mock,final,exam", "beaucoup de jours : apprentissage, consolidation, puis épreuve blanche et veille");
+ok(types(PLAN.program(U, null, "2026-11-08")) === "learn", "sans date : une séance qui couvre tout");
+/* Passage à l'heure d'hiver (25 octobre 2026) : pas de jour sauté ni doublé */
+const pd = PLAN.program(U, "2026-10-28", "2026-10-23");
+ok(pd.days.map(d => d.key).join() === "2026-10-23,2026-10-24,2026-10-25,2026-10-26,2026-10-27,2026-10-28", "changement d'heure : jours consécutifs");
+
+/* ------------------------------------------------------------------ */
 console.log(`\n${fails ? "ÉCHECS : " + fails : "Tout est bon"} · ${oks} vérifications réussies`);
 process.exit(fails ? 1 : 0);

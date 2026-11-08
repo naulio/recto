@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "10"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "11"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -492,9 +492,12 @@
     const hlpItem = inBook && B.meta.space === "hlp";
     document.body.dataset.space = hlpItem || VIEW === "hlp" || (VIEW === "home" && store.get(HOME_TYPE) === "hlp") ? "hlp" : "tc";
     const hlpDisc = hlpItem && B.meta.discipline ? { litterature: "Littérature", philosophie: "Philosophie" }[B.meta.discipline] : "";
-    $("#crumb").innerHTML = inBook ? crumbLink(hlpItem ? (hlpDisc ? "#/hlp/" + B.meta.discipline : "#/hlp") : "#/tronc-commun", hlpItem ? (hlpDisc ? "HLP · " + hlpDisc : "HLP") : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
+    /* Ouvert depuis le plan du bac blanc : un retour direct */
+    let back = null;
+    try { back = JSON.parse(sessionStorage.getItem("recto.back") || "null"); if (back && VIEW === "home") { sessionStorage.removeItem("recto.back"); back = null; } } catch (e) { back = null; }
+    $("#crumb").innerHTML = (inBook && back && back.h ? `<a class="crumb-back" href="${esc(back.h)}">${ICON.back}${esc(back.l || "Retour")}</a>` : "") + (inBook ? crumbLink(hlpItem ? (hlpDisc ? "#/hlp/" + B.meta.discipline : "#/hlp") : "#/tronc-commun", hlpItem ? (hlpDisc ? "HLP · " + hlpDisc : "HLP") : "Tronc commun") + crumbLink("#/" + B.id, B.meta.title)
       : ["library", "tcbac"].includes(VIEW) ? crumbLink("#/tronc-commun", "Philosophie · Tronc commun")
-      : VIEW === "hlp" ? crumbLink("#/hlp", "Spécialité HLP") : "";
+      : VIEW === "hlp" ? crumbLink("#/hlp", "Spécialité HLP") : "");
     $("#nav").hidden = !inBook && !spaceNav;
     if (inBook) {
       $("#nav").innerHTML = navItems().map(([v, l, s]) => `<button data-view="${v}"><span class="l">${esc(l)}</span><span class="s">${esc(s)}</span></button>`).join("");
