@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "17"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "18"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
