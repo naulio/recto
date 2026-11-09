@@ -48,6 +48,9 @@
     const ci = L.indexOf(cur);
     const cents = [];
     L.forEach((x, i) => { const c = Math.floor((x.yearN - 1) / 100) + 1; if (!cents.some(o => o.c === c)) cents.push({ c, i }); });
+    /* Deux siècles trop proches sur la frise se chevauchent (sur téléphone surtout) : on garde le premier */
+    const shown = [];
+    cents.forEach(o => { if (!shown.length || pos(o.i) - pos(shown[shown.length - 1].i) >= 13) shown.push(o); });
     const dot = (x, i) => links
       ? `<a class="fr-dot ${x === cur ? "on" : ""}" href="#/hlp/texte/${x.id}" style="left:${pos(i)}%" title="${esc(x.a.short)} · ${esc(x.year)}" aria-label="${esc(x.a.short)}, ${esc(x.year)}"></a>`
       : `<span class="fr-dot ${x === cur ? "on" : ""}" style="left:${pos(i)}%" title="${esc(x.a.short)} · ${esc(x.year)}"></span>`;
@@ -55,7 +58,7 @@
     return `<div class="tfrise" role="img" aria-label="${esc(cur.a.short)}, ${esc(cur.year)}, parmi les textes du chapitre">
       <div class="fr-line"></div>${L.map(dot).join("")}
       <div class="fr-cur ${side}" style="left:${lab}%"><b>${esc(cur.year)}</b><span>${esc(cur.a.short)}</span></div>
-      ${cents.map(o => `<span class="fr-c" style="left:${pos(o.i)}%">${ROMAN[o.c] || o.c}<sup>e</sup></span>`).join("")}
+      ${shown.map(o => `<span class="fr-c" style="left:${pos(o.i)}%">${ROMAN[o.c] || o.c}<sup>e</sup></span>`).join("")}
     </div>`;
   }
 

@@ -192,7 +192,9 @@ const P0 = HD.bacPool(HB, BK, { disc: "philosophie", chs: ["ch1"], texts: [] });
 ok(P0.interp.length === philo.length, `philosophie : une interprétation par texte de philosophie (${P0.interp.length})`);
 ok(P0.essai.length === 10, `philosophie : les 10 sujets d'essai du cours (${P0.essai.length})`);
 const PL = HD.bacPool(HB, BK, { disc: "litterature", chs: ["ch1"], texts: [] });
-ok(PL.essai.length === 0 && PL.interp.every(s => HB.T[s.t].discipline === "litterature"), "littérature : aucun sujet venu du cours de philosophie");
+ok(PL.essai.length === 5 && PL.essai.every(s => s.dossier === "hugo-poesie" && s.disc === "litterature" && s.tx.every(id => HB.T[id].discipline === "litterature")), `littérature : les 5 sujets d'essai du dossier Hugo, aucun venu du cours de philosophie (${PL.essai.length})`);
+ok(PL.interp.every(s => HB.T[s.t].discipline === "litterature" && s.disc === "litterature"), "littérature : interprétations sur des textes de littérature");
+ok(PL.essai.every(s => s.tx.includes("hugo-chaque-enfant") || s.tx.includes("hugo-contemplations")), "littérature : chaque sujet du dossier mobilise un poème de Hugo");
 ok(HD.bacPool(HB, BK, { disc: "philosophie", chs: [], texts: [] }).interp.length === 0, "aucun chapitre choisi : aucun sujet");
 const N = { epreuve: [1, 1], interpretation: [2, 0], essai: [0, 3] };
 let hdraws = 0;
@@ -203,9 +205,10 @@ Object.keys(N).forEach(fmt => {
       hdraws++;
       ok(r.interp.length === Math.min(N[fmt][0], texts.length || 99) && r.essai.length === N[fmt][1], `${fmt} (${texts.join("+") || "tous"}) : nombre de sujets`);
       r.interp.forEach(s => ok(HB.T[s.t].discipline === "philosophie" && (!texts.length || texts.includes(s.t)), `${fmt} : interprétation dans la sélection (${s.t})`));
-      r.essai.forEach(s => ok(s.tx.every(id => HB.T[id].discipline === "philosophie"), `${fmt} : essai sans texte de l'autre discipline`));
-      if (texts.length === 1 && r.essai.length) ok(r.essai[0].tx.includes(texts[0]), `${fmt} : l'essai mobilise le texte choisi (${texts[0]})`);
-      if (fmt === "epreuve" && r.interp.length) ok(r.essai[0].tx.includes(r.interp[0].t), "épreuve complète : l'essai prolonge le texte tiré");
+      /* Épreuve complète : interprétation de philosophie, essai de littérature (comme à l'épreuve) */
+      const ed2 = fmt === "epreuve" ? "litterature" : "philosophie";
+      r.essai.forEach(s => ok(s.disc === ed2 && s.tx.every(id => HB.T[id].discipline === ed2), `${fmt} : essai en ${ed2}, sans texte de l'autre discipline`));
+      if (fmt !== "epreuve" && texts.length === 1 && r.essai.length) ok(r.essai[0].tx.includes(texts[0]), `${fmt} : l'essai mobilise le texte choisi (${texts[0]})`);
       const ids = r.interp.concat(r.essai).map(s => s.id);
       ok(new Set(ids).size === ids.length, `${fmt} : pas de sujet en double`);
     }
@@ -213,7 +216,16 @@ Object.keys(N).forEach(fmt => {
 });
 const tq = P0.interp.find(s => s.t === "tocqueville-uniformiser");
 ok(tq && tq.doc && /affaire nationale/.test(tq.q), "la question d'interprétation relevée dans le manuel est reprise telle quelle (Tocqueville)");
-ok(litt.length && !HD.bacDraw(HB, BK, { disc: "litterature", chs: ["ch1"], texts: [] }, "essai", []).essai.length, "littérature sans cours : pas d'essai (génération verrouillée dans l'interface)");
+/* Le bac blanc annoncé : interprétation de philosophie, essai de littérature sur Hugo */
+for (let k = 0; k < 20; k++) {
+  const r = HD.bacDraw(HB, BK, { disc: "philosophie", chs: ["ch1"], texts: [], other: ["hugo-chaque-enfant", "hugo-contemplations"] }, "epreuve", []);
+  hdraws++;
+  ok(r.interp.length === 1 && r.interp[0].disc === "philosophie" && r.essai.length === 1 && r.essai[0].dossier === "hugo-poesie", "épreuve : interprétation de philosophie, essai sur le dossier Hugo");
+  const r2 = HD.bacDraw(HB, BK, { disc: "litterature", chs: ["ch1"], texts: ["hugo-contemplations"], other: [] }, "epreuve", []);
+  ok(r2.interp.length === 1 && r2.interp[0].t === "hugo-contemplations" && r2.essai.length === 1 && r2.essai[0].disc === "philosophie" && r2.essai[0].b === "hlp-ch1-education", "épreuve vue de la littérature : interprétation du texte choisi, essai du cours de philosophie");
+  const r3 = HD.bacDraw(HB, BK, { disc: "litterature", chs: ["ch1"], texts: ["hugo-contemplations"] }, "essai", []);
+  ok(r3.essai.length === 3 && r3.essai.every(s => s.dossier === "hugo-poesie" && s.tx.includes("hugo-contemplations")), "essai de littérature : trois sujets du dossier sur le texte choisi");
+}
 console.log(`  ${hdraws} tirages HLP vérifiés`);
 
 /* ------------------------------------------------------------------ */

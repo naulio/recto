@@ -21,6 +21,9 @@ const HP = win.Recto.hlpData.bacPool(H, win.BOOKS, { disc: "philosophie", chs: [
 const SUBJ = {};
 TC.forEach(s => { SUBJ[s.id] = s; });
 HP.essai.concat(HP.interp).forEach(s => { SUBJ[s.id] = s; });
+/* Littérature : les sujets d'essai des dossiers (pas d'interprétation littéraire rédigée) */
+const HL = win.Recto.hlpData.bacPool(H, win.BOOKS, { disc: "litterature", chs: ["ch1"], texts: [] });
+HL.essai.forEach(s => { SUBJ[s.id] = s; });
 
 const files = process.argv.slice(2).length ? process.argv.slice(2)
   : fs.readdirSync(path.join(ROOT, "contenus/bac")).filter(f => /^corriges-.*\.js$/.test(f)).map(f => "contenus/bac/" + f);

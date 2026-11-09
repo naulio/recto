@@ -4,7 +4,7 @@
   /* =========================================================
      Bibliothèque (livres et leçons) et chargement à la demande
      ========================================================= */
-  const V = "16"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
+  const V = "17"; /* version des fichiers (cache) : à changer avec index.html et sw.js */
   const LIB = ((window.RECTO_LIBRARY && window.RECTO_LIBRARY.items) || []).map(m => Object.assign({ type: "livre" }, m));
   /* Deux espaces : la philosophie du tronc commun (par défaut) et la spécialité HLP (space: "hlp") */
   const inTC = m => !!m && (!m.space || m.space === "tc");
@@ -525,16 +525,20 @@
   }
   window.addEventListener("hashchange", route);
 
-  let STILL = false, LAST_HASH = null;
+  let STILL = false, LAST_HASH = null, KEEP_Y = null;
+  /* Changer d'onglet dans une même page : garder la position (sur mobile, ne pas remonter en haut) */
+  const keepScroll = () => { KEEP_Y = window.scrollY; };
   function render() {
     closeModal(true);
     CLEAN.forEach(f => { try { f(); } catch (e) { /* */ } });
     CLEAN = [];
     document.body.dataset.view = VIEW;
     /* Sur mobile la page défile : on revient en haut quand on change d'écran */
-    if (location.hash !== LAST_HASH || (STILL && VIEW === "player")) { LAST_HASH = location.hash; window.scrollTo(0, 0); }
+    const keep = KEEP_Y; KEEP_Y = null;
+    if (location.hash !== LAST_HASH || (STILL && VIEW === "player")) { LAST_HASH = location.hash; window.scrollTo(0, keep || 0); }
     renderTopbar();
     VIEWS[VIEW](app, PARAMS);
+    if (keep) window.scrollTo(0, keep);
     if (STILL) { const v = $(".view", app); if (v) v.classList.add("still"); }
     STILL = false;
     renderPill();
@@ -3477,7 +3481,7 @@
   }
   window.Recto.core = {
     V, $, $$, esc, md, ICON, toast, store, X, shuffle, clip, sum, avg, fold, dayKey, fmtHMS, kSum,
-    G: () => G, noQ, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV,
+    G: () => G, noQ, keepScroll, LIB, TCLIB, BOOKS, KIND, VIEWS, SPACE_NAV,
     /* Suivi en direct des chronos */
     live: LIVE, liveHTML, liveTxt, liveLong,
     view: () => VIEW, params: () => PARAMS, hash: (v, p) => hashFor(v, p),

@@ -1119,6 +1119,239 @@ window.RECTO_HLP = {
       vf: [
         { s: "Le pouvoir décrit par Tocqueville prépare les hommes à l'âge viril, comme un père.", a: false, explain: "Il ressemblerait à la puissance paternelle s'il préparait à l'âge viril, « mais il ne cherche, au contraire, qu'à les fixer irrévocablement dans l'enfance »." }
       ] }
+  ],
+  /* Dossiers pour l'essai : un auteur du programme, ses textes et la culture littéraire à mobiliser autour */
+  dossiers: [
+    { id: "hugo-poesie", discipline: "litterature", chapter: "ch1", author: "hugo",
+      title: "Hugo et la poésie", sub: "Les deux poèmes de Hugo sur l'école, et ce que la poésie dit de l'éducation.",
+      texts: ["hugo-chaque-enfant", "hugo-contemplations"],
+      auteur: {
+        reperes: [
+          "Chef de file du romantisme : la préface de Cromwell (1827) et la bataille d'Hernani (1830) libèrent le théâtre des règles classiques.",
+          "Un poète qui se veut guide : dans « Fonction du poète » (Les Rayons et les Ombres, 1840), le poète éclaire le peuple et prépare l'avenir.",
+          "Un homme politique : pair de France, puis député en 1848. En 1850, il combat la loi Falloux, qui renforce l'emprise de l'Église sur l'école, et réclame l'instruction gratuite et obligatoire.",
+          "L'exil (1851-1870) : opposant au coup d'État de Louis-Napoléon Bonaparte, il vit à Jersey puis à Guernesey, où il publie Les Châtiments (1853), Les Contemplations (1856) et Les Misérables (1862).",
+          "Retour en France en 1870, sénateur sous la IIIe République ; à sa mort en 1885, des funérailles nationales le conduisent au Panthéon."
+        ],
+        oeuvres: [
+          { t: "Les Misérables (1862)", d: "Au bagne, Jean Valjean « alla à l'école à quarante ans, et apprit à lire, à écrire, à compter » ; mais « Il sentit que fortifier son intelligence, c'était fortifier sa haine. » Ce qui le transforme, c'est la bonté de l'évêque Myriel : l'instruction seule ne suffit pas." },
+          { t: "« Réponse à un acte d'accusation » (Les Contemplations, I, 7)", d: "« Je mis un bonnet rouge au vieux dictionnaire. » Hugo libère les mots comme on affranchit des hommes : « Et déclarai les mots égaux, libres, majeurs. » La poésie elle-même s'émancipe des règles." },
+          { t: "« À propos d'Horace » (Les Contemplations, I, 13)", d: "Le poème dont est tiré « Un idéal d'éducation » s'ouvre sur une charge contre les maîtres de son enfance : « Marchands de grec ! marchands de latin ! cuistres ! dogues ! » Hugo y dit aussi : « je hais l'affreux tas des vils pédants iniques »." },
+          { t: "Discours contre la loi Falloux (1850)", d: "À l'Assemblée, Hugo défend un grand enseignement public et laïque, et l'instruction gratuite et obligatoire, trente ans avant les lois Ferry." }
+        ],
+        piege: "« Ouvrir une école, c'est fermer une prison » n'est pas de Hugo : cette formule, devenue un slogan, ne figure pas dans son œuvre. Citer plutôt le vers exact : « Chaque enfant qu'on enseigne est un homme qu'on gagne. »"
+      },
+      poemes: [
+        { text: "hugo-chaque-enfant", titre: "« Écrit après la visite d'un bagne »", recueil: "Les Quatre Vents de l'esprit", annee: "1881", forme: "Extrait de 26 alexandrins à rimes plates",
+          vers: [
+            "Chaque enfant qu'on enseigne est un homme qu'on gagne.",
+            "Quatre-vingt-dix voleurs sur cent qui sont au bagne",
+            "Ne sont jamais allés à l'école une fois,",
+            "Et ne savent pas lire, et signent d'une croix.",
+            "C'est dans cette ombre-là qu'ils ont trouvé le crime.",
+            "L'ignorance est la nuit qui commence l'abîme.",
+            "Où rampe la raison, l'honnêteté périt.",
+            "[…] L'école est sanctuaire autant que la chapelle.",
+            "L'alphabet que l'enfant avec son doigt épelle",
+            "Contient sous chaque lettre une vertu ; le cœur",
+            "S'éclaire doucement à cette humble lueur.",
+            "Donc au petit enfant donnez le petit livre.",
+            "Marchez, la lampe en main, pour qu'il puisse vous suivre.",
+            "La nuit produit l'erreur et l'erreur l'attentat.",
+            "Faute d'enseignement, on jette dans l'état",
+            "Des hommes animaux, têtes inachevées,",
+            "Tristes instincts qui vont les prunelles crevées,",
+            "Aveugles effrayants, au regard sépulcral,",
+            "Qui marchent à tâtons dans le monde moral.",
+            "Allumons les esprits, c'est notre loi première,",
+            "Et du suif le plus vil faisons une lumière.",
+            "L'intelligence veut être ouverte ici-bas,",
+            "Le germe a droit d'éclore, et qui ne pense pas",
+            "Ne vit pas. Ces voleurs avaient le droit de vivre.",
+            "Songeons-y bien, l'école en or change le cuivre,",
+            "Tandis que l'ignorance en plomb transforme l'or. […]"
+          ],
+          mouvements: [
+            { v: [1, 7], titre: "Le constat : l'ignorance mène au crime", idee: "Un vers-maxime, puis une preuve chiffrée et la métaphore de la nuit : l'ignorance est la cause du crime." },
+            { v: [8, 13], titre: "L'école, lieu sacré et lumière", idee: "L'école vaut la chapelle ; chaque lettre « contient » une vertu : instruire, c'est moraliser. Puis un appel à agir." },
+            { v: [14, 19], titre: "Sans école, des hommes inachevés", idee: "Un tableau effrayant : l'aveuglement du corps figure l'aveuglement moral de ceux qu'on n'a pas instruits." },
+            { v: [20, 26], titre: "Un devoir collectif, un droit de l'enfant", idee: "« Allumons » : le « nous » engage la société ; l'enfant a droit au savoir ; l'image de l'alchimie conclut." }
+          ],
+          procedes: [
+            "Vers-maxime d'ouverture, au présent de vérité générale, frappé comme un proverbe.",
+            "Argument chiffré (« Quatre-vingt-dix voleurs sur cent ») : le poème emprunte à l'éloquence politique.",
+            "Métaphore filée de la lumière (lueur, lampe, allumer, lumière) contre la nuit (ombre, abîme, aveugles).",
+            "Animalisation de ceux qu'on n'a pas instruits : « hommes animaux, têtes inachevées », qui vont « à tâtons ».",
+            "Impératifs et « nous » (« donnez », « Marchez », « Allumons », « Songeons-y ») : un poème qui exhorte.",
+            "Image de l'alchimie et antithèse finale : l'école change le cuivre en or, l'ignorance l'or en plomb."
+          ] },
+        { text: "hugo-contemplations", titre: "« À propos d'Horace » (fin du poème)", recueil: "Les Contemplations, livre I, poème 13", annee: "1856", forme: "Extrait de 42 alexandrins à rimes plates",
+          vers: [
+            "Un jour, quand l'homme sera sage,",
+            "Lorsqu'on n'instruira plus les oiseaux par la cage,",
+            "Quand les sociétés difformes sentiront",
+            "Dans l'enfant mieux compris se redresser leur front,",
+            "Que, des libres essors ayant sondé les règles,",
+            "On connaîtra la loi de croissance des aigles,",
+            "Et que le plein midi rayonnera pour tous,",
+            "Savoir étant sublime, apprendre sera doux.",
+            "Alors, tout en laissant au sommet des études",
+            "Les grands livres latins et grecs, ces solitudes",
+            "Où l'éclair gronde, où luit la mer, où l'astre rit,",
+            "Et qu'emplissent les vents immenses de l'esprit,",
+            "C'est en les pénétrant d'explication tendre,",
+            "En les faisant aimer, qu'on les fera comprendre.",
+            "Homère emportera dans son vaste reflux",
+            "L'écolier ébloui ; l'enfant ne sera plus",
+            "Une bête de somme attelée à Virgile ;",
+            "Et l'on ne verra plus ce vif esprit agile",
+            "Devenir, sous le fouet d'un cuistre ou d'un abbé,",
+            "Le lourd cheval poussif du pensum embourbé.",
+            "Chaque village aura, dans un temple rustique,",
+            "Dans la lumière, au lieu du magister antique,",
+            "Trop noir pour que jamais le jour y pénétrât,",
+            "L'instituteur lucide et grave, magistrat",
+            "Du progrès, médecin de l'ignorance, et prêtre",
+            "De l'idée ; et dans l'ombre on verra disparaître",
+            "L'éternel écolier et l'éternel pédant.",
+            "L'aube vient en chantant, et non pas en grondant.",
+            "Nos fils riront de nous dans cette blanche sphère ;",
+            "Ils se demanderont ce que nous pouvions faire",
+            "Enseigner au moineau par le hibou hagard.",
+            "Alors, le jeune esprit et le jeune regard",
+            "Se lèveront avec une clarté sereine",
+            "Vers la science auguste, aimable et souveraine ;",
+            "Alors, plus de grimoire obscur, fade, étouffant ;",
+            "Le maître, doux apôtre incliné sur l'enfant,",
+            "Fera, lui versant Dieu, l'azur et l'harmonie,",
+            "Boire la petite âme à la coupe infinie.",
+            "Alors, tout sera vrai, lois, dogmes, droits, devoirs.",
+            "Tu laisseras passer dans tes jambages noirs",
+            "Une pure lueur, de jour en jour moins sombre,",
+            "Ô nature, alphabet des grandes lettres d'ombre !"
+          ],
+          mouvements: [
+            { v: [1, 8], titre: "« Un jour » : la promesse d'une autre école", idee: "Une longue phrase au futur accumule les conditions jusqu'à la maxime : « Savoir étant sublime, apprendre sera doux. »" },
+            { v: [9, 20], titre: "Faire aimer les grands auteurs", idee: "Garder Homère et Virgile, mais les faire aimer par une « explication tendre » : fini l'élève-bête de somme et le fouet du cuistre." },
+            { v: [21, 31], titre: "L'instituteur, prêtre de l'idée", idee: "Le maître obscur cède la place à l'instituteur lucide, « médecin de l'ignorance » : le savoir vient avec douceur, pas avec menace." },
+            { v: [32, 42], titre: "Une éducation ouverte sur l'infini", idee: "Le « doux apôtre incliné sur l'enfant » ouvre à la science et au monde ; la nature devient un alphabet à déchiffrer." }
+          ],
+          procedes: [
+            "Futur prophétique et anaphore de « Alors » : le poète annonce l'avenir, comme un mage.",
+            "Antithèses : la cage et les « libres essors », l'ombre et la lumière, le fouet et la tendresse, le hibou et le moineau.",
+            "Métaphores animales : l'élève-oiseau, l'aigle, la « bête de somme », le « lourd cheval poussif du pensum ».",
+            "Lexique religieux : « temple rustique », « prêtre / De l'idée », « apôtre » : l'école devient sacrée.",
+            "Personnification de l'aube qui « vient en chantant » : une pédagogie de la douceur.",
+            "Apostrophe finale à la nature : savoir, c'est apprendre à lire le monde."
+          ] }
+      ],
+      comparaison: [
+        { k: "Commun", t: "La lumière contre la nuit : dans les deux poèmes, savoir, c'est voir ; l'ignorance est une nuit, le maître d'autrefois est « Trop noir pour que jamais le jour y pénétrât »." },
+        { k: "Commun", t: "L'école sacrée : « sanctuaire autant que la chapelle » en 1881, « temple rustique » où officie un « prêtre / De l'idée » en 1856." },
+        { k: "Commun", t: "Un poète qui exhorte et prophétise : impératifs et « nous » dans le poème du bagne, futur prophétique dans Les Contemplations." },
+        { k: "Différence", t: "Le poème du bagne dit pourquoi instruire : prévenir le crime, faire des hommes. Celui des Contemplations dit comment instruire : sans fouet, en faisant aimer." },
+        { k: "Différence", t: "L'un s'adresse à la société et à l'État (« notre loi première ») ; l'autre regarde la relation entre le maître et l'enfant (« doux apôtre incliné sur l'enfant »)." },
+        { k: "Limite", t: "Hugo croit que l'instruction moralise ; Les Misérables le nuance : savoir lire ne rend pas Valjean meilleur, la bonté le change." }
+      ],
+      poetes: [
+        { who: "Horace", oeuvre: "Art poétique (Ier siècle av. J.-C.)", cit: "Omne tulit punctum qui miscuit utile dulci.", trad: "Il a remporté tous les suffrages, celui qui a mêlé l'utile à l'agréable.",
+          idee: "La poésie plaît et instruit à la fois. Le poème de Hugo vient de « À propos d'Horace » : « apprendre sera doux » prolonge cet idéal.", usage: "Pour montrer que la poésie peut enseigner en charmant." },
+        { who: "La Fontaine", oeuvre: "Fables, dédicace « À Monseigneur le Dauphin » (1668)", cit: "Je me sers d'animaux pour instruire les hommes.",
+          idee: "Les Fables sont dédiées à un enfant, le fils de Louis XIV : la poésie éduque par le récit et la morale.", usage: "Pour le poète éducateur, bien avant Hugo." },
+        { who: "Hugo", oeuvre: "« Fonction du poète », Les Rayons et les Ombres (1840)", cit: "Le poète en des jours impies / Vient préparer des jours meilleurs.",
+          idee: "Le poète est un guide, un mage qui éclaire le peuple : la poésie a une mission.", usage: "Pour la poésie engagée et éducatrice." },
+        { who: "Gautier", oeuvre: "Préface de Mademoiselle de Maupin (1835)", cit: "Il n'y a de vraiment beau que ce qui ne peut servir à rien ; tout ce qui est utile est laid",
+          idee: "L'art pour l'art : la poésie n'a pas à instruire ; la soumettre à une utilité, c'est la rendre laide.", usage: "Pour l'objection : la poésie n'est pas une leçon." },
+        { who: "Rimbaud", oeuvre: "« Les Poètes de sept ans » (1871)", cit: "Et la Mère, fermant le livre du devoir,",
+          idee: "Une éducation pieuse et autoritaire qui ne voit pas l'enfant ; lui s'échappe par l'imaginaire : « À sept ans, il faisait des romans, sur la vie ».", usage: "Pour l'éducation qui enferme et l'émancipation par la poésie." },
+        { who: "Rimbaud", oeuvre: "Lettre à Paul Demeny, dite « Lettre du voyant » (15 mai 1871)", cit: "Le poète se fait voyant par un long, immense et raisonné dérèglement de tous les sens.",
+          idee: "Se défaire de ce qu'on a appris pour voir autrement : « Je est un autre ». Rimbaud salue pourtant Hugo : « Les Misérables sont un vrai poème. »", usage: "Pour l'émancipation par la poésie, contre l'éducation reçue." },
+        { who: "Rimbaud et son professeur", oeuvre: "Charleville, 1870", cit: "",
+          idee: "Élève brillant, Rimbaud est encouragé par son jeune professeur de rhétorique, Georges Izambard, qui lui prête des livres ; sa mère reproche à Izambard de lui avoir fait lire Les Misérables.", usage: "Pour le maître qui ouvre le monde à l'élève, comme celui de Camus." }
+      ],
+      axes: [
+        { titre: "L'éducation éclaire et libère", args: [
+          { idee: "L'ignorance est une nuit qui mène au crime ; instruire, c'est faire un homme.", ex: "Hugo, « Chaque enfant qu'on enseigne est un homme qu'on gagne. »" },
+          { idee: "L'instruction est un droit de l'enfant et un devoir de la société.", ex: "Hugo, « Le germe a droit d'éclore » ; « notre loi première »." },
+          { idee: "L'école ouvre un monde fermé aux enfants pauvres.", ex: "Camus et son instituteur ; les hussards noirs de Péguy." },
+          { idee: "Sans éducation, l'enfant reste proche de l'animal.", ex: "Rabelais, l'enfance de Gargantua ; Hugo, « hommes animaux, têtes inachevées »." } ] },
+        { titre: "Mais l'éducation peut enfermer", args: [
+          { idee: "L'école peut abrutir par la contrainte et la punition.", ex: "Hugo, l'élève « bête de somme attelée à Virgile » ; Balzac, le pensum et « un abrutissement complet »." },
+          { idee: "Le groupe scolaire impose ses codes et humilie.", ex: "Flaubert, le nouveau et sa casquette : « Toute la classe se mit à rire. »" },
+          { idee: "L'éducation assigne des rôles et n'est pas neutre.", ex: "Colette, les travaux de couture réservés aux filles." },
+          { idee: "Savoir ne suffit pas à rendre meilleur.", ex: "Hugo, Les Misérables : Valjean apprend à lire au bagne, mais sa haine grandit." } ] },
+        { titre: "Tout dépend de la manière d'enseigner", args: [
+          { idee: "On comprend ce qu'on aime : la douceur plutôt que le fouet.", ex: "Hugo, « En les faisant aimer, qu'on les fera comprendre. »" },
+          { idee: "La curiosité et le plaisir rendent le savoir vivant.", ex: "Rabelais, la journée humaniste : « Tout leur jeu n'était qu'en liberté »." },
+          { idee: "Le maître compte autant que le programme.", ex: "Hugo, l'instituteur « médecin de l'ignorance » ; Camus, « la faim de la découverte »." } ] },
+        { titre: "La poésie, une autre école", args: [
+          { idee: "La poésie instruit en plaisant.", ex: "Horace, l'utile mêlé à l'agréable ; La Fontaine, « Je me sers d'animaux pour instruire les hommes. »" },
+          { idee: "Le poète se veut guide du peuple.", ex: "Hugo, « Fonction du poète » ; les poèmes sur l'école, qui exhortent." },
+          { idee: "Mais la beauté n'a pas à servir.", ex: "Gautier, l'art pour l'art." },
+          { idee: "La poésie émancipe : elle apprend à voir et libère la langue.", ex: "Rimbaud, se faire « voyant » ; Hugo, « Je mis un bonnet rouge au vieux dictionnaire. »" } ] }
+      ],
+      methode: [
+        "L'essai est une réflexion personnelle et argumentée sur une question, appuyée sur les textes étudiés et sur sa culture littéraire.",
+        "Définir chaque mot du sujet (instruire, éduquer, émanciper, poésie…) : la question cache souvent une tension.",
+        "Formuler une problématique qui oppose deux réponses possibles, puis un plan en deux ou trois parties : thèse, nuance, dépassement.",
+        "Chaque argument : une idée, un exemple précis, une courte analyse. Partir des deux poèmes de Hugo, puis élargir : Rabelais, Balzac, Flaubert, Colette, Péguy, Camus, Rimbaud, La Fontaine.",
+        "Citer exactement et analyser : dire ce que montre l'image ou le procédé, pas seulement le recopier.",
+        "Introduction : accroche, définitions, problématique, annonce du plan. Conclusion : réponse nette, puis ouverture.",
+        "Garder dix minutes pour relire : orthographe, accords, ponctuation."
+      ],
+      essais: [
+        { id: "E-hugo-poesie-1", q: "L'école peut-elle rendre les hommes meilleurs ?",
+          prob: "Si instruire, c'est éclairer l'esprit, cela suffit-il à rendre l'homme bon, ou faut-il autre chose que le savoir ?",
+          plan: ["I. Pour Hugo, l'école arrache l'homme à la nuit de l'ignorance et du crime.", "II. Mais l'instruction seule ne rend pas meilleur : l'école peut abrutir ou humilier.", "III. L'école rend meilleur quand elle fait aimer le savoir et qu'un maître croit en l'enfant."],
+          cit: "Chaque enfant qu'on enseigne est un homme qu'on gagne.",
+          tx: ["hugo-chaque-enfant", "hugo-contemplations", "balzac-lambert", "flaubert-bovary", "camus-maitre", "rabelais-adolescence"],
+          pieges: ["Réciter les poèmes sans répondre à la question : chaque citation doit servir un argument.", "Oublier la nuance de Hugo lui-même : dans Les Misérables, savoir lire ne rend pas Valjean meilleur."] },
+        { id: "E-hugo-poesie-2", q: "Faut-il faire aimer le savoir pour le transmettre ?",
+          prob: "Le désir d'apprendre est-il la condition de toute transmission, ou le savoir exige-t-il aussi l'effort et la contrainte ?",
+          plan: ["I. On comprend mieux ce qu'on aime : l'idéal de Hugo et des humanistes.", "II. Mais transmettre exige aussi l'effort, la règle et l'exigence.", "III. Le maître fait aimer l'effort lui-même : désir et exigence se rejoignent."],
+          cit: "Savoir étant sublime, apprendre sera doux.",
+          tx: ["hugo-contemplations", "rabelais-ponocrates", "balzac-lambert", "peguy-hussards", "camus-maitre"],
+          pieges: ["Opposer naïvement plaisir et travail : Hugo garde Homère et Virgile, il change la manière de les enseigner.", "Confondre faire aimer et faire plaisir : le désir de savoir n'est pas la facilité."] },
+        { id: "E-hugo-poesie-3", q: "La poésie peut-elle éduquer ?",
+          prob: "La poésie, qui cherche d'abord la beauté, peut-elle aussi former l'esprit et le cœur, ou perd-elle son pouvoir quand elle se fait leçon ?",
+          plan: ["I. La poésie instruit en plaisant : Horace, La Fontaine, Hugo.", "II. Mais elle refuse d'être une leçon : l'art pour l'art, la révolte de Rimbaud.", "III. Elle éduque autrement : elle apprend à voir et libère le langage."],
+          cit: "Le poète en des jours impies / Vient préparer des jours meilleurs.",
+          tx: ["hugo-chaque-enfant", "hugo-contemplations"],
+          pieges: ["Parler de la poésie en général sans exemples précis : citer les vers, nommer les procédés.", "Oublier l'objection de l'art pour l'art : sans elle, l'essai n'a pas de nuance."] },
+        { id: "E-hugo-poesie-4", q: "L'éducation est-elle une lumière ?",
+          prob: "L'image de la lumière dit-elle vrai : l'éducation éclaire-t-elle toujours, ou peut-elle aussi aveugler et enfermer ?",
+          plan: ["I. L'éducation éclaire l'esprit et la conscience : la métaphore centrale des deux poèmes.", "II. Mais une lumière peut aveugler : codes, rôles et dogmes imposés.", "III. La vraie lumière apprend à voir par soi-même."],
+          cit: "Allumons les esprits, c'est notre loi première,",
+          tx: ["hugo-chaque-enfant", "hugo-contemplations", "flaubert-bovary", "colette-claudine", "camus-maitre"],
+          pieges: ["Se contenter de relever la métaphore : il faut discuter ce qu'elle affirme.", "Oublier que la lumière est aussi celle des Lumières : l'image a une histoire."] },
+        { id: "E-hugo-poesie-5", q: "Peut-on s'émanciper grâce à l'école ?",
+          prob: "L'école, qui impose ses règles, peut-elle aussi libérer, ou l'émancipation se fait-elle contre elle ?",
+          plan: ["I. L'école libère de l'ignorance et du destin social.", "II. Mais elle peut aussi enfermer, et l'on s'émancipe parfois contre elle.", "III. Elle émancipe quand elle donne les moyens de penser par soi-même."],
+          cit: "Le germe a droit d'éclore",
+          tx: ["hugo-chaque-enfant", "hugo-contemplations", "camus-maitre", "colette-claudine", "balzac-lambert", "peguy-hussards"],
+          pieges: ["Définir l'émancipation : sortir d'une tutelle, pas seulement réussir ses études.", "Ne pas oublier que celui qui se révolte contre l'école, comme Rimbaud, s'appuie sur ce qu'elle lui a appris."] }
+      ],
+      cartes: [
+        { n: "hugo-chaque-enfant", cite: true, f: "Quel vers ouvre « Écrit après la visite d'un bagne » ?", b: "« Chaque enfant qu'on enseigne est un homme qu'on gagne. » Un vers-maxime : instruire, c'est faire un homme." },
+        { n: "hugo-contemplations", cite: true, f: "Quelle maxime résume l'idéal du poème des Contemplations (I, 13) ?", b: "« Savoir étant sublime, apprendre sera doux. » Le plaisir d'apprendre naît de la grandeur du savoir." },
+        { n: "hugo-chaque-enfant", f: "Que montre Jean Valjean, dans Les Misérables, sur l'instruction ?", b: "Il apprend à lire au bagne, à quarante ans, mais sa haine grandit : sans la bonté, l'instruction ne rend pas meilleur." },
+        { n: "hugo-chaque-enfant", f: "Quelle formule souvent attribuée à Hugo n'est pas de lui ?", b: "« Ouvrir une école, c'est fermer une prison » : elle ne figure pas dans son œuvre. Citer le premier vers du poème du bagne." },
+        { n: "hugo-contemplations", cite: true, f: "Que dit La Fontaine dans la dédicace de ses Fables au dauphin ?", b: "« Je me sers d'animaux pour instruire les hommes. » La poésie éduque par le récit et la morale." },
+        { n: "hugo-chaque-enfant", f: "Quelle fonction Hugo donne-t-il au poète en 1840 ?", b: "Un guide qui éclaire le peuple et prépare l'avenir (« Fonction du poète », Les Rayons et les Ombres)." },
+        { n: "hugo-contemplations", f: "Que soutient Gautier dans la préface de Mademoiselle de Maupin ?", b: "L'art pour l'art : le beau ne sert à rien, l'utile est laid. La poésie n'a pas à instruire." },
+        { n: "hugo-contemplations", f: "Que veut Rimbaud dans la « Lettre du voyant » ?", b: "Se faire voyant par un « raisonné dérèglement de tous les sens », se défaire de ce qu'on a appris. Il salue Hugo : « Les Misérables sont un vrai poème. »" },
+        { n: "hugo-contemplations", f: "Quel procédé domine les deux poèmes de Hugo sur l'école ?", b: "La métaphore filée de la lumière et de la nuit : savoir, c'est voir ; l'ignorance est un aveuglement." },
+        { n: "hugo-chaque-enfant", f: "En quoi les deux poèmes de Hugo se complètent-ils ?", b: "Le poème du bagne dit pourquoi instruire (prévenir le crime) ; celui des Contemplations dit comment (sans fouet, en faisant aimer)." },
+        { n: "hugo-contemplations", f: "Que fait Hugo au « vieux dictionnaire » ?", b: "« Je mis un bonnet rouge au vieux dictionnaire. » Il libère les mots : la poésie s'émancipe aussi des règles." },
+        { n: "hugo-contemplations", f: "Quel lien unit Rimbaud, son professeur et Hugo ?", b: "À Charleville, son professeur Izambard lui prête des livres ; sa mère reproche à Izambard de lui avoir fait lire Les Misérables." }
+      ],
+      qcm: [
+        { n: "hugo-contemplations", q: "Quelle image Hugo donne-t-il de l'élève maltraité dans Les Contemplations ?", options: ["Une bête de somme attelée à Virgile", "Un aigle enfermé dans une tour", "Un arbre taillé par le jardinier", "Un navire perdu sans boussole"], answer: 0, explain: "L'élève devient aussi « Le lourd cheval poussif du pensum embourbé »." },
+        { n: "hugo-chaque-enfant", q: "Dans le poème du bagne, que contient chaque lettre de l'alphabet ?", options: ["Une vertu qui éclaire le cœur", "Un secret que l'enfant devine", "Une prière que l'enfant récite", "Une loi que l'enfant respecte"], answer: 0, explain: "« Contient sous chaque lettre une vertu ; le cœur / S'éclaire doucement »." },
+        { n: "hugo-contemplations", q: "Que reproche Gautier à la poésie utile ?", options: ["D'être laide, car l'utile exprime un besoin", "D'être trop difficile pour les enfants", "D'oublier les règles de la versification", "De flatter le pouvoir politique du moment"], answer: 0, explain: "Préface de Mademoiselle de Maupin (1835) : l'art pour l'art." },
+        { n: "hugo-chaque-enfant", q: "Pourquoi Hugo combat-il la loi Falloux en 1850 ?", options: ["Elle renforce l'emprise de l'Église sur l'école", "Elle rend l'école primaire obligatoire", "Elle ferme les collèges de province", "Elle interdit l'enseignement du latin"], answer: 0, explain: "Il réclame un enseignement public et l'instruction gratuite et obligatoire." },
+        { n: "hugo-chaque-enfant", q: "Quelle nuance Les Misérables apporte-t-il au poème du bagne ?", options: ["Savoir lire ne suffit pas à rendre meilleur", "L'école coûte trop cher à l'État", "Les bagnards refusent d'apprendre à lire", "Le latin est inutile aux enfants pauvres"], answer: 0, explain: "Valjean apprend à lire au bagne, mais c'est la bonté de l'évêque qui le change." }
+      ] }
   ]
 };
 if (window.Recto && window.Recto.hlpLoaded) window.Recto.hlpLoaded();
